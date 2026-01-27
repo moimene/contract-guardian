@@ -62,7 +62,7 @@ serve(async (req) => {
         // 1. Verificar que el run existe
         const { data: run, error: runError } = await supabaseClient
             .from('contract_runs')
-            .select('run_id, document_id, status')
+            .select('run_id, document_id, status, decision')
             .eq('run_id', run_id)
             .single()
 

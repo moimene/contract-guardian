@@ -22,13 +22,7 @@ export function useEscalations(filters?: EscalationFilters) {
     queryFn: async (): Promise<EscalationRequest[]> => {
       let queryBuilder = supabase
         .from('escalation_requests')
-        .select(`
-          *,
-          clause_reviews(heading, detected_family),
-          documents(file_name),
-          assigned_profile:profiles!escalation_requests_assigned_to_fkey(full_name),
-          created_profile:profiles!escalation_requests_created_by_fkey(full_name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       // Apply filters
@@ -52,28 +46,24 @@ export function useEscalations(filters?: EscalationFilters) {
 
       if (error) throw error;
 
-      return (data || []).map((row: any) => ({
-        escalation_id: row.escalation_id,
-        clause_instance_id: row.clause_instance_id,
-        document_id: row.document_id,
+      return ((data as any[]) || []).map((row) => ({
+        escalation_id: row.escalation_id || row.id,
+        clause_instance_id: row.clause_instance_id || '',
+        document_id: row.document_id || '',
         run_id: row.run_id,
         reason: row.reason || '',
         context: row.context || '',
-        urgency: row.urgency as EscalationUrgency,
-        status: row.status as EscalationStatus,
-        assigned_to: row.assigned_to,
-        assigned_to_name: row.assigned_profile?.full_name,
-        resolution: row.resolution,
-        resolution_notes: row.resolution_notes,
-        created_by: row.created_by,
-        created_by_name: row.created_profile?.full_name,
+        urgency: (row.urgency || 'medium') as EscalationUrgency,
+        status: (row.status || 'pending') as EscalationStatus,
+        assigned_to: row.assigned_to || undefined,
+        assigned_to_name: undefined,
+        resolution: row.resolution || undefined,
+        resolution_notes: row.resolution_notes || undefined,
+        created_by: row.created_by || row.requested_by || '',
+        created_by_name: undefined,
         created_at: row.created_at,
-        resolved_at: row.resolved_at,
-        resolved_by: row.resolved_by,
-        // Extra context from joins
-        clause_heading: row.clause_reviews?.heading,
-        clause_family: row.clause_reviews?.detected_family,
-        document_name: row.documents?.file_name,
+        resolved_at: row.resolved_at || undefined,
+        resolved_by: row.resolved_by || undefined,
       }));
     },
     refetchInterval: realtimeEnabled ? false : 10000,
@@ -92,12 +82,12 @@ export function useEscalations(filters?: EscalationFilters) {
           schema: 'public',
           table: 'escalation_requests',
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Escalation update:', payload);
           queryClient.invalidateQueries({ queryKey: ['escalations'] });
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === 'CHANNEL_ERROR') {
           console.warn('Realtime subscription failed for escalations');
           setRealtimeEnabled(false);
@@ -127,36 +117,31 @@ export function useEscalation(escalationId: string | undefined) {
 
       const { data, error } = await supabase
         .from('escalation_requests')
-        .select(`
-          *,
-          clause_reviews(heading, detected_family, clause_text),
-          documents(file_name),
-          assigned_profile:profiles!escalation_requests_assigned_to_fkey(full_name),
-          created_profile:profiles!escalation_requests_created_by_fkey(full_name)
-        `)
+        .select('*')
         .eq('escalation_id', escalationId)
         .single();
 
       if (error) throw error;
 
+      const row = data as any;
       return {
-        escalation_id: data.escalation_id,
-        clause_instance_id: data.clause_instance_id,
-        document_id: data.document_id,
-        run_id: data.run_id,
-        reason: data.reason || '',
-        context: data.context || '',
-        urgency: data.urgency as EscalationUrgency,
-        status: data.status as EscalationStatus,
-        assigned_to: data.assigned_to,
-        assigned_to_name: data.assigned_profile?.full_name,
-        resolution: data.resolution,
-        resolution_notes: data.resolution_notes,
-        created_by: data.created_by,
-        created_by_name: data.created_profile?.full_name,
-        created_at: data.created_at,
-        resolved_at: data.resolved_at,
-        resolved_by: data.resolved_by,
+        escalation_id: row.escalation_id || row.id,
+        clause_instance_id: row.clause_instance_id || '',
+        document_id: row.document_id || '',
+        run_id: row.run_id,
+        reason: row.reason || '',
+        context: row.context || '',
+        urgency: (row.urgency || 'medium') as EscalationUrgency,
+        status: (row.status || 'pending') as EscalationStatus,
+        assigned_to: row.assigned_to || undefined,
+        assigned_to_name: undefined,
+        resolution: row.resolution || undefined,
+        resolution_notes: row.resolution_notes || undefined,
+        created_by: row.created_by || row.requested_by || '',
+        created_by_name: undefined,
+        created_at: row.created_at,
+        resolved_at: row.resolved_at || undefined,
+        resolved_by: row.resolved_by || undefined,
       };
     },
     enabled: !!escalationId,
@@ -175,20 +160,17 @@ export function useEscalationComments(escalationId: string | undefined) {
 
       const { data, error } = await supabase
         .from('escalation_comments')
-        .select(`
-          *,
-          profiles(full_name)
-        `)
+        .select('*')
         .eq('escalation_id', escalationId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      return (data || []).map((row: any) => ({
+      return ((data as any[]) || []).map((row) => ({
         comment_id: row.comment_id,
         escalation_id: row.escalation_id,
         author_id: row.author_id,
-        author_name: row.profiles?.full_name || 'Unknown',
+        author_name: 'Unknown',
         content: row.content,
         created_at: row.created_at,
       }));
@@ -234,8 +216,9 @@ export function useEscalationActions() {
           context: context || '',
           urgency,
           status: 'pending',
+          requested_by: user.id,
           created_by: user.id,
-        })
+        } as any)
         .select()
         .single();
 
@@ -248,7 +231,7 @@ export function useEscalationActions() {
           escalation_recommended: true,
           escalation_reason: reason,
           client_state: 'NEEDS_REVIEW',
-        })
+        } as any)
         .eq('clause_instance_id', clauseInstanceId);
 
       return data;
@@ -273,12 +256,12 @@ export function useEscalationActions() {
         .update({
           assigned_to: assignedTo,
           status: 'in_review',
-        })
+        } as any)
         .eq('escalation_id', escalationId);
 
       if (error) throw error;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: { escalationId: string; assignedTo: string }) => {
       queryClient.invalidateQueries({ queryKey: ['escalation', variables.escalationId] });
       queryClient.invalidateQueries({ queryKey: ['escalations'] });
     },
@@ -308,6 +291,8 @@ export function useEscalationActions() {
 
       if (fetchError) throw fetchError;
 
+      const escalationData = escalation as any;
+
       // Update escalation
       const { error } = await supabase
         .from('escalation_requests')
@@ -317,32 +302,30 @@ export function useEscalationActions() {
           resolution_notes: resolutionNotes,
           resolved_at: new Date().toISOString(),
           resolved_by: user.id,
-        })
+        } as any)
         .eq('escalation_id', escalationId);
 
       if (error) throw error;
 
       // Update clause status based on resolution
-      let newClauseStatus: EscalationStatus = 'resolved';
-      if (resolution === 'approved' && approveChanges) {
-        newClauseStatus = 'resolved';
+      if (resolution === 'approved' && approveChanges && escalationData.clause_instance_id) {
         await supabase
           .from('clause_reviews')
           .update({
             client_state: 'OK',
             escalation_recommended: false,
-          })
-          .eq('clause_instance_id', escalation.clause_instance_id);
-      } else if (resolution === 'rejected') {
+          } as any)
+          .eq('clause_instance_id', escalationData.clause_instance_id);
+      } else if (resolution === 'rejected' && escalationData.clause_instance_id) {
         await supabase
           .from('clause_reviews')
           .update({
             client_state: 'BLOCKED',
-          })
-          .eq('clause_instance_id', escalation.clause_instance_id);
+          } as any)
+          .eq('clause_instance_id', escalationData.clause_instance_id);
       }
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: any) => {
       queryClient.invalidateQueries({ queryKey: ['escalation', variables.escalationId] });
       queryClient.invalidateQueries({ queryKey: ['escalations'] });
       queryClient.invalidateQueries({ queryKey: ['clause_reviews'] });
@@ -367,14 +350,14 @@ export function useEscalationActions() {
           escalation_id: escalationId,
           author_id: user.id,
           content,
-        })
+        } as any)
         .select()
         .single();
 
       if (error) throw error;
       return data;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: { escalationId: string; content: string }) => {
       queryClient.invalidateQueries({ queryKey: ['escalation_comments', variables.escalationId] });
     },
   });
@@ -409,7 +392,7 @@ export function useEscalationCounts() {
         high_urgency: 0,
       };
 
-      (data || []).forEach((row) => {
+      ((data as any[]) || []).forEach((row) => {
         if (row.status === 'pending') counts.pending++;
         if (row.status === 'in_review') counts.in_review++;
         if (row.status === 'resolved') counts.resolved++;

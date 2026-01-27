@@ -7,6 +7,7 @@ import type {
   ClauseFilters,
   ContractReviewSummary,
   ClauseStatus,
+  ContractTypology,
 } from '@/types/contracts';
 
 // ============================================================================
@@ -50,9 +51,9 @@ export function useClauseReviews(documentId: string | undefined, runId?: string)
         client_state: row.client_state as ClauseStatus,
         client_comment: row.client_comment || '',
         client_summary_line: row.client_summary_line || '',
-        proposed_changes: row.proposed_changes || [],
+        proposed_changes: (row.proposed_changes as ProposedChange[]) || [],
         escalation_recommended: row.escalation_recommended || false,
-        escalation_reason: row.escalation_reason,
+        escalation_reason: row.escalation_reason || undefined,
         created_at: row.created_at,
         updated_at: row.updated_at,
       }));
@@ -75,12 +76,12 @@ export function useClauseReviews(documentId: string | undefined, runId?: string)
           table: 'clause_reviews',
           filter: `document_id=eq.${documentId}`,
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Clause review update:', payload);
           queryClient.invalidateQueries({ queryKey: ['clause_reviews', documentId] });
         }
       )
-      .subscribe((status) => {
+      .subscribe((status: string) => {
         if (status === 'SUBSCRIBED') {
           console.log('Realtime subscription active for clause reviews');
         } else if (status === 'CHANNEL_ERROR') {
@@ -118,24 +119,25 @@ export function useClauseReview(clauseInstanceId: string | undefined) {
 
       if (error) throw error;
 
+      const row = data as any;
       return {
-        clause_instance_id: data.clause_instance_id,
-        clause_id: data.clause_id,
-        document_id: data.document_id,
-        run_id: data.run_id,
-        sequence_number: data.sequence_number,
-        heading: data.heading || '',
-        clause_text: data.clause_text || '',
-        detected_family: data.detected_family || '',
-        confidence_score: data.confidence_score || 0,
-        client_state: data.client_state as ClauseStatus,
-        client_comment: data.client_comment || '',
-        client_summary_line: data.client_summary_line || '',
-        proposed_changes: data.proposed_changes || [],
-        escalation_recommended: data.escalation_recommended || false,
-        escalation_reason: data.escalation_reason,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
+        clause_instance_id: row.clause_instance_id,
+        clause_id: row.clause_id,
+        document_id: row.document_id,
+        run_id: row.run_id,
+        sequence_number: row.sequence_number,
+        heading: row.heading || '',
+        clause_text: row.clause_text || '',
+        detected_family: row.detected_family || '',
+        confidence_score: row.confidence_score || 0,
+        client_state: row.client_state as ClauseStatus,
+        client_comment: row.client_comment || '',
+        client_summary_line: row.client_summary_line || '',
+        proposed_changes: (row.proposed_changes as ProposedChange[]) || [],
+        escalation_recommended: row.escalation_recommended || false,
+        escalation_reason: row.escalation_reason || undefined,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
       };
     },
     enabled: !!clauseInstanceId,
@@ -161,6 +163,8 @@ export function useContractReviewSummary(documentId: string | undefined, runId?:
 
       if (docError) throw docError;
 
+      const docData = doc as any;
+
       // Get run info
       let runQuery = supabase
         .from('contract_runs')
@@ -175,7 +179,7 @@ export function useContractReviewSummary(documentId: string | undefined, runId?:
       const { data: runs, error: runError } = await runQuery.limit(1);
       if (runError) throw runError;
 
-      const latestRun = runs?.[0];
+      const latestRun = (runs as any[])?.[0];
 
       // Get clause counts
       let clauseQuery = supabase
@@ -193,7 +197,7 @@ export function useContractReviewSummary(documentId: string | undefined, runId?:
       if (clauseError) throw clauseError;
 
       // Count by status
-      const counts = (clauses || []).reduce(
+      const counts = ((clauses as any[]) || []).reduce(
         (acc, clause) => {
           const status = clause.client_state as ClauseStatus;
           acc[status] = (acc[status] || 0) + 1;
@@ -209,9 +213,9 @@ export function useContractReviewSummary(documentId: string | undefined, runId?:
       return {
         document_id: documentId,
         run_id: latestRun?.run_id || '',
-        file_name: doc.file_name,
-        contract_type: doc.contract_types?.type_id || 'unknown',
-        contract_decision: latestRun?.contract_decision || 'PROCESSING',
+        file_name: docData.file_name,
+        contract_type: (docData.contract_types?.type_id || 'unknown') as ContractTypology,
+        contract_decision: latestRun?.decision || 'PROCESSING',
         total_clauses: counts.total,
         ok_count: counts.OK,
         recommended_count: counts.RECOMMENDED,
@@ -219,8 +223,8 @@ export function useContractReviewSummary(documentId: string | undefined, runId?:
         needs_review_count: counts.NEEDS_REVIEW,
         blocked_count: counts.BLOCKED,
         progress_percentage: progress,
-        created_at: doc.created_at,
-        updated_at: latestRun?.updated_at || doc.updated_at,
+        created_at: docData.created_at,
+        updated_at: latestRun?.completed_at || docData.updated_at,
       };
     },
     enabled: !!documentId,
@@ -252,8 +256,9 @@ export function useClauseActions() {
 
       if (fetchError) throw fetchError;
 
+      const clauseData = clause as any;
       // Update the specific change
-      const updatedChanges = (clause.proposed_changes || []).map((change: ProposedChange) =>
+      const updatedChanges = ((clauseData.proposed_changes as ProposedChange[]) || []).map((change: ProposedChange) =>
         change.change_id === changeId
           ? { ...change, accepted: true, rejected: false }
           : change
@@ -262,14 +267,14 @@ export function useClauseActions() {
       const { error } = await supabase
         .from('clause_reviews')
         .update({
-          proposed_changes: updatedChanges,
+          proposed_changes: updatedChanges as any,
           updated_at: new Date().toISOString(),
         })
         .eq('clause_instance_id', clauseInstanceId);
 
       if (error) throw error;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: { clauseInstanceId: string; changeId: string }) => {
       queryClient.invalidateQueries({ queryKey: ['clause_review', variables.clauseInstanceId] });
       queryClient.invalidateQueries({ queryKey: ['clause_reviews'] });
     },
@@ -292,7 +297,8 @@ export function useClauseActions() {
 
       if (fetchError) throw fetchError;
 
-      const updatedChanges = (clause.proposed_changes || []).map((change: ProposedChange) =>
+      const clauseData = clause as any;
+      const updatedChanges = ((clauseData.proposed_changes as ProposedChange[]) || []).map((change: ProposedChange) =>
         change.change_id === changeId
           ? { ...change, accepted: false, rejected: true }
           : change
@@ -301,14 +307,14 @@ export function useClauseActions() {
       const { error } = await supabase
         .from('clause_reviews')
         .update({
-          proposed_changes: updatedChanges,
+          proposed_changes: updatedChanges as any,
           updated_at: new Date().toISOString(),
         })
         .eq('clause_instance_id', clauseInstanceId);
 
       if (error) throw error;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: { clauseInstanceId: string; changeId: string }) => {
       queryClient.invalidateQueries({ queryKey: ['clause_review', variables.clauseInstanceId] });
       queryClient.invalidateQueries({ queryKey: ['clause_reviews'] });
     },
@@ -325,7 +331,8 @@ export function useClauseActions() {
 
       if (fetchError) throw fetchError;
 
-      const updatedChanges = (clause.proposed_changes || []).map((change: ProposedChange) => ({
+      const clauseData = clause as any;
+      const updatedChanges = ((clauseData.proposed_changes as ProposedChange[]) || []).map((change: ProposedChange) => ({
         ...change,
         accepted: true,
         rejected: false,
@@ -334,7 +341,7 @@ export function useClauseActions() {
       const { error } = await supabase
         .from('clause_reviews')
         .update({
-          proposed_changes: updatedChanges,
+          proposed_changes: updatedChanges as any,
           client_state: 'OK',
           updated_at: new Date().toISOString(),
         })
@@ -342,7 +349,7 @@ export function useClauseActions() {
 
       if (error) throw error;
     },
-    onSuccess: (_, clauseInstanceId) => {
+    onSuccess: (_: any, clauseInstanceId: string) => {
       queryClient.invalidateQueries({ queryKey: ['clause_review', clauseInstanceId] });
       queryClient.invalidateQueries({ queryKey: ['clause_reviews'] });
     },
@@ -375,7 +382,7 @@ export function useClauseActions() {
 
       if (error) throw error;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: { clauseInstanceId: string; status: ClauseStatus; comment?: string }) => {
       queryClient.invalidateQueries({ queryKey: ['clause_review', variables.clauseInstanceId] });
       queryClient.invalidateQueries({ queryKey: ['clause_reviews'] });
     },

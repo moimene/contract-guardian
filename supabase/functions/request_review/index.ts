@@ -95,15 +95,15 @@ serve(async (req) => {
         .eq('document_id', run.document_id)
     } else {
       // Incrementar contador de escalaciones en documento
-      await supabaseClient
-        .rpc('increment_escalations', { doc_id: run.document_id })
-        .catch(() => {
-          // Si no existe la funcion, actualizar manualmente
-          supabaseClient
-            .from('documents')
-            .update({ escalations_pending: 1 })
-            .eq('document_id', run.document_id)
-        })
+      try {
+        await supabaseClient.rpc('increment_escalations', { doc_id: run.document_id })
+      } catch {
+        // Si no existe la funcion, actualizar manualmente
+        await supabaseClient
+          .from('documents')
+          .update({ escalations_pending: 1 })
+          .eq('document_id', run.document_id)
+      }
     }
 
     // 5. Respuesta exitosa (mensaje neutral para cliente)

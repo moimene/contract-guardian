@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Upload, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { getPlaybookId, getReviewConfig, uploadContractToN8n, startContractReview, FileUploadPayload, ContractReviewPayload } from '@/services/n8nService';
 import { supabase } from '@/integrations/supabase/client';
+import { ContractTypeSelector } from '@/components/contract-type/ContractTypeSelector';
 
 export default function NewAnalysis() {
     const [file, setFile] = useState<File | null>(null);
@@ -105,7 +105,7 @@ export default function NewAnalysis() {
             <div className="container max-w-3xl mx-auto py-8">
                 <h1 className="text-3xl font-bold mb-2">Nuevo Análisis</h1>
                 <p className="text-muted-foreground mb-8">
-                    Sube un contrato para analizarlo contra el playbook de Amazon.
+                    Sube un contrato para analizarlo contra el playbook correspondiente.
                 </p>
 
                 <div className="grid gap-8">
@@ -178,32 +178,17 @@ export default function NewAnalysis() {
                                 </div>
                                 Configuración del Análisis
                             </CardTitle>
-                            <CardDescription className="ml-10">
-                                Selecciona el tipo de contrato para aplicar las reglas correctas.
-                            </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="ml-10 space-y-4">
-                                <div className="grid gap-2">
-                                    <label className="text-sm font-medium">Tipo de Contrato</label>
-                                    <Select
-                                        value={contractType}
-                                        onValueChange={setContractType}
-                                        disabled={step !== 2}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Seleccionar tipo..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="amazon-psa">Amazon PSA (Production Services Agreement)</SelectItem>
-                                            <SelectItem value="amazon-dsa">Amazon DSA (Development Services Agreement)</SelectItem>
-                                            <SelectItem value="nueva-planta-epc">Nueva Planta EPC</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                            <div className="ml-10 space-y-6">
+                                <ContractTypeSelector
+                                    value={contractType}
+                                    onChange={setContractType}
+                                    disabled={step !== 2}
+                                />
 
                                 {step === 2 && (
-                                    <div className="flex justify-between mt-6">
+                                    <div className="flex justify-between mt-6 pt-4 border-t">
                                         <Button variant="ghost" onClick={() => setStep(1)}>
                                             Atrás
                                         </Button>

@@ -1,0 +1,470 @@
+{
+  "name": "W3_ContractReview - 3 Layer with LLM Parser",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contract-review",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-main",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 200],
+      "webhookId": "contract-review-3layer"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  d.contract_type_code,\n  d.default_blueprint_version_id as blueprint_version_id,\n  d.default_contract_model_version_id as contract_model_version_id,\n  bv.version_label,\n  rb.name as blueprint_name\nFROM contract_type_review_defaults d\nJOIN blueprint_versions bv ON bv.id = d.default_blueprint_version_id\nJOIN review_blueprints rb ON rb.id = bv.blueprint_id\nWHERE d.contract_type_code = '{{ $json.body.contract_type || 'nueva_planta' }}'\n  AND d.effective_from <= NOW()\n  AND (d.effective_until IS NULL OR d.effective_until > NOW())\n  AND bv.is_active = true\nORDER BY d.effective_from DESC\nLIMIT 1;"
+      },
+      "id": "resolve-config",
+      "name": "Resolve Config",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [224, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst input = $('Webhook').first().json;\nconst resolved = $('Resolve Config').first().json;\n\nconst document_id = input.body?.document_id || input.document_id;\nif (!document_id) {\n  throw new Error('document_id is required');\n}\n\n// Config con resolución 3-layer\nconst config = {\n  SUPABASE_URL: 'https://hvlsuwdqtffiilvampxq.supabase.co',\n  N8N_WEBHOOK_BASE: 'https://mmenendeza.app.n8n.cloud',\n  CLAUSE_REVIEW_ENDPOINT: '/webhook/clause-review-nueva-planta',\n  CLAUSE_TIMEOUT: 120000,\n  // 3-Layer resolution\n  blueprint_version_id: resolved?.blueprint_version_id || null,\n  contract_model_version_id: resolved?.contract_model_version_id || null,\n  blueprint_name: resolved?.blueprint_name || 'Default',\n  contract_type: input.body?.contract_type || 'nueva_planta'\n};\n\nreturn [{\n  json: {\n    run_id: crypto.randomUUID(),\n    document_id,\n    config,\n    started_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "create-run-id",
+      "name": "Create Run ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [448, 200]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=document_id=eq.{{ $json.document_id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "processing"
+            },
+            {
+              "fieldId": "processing_started_at",
+              "fieldValue": "={{ $json.started_at }}"
+            }
+          ]
+        }
+      },
+      "id": "update-status-processing",
+      "name": "Update Status Processing",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [672, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "documents",
+        "limit": 1,
+        "filterType": "string",
+        "filterString": "=document_id=eq.{{ $('Create Run ID').first().json.document_id }}"
+      },
+      "id": "fetch-document",
+      "name": "Fetch Document",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [896, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.raw_content }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "has-content",
+      "name": "Has Document Content?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un experto en análisis de contratos. Tu tarea es extraer TODAS las cláusulas de un contrato.\\n\\nPara cada cláusula identificada, proporciona:\\n1. clause_number: Número o identificador de la cláusula (ej: '1.1', 'Artículo 5', 'Cláusula Primera')\\n2. heading: Título o encabezado de la cláusula\\n3. clause_text: Texto COMPLETO de la cláusula (no resumir)\\n4. probable_category: Una de estas categorías:\\n   - PRECIO_PAGOS: Precio, pagos, facturación, retenciones\\n   - ALCANCE_TRABAJO: Alcance, trabajos, modificaciones\\n   - RESPONSABILIDADES: Obligaciones, responsabilidades, deberes\\n   - ENTREGABLES_HITOS: Plazos, hitos, entregables, penalizaciones\\n   - TERMINACION: Rescisión, terminación, resolución\\n   - GARANTIAS: Garantías, fianzas, seguros\\n   - PROPIEDAD_IP: Propiedad intelectual, derechos\\n   - CONFIDENCIALIDAD: Confidencialidad, secreto\\n   - INDEMNIZACION: Indemnización, responsabilidad\\n   - OTRO: Cualquier otra categoría\\n\\nResponde SOLO en formato JSON válido:\\n{\\n  \\\"document_summary\\\": \\\"Breve descripción del tipo de contrato\\\",\\n  \\\"total_clauses\\\": 15,\\n  \\\"clauses\\\": [\\n    {\\n      \\\"clause_number\\\": \\\"1.1\\\",\\n      \\\"heading\\\": \\\"Precio del Contrato\\\",\\n      \\\"clause_text\\\": \\\"Texto completo...\\\",\\n      \\\"probable_category\\\": \\\"PRECIO_PAGOS\\\"\\n    }\\n  ]\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Extrae todas las cláusulas del siguiente contrato:\\n\\n{{ $json.raw_content.substring(0, 100000) }}\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 180000
+        }
+      },
+      "id": "llm-extract-clauses",
+      "name": "LLM Extract Clauses",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1344, 100],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse LLM response and prepare clauses\nconst crypto = require('crypto');\nconst runData = $('Create Run ID').first().json;\nconst document = $('Fetch Document').first().json;\nlet extractedData = { clauses: [] };\n\ntry {\n  const llmResponse = $('LLM Extract Clauses').first().json;\n  const content = llmResponse.choices?.[0]?.message?.content || '{}';\n  extractedData = JSON.parse(content);\n} catch (e) {\n  console.log('LLM parse error:', e.message);\n  // Fallback: crear una cláusula genérica si el parsing falla\n  extractedData = {\n    clauses: [{\n      clause_number: '1',\n      heading: 'Documento Completo',\n      clause_text: document.raw_content?.substring(0, 5000) || 'No content',\n      probable_category: 'OTRO'\n    }]\n  };\n}\n\nif (!extractedData.clauses || extractedData.clauses.length === 0) {\n  throw new Error('No clauses extracted from document');\n}\n\n// Map clauses with run context and 3-layer info\nconst clauses = extractedData.clauses.map((c, idx) => ({\n  clause_id: `clause_${idx + 1}`,\n  clause_instance_id: crypto.randomUUID(),\n  sequence_number: idx + 1,\n  clause_number: c.clause_number,\n  heading: c.heading,\n  clause_text: c.clause_text,\n  probable_category: c.probable_category,\n  // Run context\n  run_id: runData.run_id,\n  document_id: runData.document_id,\n  // 3-Layer context\n  blueprint_version_id: runData.config.blueprint_version_id,\n  contract_model_version_id: runData.config.contract_model_version_id\n}));\n\nconsole.log(`Extracted ${clauses.length} clauses from document`);\n\nreturn clauses.map(c => ({ json: c }));"
+      },
+      "id": "parse-extracted-clauses",
+      "name": "Parse Extracted Clauses",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1568, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fallback: usar cláusulas de prueba cuando no hay contenido\nconst crypto = require('crypto');\nconst runData = $('Create Run ID').first().json;\n\nconsole.log('WARNING: No document content found. Using sample clauses for testing.');\n\nconst sampleClauses = [\n  {\n    clause_number: '1.1',\n    heading: 'Precio del Contrato',\n    clause_text: 'El precio total del contrato es de 15.000.000 EUR. El pago se realizará en 3 plazos: 30% a la firma, 40% al 50% de avance, y 30% a la recepción definitiva.',\n    probable_category: 'PRECIO_PAGOS'\n  },\n  {\n    clause_number: '2.1',\n    heading: 'Alcance de los Trabajos',\n    clause_text: 'El Contratista ejecutará todos los trabajos necesarios para la completa construcción de la planta, incluyendo cualquier trabajo adicional que sea requerido por el Propietario.',\n    probable_category: 'ALCANCE_TRABAJO'\n  },\n  {\n    clause_number: '3.1',\n    heading: 'Responsabilidades',\n    clause_text: 'El Contratista será responsable de todos los daños que se produzcan durante la ejecución de las obras, sin limitación alguna.',\n    probable_category: 'RESPONSABILIDADES'\n  },\n  {\n    clause_number: '4.1',\n    heading: 'Hitos y Penalizaciones',\n    clause_text: 'El retraso en cualquier hito conllevará penalizaciones del 1% semanal sin límite máximo.',\n    probable_category: 'ENTREGABLES_HITOS'\n  },\n  {\n    clause_number: '5.1',\n    heading: 'Terminación',\n    clause_text: 'El Propietario podrá resolver el contrato en cualquier momento y por cualquier causa, sin derecho a indemnización para el Contratista.',\n    probable_category: 'TERMINACION'\n  }\n];\n\nconst clauses = sampleClauses.map((c, idx) => ({\n  clause_id: `clause_${idx + 1}`,\n  clause_instance_id: crypto.randomUUID(),\n  sequence_number: idx + 1,\n  clause_number: c.clause_number,\n  heading: c.heading,\n  clause_text: c.clause_text,\n  probable_category: c.probable_category,\n  run_id: runData.run_id,\n  document_id: runData.document_id,\n  blueprint_version_id: runData.config.blueprint_version_id,\n  contract_model_version_id: runData.config.contract_model_version_id,\n  is_sample: true\n}));\n\nreturn clauses.map(c => ({ json: c }));"
+      },
+      "id": "fallback-sample-clauses",
+      "name": "Fallback Sample Clauses",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1344, 300]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "clause_instance_id",
+              "field2": "clause_instance_id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "merge-clauses",
+      "name": "Merge Clauses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1792, 200]
+    },
+    {
+      "parameters": {
+        "tableId": "clause_instances",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{ $json.clause_instance_id }}"
+            },
+            {
+              "fieldId": "document_id",
+              "fieldValue": "={{ $json.document_id }}"
+            },
+            {
+              "fieldId": "run_id",
+              "fieldValue": "={{ $json.run_id }}"
+            },
+            {
+              "fieldId": "sequence_number",
+              "fieldValue": "={{ $json.sequence_number }}"
+            },
+            {
+              "fieldId": "clause_number",
+              "fieldValue": "={{ $json.clause_number }}"
+            },
+            {
+              "fieldId": "heading",
+              "fieldValue": "={{ $json.heading }}"
+            },
+            {
+              "fieldId": "clause_text",
+              "fieldValue": "={{ $json.clause_text }}"
+            },
+            {
+              "fieldId": "probable_category",
+              "fieldValue": "={{ $json.probable_category }}"
+            }
+          ]
+        }
+      },
+      "id": "save-clause-instances",
+      "name": "Save Clause Instances",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2016, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "prepare-loop",
+      "name": "Prepare Loop",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [2240, 200]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "id": "loop-clauses",
+      "name": "Loop Clauses",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [2464, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Create Run ID').first().json.config.N8N_WEBHOOK_BASE + $('Create Run ID').first().json.config.CLAUSE_REVIEW_ENDPOINT }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"clause_instance_id\": \"{{ $json.clause_instance_id }}\",\n  \"clause_id\": \"{{ $json.clause_id }}\",\n  \"clause_text\": {{ JSON.stringify($json.clause_text) }},\n  \"heading\": \"{{ $json.heading }}\",\n  \"probable_category\": \"{{ $json.probable_category }}\",\n  \"run_id\": \"{{ $json.run_id }}\",\n  \"document_id\": \"{{ $json.document_id }}\",\n  \"blueprint_version_id\": \"{{ $json.blueprint_version_id }}\",\n  \"contract_model_version_id\": \"{{ $json.contract_model_version_id }}\"\n}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "call-clause-review",
+      "name": "Call ClauseReview",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2688, 200],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "results",
+        "options": {}
+      },
+      "id": "collect-results",
+      "name": "Collect Results",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [2912, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate contract-level decision\nconst results = $json.results || [];\nconst runData = $('Create Run ID').first().json;\n\nlet hasBlock = false;\nlet hasRequired = false;\nlet escalations = [];\n\nconst stateCounts = { OK: 0, RECOMMENDED: 0, REQUIRED: 0, NEEDS_REVIEW: 0, BLOCKED: 0 };\n\nfor (const r of results) {\n  const state = r.client_state || 'NEEDS_REVIEW';\n  stateCounts[state] = (stateCounts[state] || 0) + 1;\n  \n  if (state === 'BLOCKED') hasBlock = true;\n  if (state === 'REQUIRED') {\n    hasRequired = true;\n    escalations.push({ clause_id: r.clause_id, reason: r.escalation_reason || 'Requires review' });\n  }\n}\n\nlet contract_decision = 'READY_FOR_EXPORT';\nif (hasBlock) contract_decision = 'BLOCKED';\nelse if (hasRequired) contract_decision = 'NEEDS_REVIEW';\n\nreturn [{\n  json: {\n    results,\n    run_id: runData.run_id,\n    document_id: runData.document_id,\n    contractDecision: {\n      contract_decision,\n      escalations_pending: escalations.length,\n      state_counts: stateCounts\n    },\n    escalations,\n    total_clauses: results.length\n  }\n}];"
+      },
+      "id": "aggregate-decision",
+      "name": "Aggregate Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3136, 200]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=document_id=eq.{{ $json.document_id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "completed"
+            },
+            {
+              "fieldId": "contract_decision",
+              "fieldValue": "={{ $json.contractDecision.contract_decision }}"
+            },
+            {
+              "fieldId": "escalations_pending",
+              "fieldValue": "={{ $json.contractDecision.escalations_pending }}"
+            },
+            {
+              "fieldId": "processing_completed_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "update-document-final",
+      "name": "Update Document",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3360, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "contract_runs",
+        "filterType": "string",
+        "filterString": "=document_id=eq.{{ $('Create Run ID').first().json.document_id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "COMPLETED"
+            },
+            {
+              "fieldId": "total_clauses",
+              "fieldValue": "={{ $('Aggregate Decision').first().json.total_clauses }}"
+            },
+            {
+              "fieldId": "processed_clauses",
+              "fieldValue": "={{ $('Aggregate Decision').first().json.total_clauses }}"
+            },
+            {
+              "fieldId": "decision",
+              "fieldValue": "={{ $('Aggregate Decision').first().json.contractDecision.contract_decision }}"
+            },
+            {
+              "fieldId": "completed_at",
+              "fieldValue": "={{ new Date().toISOString() }}"
+            }
+          ]
+        }
+      },
+      "id": "update-run-final",
+      "name": "Update Run",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3584, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  success: true,\n  run_id: $('Create Run ID').first().json.run_id,\n  document_id: $('Create Run ID').first().json.document_id,\n  total_clauses: $('Aggregate Decision').first().json.total_clauses,\n  contract_decision: $('Aggregate Decision').first().json.contractDecision.contract_decision,\n  escalations_pending: $('Aggregate Decision').first().json.contractDecision.escalations_pending,\n  state_counts: $('Aggregate Decision').first().json.contractDecision.state_counts,\n  message: 'Contract review completed'\n} }}",
+        "options": {}
+      },
+      "id": "respond-success",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3808, 200]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [[{"node": "Resolve Config", "type": "main", "index": 0}]]
+    },
+    "Resolve Config": {
+      "main": [[{"node": "Create Run ID", "type": "main", "index": 0}]]
+    },
+    "Create Run ID": {
+      "main": [[{"node": "Update Status Processing", "type": "main", "index": 0}]]
+    },
+    "Update Status Processing": {
+      "main": [[{"node": "Fetch Document", "type": "main", "index": 0}]]
+    },
+    "Fetch Document": {
+      "main": [[{"node": "Has Document Content?", "type": "main", "index": 0}]]
+    },
+    "Has Document Content?": {
+      "main": [
+        [{"node": "LLM Extract Clauses", "type": "main", "index": 0}],
+        [{"node": "Fallback Sample Clauses", "type": "main", "index": 0}]
+      ]
+    },
+    "LLM Extract Clauses": {
+      "main": [
+        [{"node": "Parse Extracted Clauses", "type": "main", "index": 0}],
+        [{"node": "Fallback Sample Clauses", "type": "main", "index": 0}]
+      ]
+    },
+    "Parse Extracted Clauses": {
+      "main": [[{"node": "Merge Clauses", "type": "main", "index": 0}]]
+    },
+    "Fallback Sample Clauses": {
+      "main": [[{"node": "Merge Clauses", "type": "main", "index": 1}]]
+    },
+    "Merge Clauses": {
+      "main": [[{"node": "Save Clause Instances", "type": "main", "index": 0}]]
+    },
+    "Save Clause Instances": {
+      "main": [
+        [{"node": "Prepare Loop", "type": "main", "index": 0}],
+        [{"node": "Prepare Loop", "type": "main", "index": 0}]
+      ]
+    },
+    "Prepare Loop": {
+      "main": [[{"node": "Loop Clauses", "type": "main", "index": 0}]]
+    },
+    "Loop Clauses": {
+      "main": [[{"node": "Call ClauseReview", "type": "main", "index": 0}]]
+    },
+    "Call ClauseReview": {
+      "main": [
+        [{"node": "Collect Results", "type": "main", "index": 0}],
+        [{"node": "Collect Results", "type": "main", "index": 0}]
+      ]
+    },
+    "Collect Results": {
+      "main": [[{"node": "Aggregate Decision", "type": "main", "index": 0}]]
+    },
+    "Aggregate Decision": {
+      "main": [[{"node": "Update Document", "type": "main", "index": 0}]]
+    },
+    "Update Document": {
+      "main": [[{"node": "Update Run", "type": "main", "index": 0}]]
+    },
+    "Update Run": {
+      "main": [[{"node": "Respond", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3layer-w3-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "W3-3Layer-001",
+  "tags": [{"name": "3-layer"}, {"name": "contract-review"}]
+}

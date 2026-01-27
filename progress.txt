@@ -1,0 +1,47 @@
+# Ralph Progress Log - Contract Guardian v2.1
+
+Iniciado: 2026-01-27
+
+---
+
+## T-001: Cargar Dataset Harvey Completo ✅
+**Status**: PASSED
+**Fecha**: 2026-01-27 12:30
+
+### Acciones:
+- Creados 4 matters faltantes (third_party_credit, control_publicity_trademarks, prodco_reps_title_noninfringement, compliance_policies_laws)
+- Creadas 4 matter_policies
+- Creados 24 clause_types faltantes
+- Insertados 458 policy_examples nuevos
+- Generados 458 embeddings (100% del dataset)
+
+### Verificación:
+- Total: 1,367 policy_examples
+- Distribución: 456 ACCEPTABLE, 458 PASSABLE, 453 UNACCEPTABLE
+- Embeddings: 1,367/1,367 (100%)
+- RAG Test: Top similarity 98.3%
+
+### Learnings:
+- El JSONL original tiene matters/clause_types que no existían en la taxonomía base
+- Hay que verificar FK dependencies antes de cargar datos
+- El script load_missing_harvey.js es útil para cargas incrementales
+
+---
+
+## T-002: Webhook Retorno contract_runs ✅
+**Status**: PASSED
+**Fecha**: 2026-01-27 12:26
+
+### Acciones:
+- Creada Edge Function `update_run_status`
+- Desplegada a Supabase (verify_jwt=false para n8n)
+- Creada documentación `docs/N8N_UPDATE_RUN_STATUS.md`
+
+### Endpoint:
+`POST https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/update_run_status`
+
+### Verificación:
+- Función responde correctamente
+- Actualiza contract_runs y documents
+
+---

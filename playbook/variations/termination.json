@@ -1,0 +1,79 @@
+{
+    "rule_id": "termination",
+    "version": "1.0.0",
+    "examples": [
+        {
+            "label": "STANDARD",
+            "text": "Either party may terminate this Agreement upon 30 days prior written notice if the other party breaches any material term and fails to cure such breach within 30 days after receiving written notice of the breach.",
+            "source": "synthetic",
+            "metadata": {
+                "origin": "standard_position"
+            }
+        },
+        {
+            "label": "ACCEPTABLE",
+            "text": "This Agreement may be terminated by either party with 30 days written notice upon material breach, provided the breaching party is given a 30-day cure period.",
+            "source": "human",
+            "metadata": {
+                "approved_by": "legal_team",
+                "date": "2025-07-20"
+            }
+        },
+        {
+            "label": "ACCEPTABLE",
+            "text": "Either party may terminate for cause upon material breach, with 30 days notice and a 30-day opportunity to cure such breach.",
+            "source": "contract",
+            "source_document_id": "contract_2025_002",
+            "metadata": {
+                "client": "ProductionCo_B"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "Amazon may terminate this Agreement immediately upon written notice if ProdCo breaches any material term.",
+            "source": "contract",
+            "source_document_id": "contract_2024_rejected_001",
+            "metadata": {
+                "reason": "no_cure_period"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "Amazon may terminate this Agreement without cause at any time upon 10 days written notice.",
+            "source": "synthetic",
+            "metadata": {
+                "reason": "termination_without_cause"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "Upon termination, Amazon shall have no obligation to pay any fees accrued but unpaid at termination.",
+            "source": "contract",
+            "source_document_id": "contract_2024_rejected_002",
+            "metadata": {
+                "reason": "waiver_of_accrued_fees"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "TERMINATION: Amazon may terminate this Agreement immediately upon written notice if ProdCo breaches any material term. Upon termination, ProdCo shall immediately cease all use of Amazon trademarks and return all confidential information. Amazon shall have no obligation to pay any fees accrued but unpaid at termination.",
+            "source": "contract",
+            "source_document_id": "test_doc_004",
+            "metadata": {
+                "reason": "multiple_violations",
+                "issues": [
+                    "no_cure_period",
+                    "waiver_of_fees"
+                ]
+            }
+        },
+        {
+            "label": "NOT_COVERED",
+            "text": "In the event of a force majeure lasting more than 90 days, either party may terminate this Agreement without liability to the other.",
+            "source": "synthetic",
+            "metadata": {
+                "reason": "force_majeure_termination_not_covered"
+            }
+        }
+    ]
+}

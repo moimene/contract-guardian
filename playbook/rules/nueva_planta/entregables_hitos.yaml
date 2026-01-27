@@ -1,0 +1,160 @@
+# =============================================================================
+# Regla de Playbook - Nueva Planta: Entregables e Hitos
+# =============================================================================
+# Familia: EntregablesHitos
+# Descripción: Análisis de plazos, hitos, cronograma, entregables, recepción
+#              provisional y definitiva, demoras y prórrogas
+# =============================================================================
+
+rule_id: "NuevaPlanta:2026-01:EntregablesHitos"
+version: "1.0.0"
+clause_family: "NuevaPlanta.EntregablesHitos"
+required: true
+severity: "HIGH"
+
+analysis_mode: "MODE_ENUMERATED_DEVIATIONS"
+
+standard_position:
+  text: |
+    El Contratista ejecutará los trabajos conforme al cronograma del Anexo III,
+    con los siguientes hitos principales:
+    - Hito 1: Finalización ingeniería básica
+    - Hito 2: Llegada equipos principales a obra
+    - Hito 3: Finalización montaje mecánico
+    - Hito 4: Commissioning y puesta en marcha
+    - Hito 5: Recepción provisional
+
+    La Recepción Provisional se producirá cuando la instalación esté completa
+    y operativa según especificaciones. Dará inicio al período de garantía.
+
+    La Recepción Definitiva se producirá transcurrido el período de garantía
+    (12 meses desde Recepción Provisional) sin defectos pendientes.
+
+    Las prórrogas de plazo se concederán por causas imputables al Propietario
+    o fuerza mayor, previa notificación en plazo de 15 días.
+
+  summary: "Cronograma con hitos definidos, recepción provisional y definitiva"
+
+acceptable_variations:
+  - id: "ACCEPT_01"
+    description: "Período de garantía de 12-24 meses"
+    pattern: "garantía.*(12|18|24).*meses"
+    condition: "Período de garantía dentro del rango estándar"
+
+  - id: "ACCEPT_02"
+    description: "Penalizaciones por demora limitadas"
+    pattern: "penalización.*demora.*(0[.,]5|1|2)%.*semana"
+    condition: "Penalización no supera 2% semanal"
+
+  - id: "ACCEPT_03"
+    description: "Límite de penalizaciones entre 5-10%"
+    pattern: "máximo.*penalizaciones.*(5|8|10)%"
+    condition: "Límite total de penalizaciones razonable"
+
+passable_variations:
+  - id: "PASS_01"
+    description: "Penalizaciones diarias"
+    pattern: "penalización.*(0[.,]1|0[.,]2|0[.,]5)%.*día"
+    recommendation: "Convertir a cálculo semanal"
+    risk_level: "LOW"
+
+  - id: "PASS_02"
+    description: "Recepción provisional condicionada"
+    pattern: "recepción.*provisional.*condicionada|punch.*list"
+    recommendation: "Definir criterios objetivos para la recepción"
+    risk_level: "MEDIUM"
+
+  - id: "PASS_03"
+    description: "Tests de rendimiento como condición"
+    pattern: "test.*rendimiento|pruebas.*garantía|performance.*test"
+    recommendation: "Definir tolerancias y procedimiento de repetición"
+    risk_level: "MEDIUM"
+
+unacceptable_patterns:
+  - id: "BLOCK_01"
+    description: "Penalizaciones sin límite"
+    pattern: "penalización.*sin.*límite|penalidades.*ilimitadas"
+    reason: "Las penalizaciones deben tener un tope máximo"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_02"
+    description: "Hitos esenciales sin definir"
+    pattern: "hitos.*definir.*posteriormente|calendario.*acordar"
+    reason: "Los hitos deben estar definidos en el contrato"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_03"
+    description: "Rechazo de prórroga por fuerza mayor"
+    pattern: "no.*prórroga.*fuerza.*mayor|demora.*imputable.*contratista"
+    reason: "La fuerza mayor debe dar derecho a prórroga"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_04"
+    description: "Bonificaciones sin penalizaciones simétricas"
+    pattern: "bonificación.*adelanto|premio.*anticipación"
+    reason: "Bonificaciones deben estar equilibradas con penalizaciones"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_05"
+    description: "Penalización superior al 15%"
+    pattern: "máximo.*penalizaciones.*(15|20|25)%"
+    reason: "Límite de penalizaciones excesivo"
+    action: "ESCALATE_HUMAN"
+
+suggested_clauses:
+  - id: "SUG_PLAZOS"
+    title: "Plazos de Ejecución"
+    text: |
+      El plazo total de ejecución de los trabajos será de [X] meses contados
+      desde la fecha de firma del presente contrato.
+
+      Los hitos principales del proyecto son:
+      - Hito 1 - [DESCRIPCIÓN]: [FECHA/PLAZO]
+      - Hito 2 - [DESCRIPCIÓN]: [FECHA/PLAZO]
+      - Hito 3 - [DESCRIPCIÓN]: [FECHA/PLAZO]
+      - Hito 4 - [DESCRIPCIÓN]: [FECHA/PLAZO]
+      - Hito 5 - Recepción Provisional: [FECHA/PLAZO]
+
+  - id: "SUG_PENALIZACIONES"
+    title: "Penalizaciones por Demora"
+    text: |
+      En caso de retraso en la finalización de los trabajos respecto al plazo
+      contractual, el Contratista abonará al Propietario una penalización
+      equivalente al 0,5% del precio del contrato por cada semana completa
+      de retraso.
+
+      El importe máximo de las penalizaciones por demora no podrá exceder
+      del 10% del precio total del contrato. Alcanzado dicho límite, el
+      Propietario podrá optar entre resolver el contrato o conceder
+      un nuevo plazo con las condiciones que se acuerden.
+
+  - id: "SUG_RECEPCION"
+    title: "Recepción de la Obra"
+    text: |
+      RECEPCIÓN PROVISIONAL:
+      Una vez finalizados los trabajos, el Contratista lo comunicará al
+      Propietario, quien dispondrá de 15 días para verificar la obra y
+      emitir el Acta de Recepción Provisional. Se acompañará de lista
+      de remates pendientes (punch list) si los hubiere.
+
+      PERÍODO DE GARANTÍA:
+      El período de garantía será de [12/18/24] meses desde la Recepción
+      Provisional. Durante este período, el Contratista subsanará sin
+      coste cualquier defecto de materiales o ejecución.
+
+      RECEPCIÓN DEFINITIVA:
+      Transcurrido el período de garantía sin defectos pendientes, se
+      emitirá el Acta de Recepción Definitiva y se devolverán las
+      retenciones de garantía.
+
+metadata:
+  created_at: "2026-01-16"
+  updated_at: "2026-01-16"
+  author: "Legal Team"
+  applicable_jurisdictions:
+    - "ES"
+    - "LATAM"
+  related_families:
+    - "NuevaPlanta.PrecioPagos"
+    - "NuevaPlanta.AlcanceTrabajo"
+    - "NuevaPlanta.GarantiasPostventa"

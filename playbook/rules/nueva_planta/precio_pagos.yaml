@@ -1,0 +1,134 @@
+# =============================================================================
+# Regla de Playbook - Nueva Planta: Precio y Pagos
+# =============================================================================
+# Familia: PrecioPagos
+# Descripción: Análisis de cláusulas relacionadas con precio, condiciones de pago,
+#              ajustes, retenciones y penalizaciones por demora
+# =============================================================================
+
+rule_id: "NuevaPlanta:2026-01:PrecioPagos"
+version: "1.0.0"
+clause_family: "NuevaPlanta.PrecioPagos"
+required: true
+severity: "HIGH"
+
+# Modo de análisis
+analysis_mode: "MODE_ENUMERATED_DEVIATIONS"
+
+# Posición estándar del cliente
+standard_position:
+  text: |
+    El precio del contrato será un precio alzado firme (lump sum), sin revisiones
+    durante la vigencia del contrato, salvo las expresamente pactadas.
+
+    Los pagos se realizarán contra certificaciones mensuales de avance de obra,
+    con un plazo de pago de 60 días desde la aprobación de la certificación.
+
+    Se retendrá un 5% de cada certificación como garantía de buena ejecución,
+    a devolver una vez completada la recepción definitiva.
+
+  summary: "Precio alzado firme con pagos mensuales a 60 días y retención del 5%"
+
+# Variaciones aceptables sin necesidad de cambios
+acceptable_variations:
+  - id: "ACCEPT_01"
+    description: "Ajuste por IPC limitado"
+    pattern: "ajuste.*IPC.*máximo.*(2|3|4)%"
+    condition: "El ajuste anual no supera el 4%"
+
+  - id: "ACCEPT_02"
+    description: "Retención entre 3-7%"
+    pattern: "retención.*(3|4|5|6|7)%"
+    condition: "Retención dentro del rango estándar"
+
+  - id: "ACCEPT_03"
+    description: "Plazo de pago entre 30-60 días"
+    pattern: "pago.*(30|45|60).*días"
+    condition: "Plazo de pago no superior a 60 días"
+
+# Variaciones que requieren atención pero son negociables
+passable_variations:
+  - id: "PASS_01"
+    description: "Ajuste IPC superior al 4%"
+    pattern: "ajuste.*IPC.*máximo.*(5|6|7|8)%"
+    recommendation: "Negociar reducción del tope de ajuste al 4%"
+    risk_level: "MEDIUM"
+
+  - id: "PASS_02"
+    description: "Plazo de pago superior a 60 días"
+    pattern: "pago.*(90|120).*días"
+    recommendation: "Negociar reducción a 60 días máximo"
+    risk_level: "MEDIUM"
+
+  - id: "PASS_03"
+    description: "Retención superior al 7%"
+    pattern: "retención.*(8|9|10)%"
+    recommendation: "Negociar reducción al 5-7%"
+    risk_level: "MEDIUM"
+
+# Patrones inaceptables que bloquean la aprobación
+unacceptable_patterns:
+  - id: "BLOCK_01"
+    description: "Revisión de precios sin límite"
+    pattern: "revisión.*precios.*sin.*límite|ajuste.*ilimitado"
+    reason: "Riesgo de sobrecostes no controlables"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_02"
+    description: "Pago diferido total a fin de obra"
+    pattern: "pago.*único.*finalización|pago.*total.*entrega"
+    reason: "Riesgo financiero inaceptable para el contratista"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_03"
+    description: "Retención superior al 15%"
+    pattern: "retención.*(15|20|25|30)%"
+    reason: "Retención excesiva que compromete la viabilidad"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_04"
+    description: "Penalizaciones sin límite"
+    pattern: "penalización.*sin.*límite|penalidades.*ilimitadas"
+    reason: "Exposición ilimitada a penalizaciones"
+    action: "BLOCK_EXPORT"
+
+# Sugerencias de redacción estándar
+suggested_clauses:
+  - id: "SUG_PRECIO"
+    title: "Precio del Contrato"
+    text: |
+      El precio total del presente contrato asciende a [IMPORTE] euros ([IMPORTE EN LETRAS] euros),
+      IVA no incluido. Este precio tiene carácter de precio alzado firme (lump sum) y no será
+      objeto de revisión durante la vigencia del contrato, salvo lo expresamente pactado en
+      relación con la actualización por IPC.
+
+  - id: "SUG_PAGOS"
+    title: "Condiciones de Pago"
+    text: |
+      Los pagos se realizarán mensualmente, contra certificación de obra ejecutada aprobada
+      por la Dirección Facultativa. El plazo de pago será de 60 días naturales desde la
+      fecha de aprobación de cada certificación.
+
+      Se aplicará una retención del 5% sobre cada certificación en concepto de garantía
+      de buena ejecución, que será devuelta al Contratista una vez emitido el certificado
+      de recepción definitiva de las obras.
+
+  - id: "SUG_AJUSTE_IPC"
+    title: "Ajuste por IPC"
+    text: |
+      A partir del segundo año de vigencia del contrato, el precio podrá ser ajustado
+      anualmente en función de la variación del Índice de Precios al Consumo (IPC)
+      publicado por el Instituto Nacional de Estadística. En ningún caso el ajuste
+      anual podrá superar el 3% del precio del contrato.
+
+# Metadatos
+metadata:
+  created_at: "2026-01-16"
+  updated_at: "2026-01-16"
+  author: "Legal Team"
+  applicable_jurisdictions:
+    - "ES"
+    - "LATAM"
+  related_families:
+    - "NuevaPlanta.AlcanceTrabajo"
+    - "NuevaPlanta.EntregablesHitos"

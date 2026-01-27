@@ -1,0 +1,65 @@
+{
+    "rule_id": "indemnity_prodco",
+    "version": "1.0.0",
+    "examples": [
+        {
+            "label": "STANDARD",
+            "text": "ProdCo will indemnify, defend and hold harmless Amazon and its Affiliates from any losses, costs or damages arising from any third party claims alleging breach of ProdCo representations or warranties.",
+            "source": "synthetic",
+            "metadata": {
+                "origin": "standard_position"
+            }
+        },
+        {
+            "label": "ACCEPTABLE",
+            "text": "ProdCo shall defend, indemnify and hold harmless Amazon and its Affiliates against all losses arising from third party claims related to ProdCo's breach of representations or warranties.",
+            "source": "human",
+            "metadata": {
+                "approved_by": "legal_team",
+                "date": "2025-06-15"
+            }
+        },
+        {
+            "label": "ACCEPTABLE",
+            "text": "ProdCo agrees to indemnify and defend Amazon from any losses or damages resulting from claims by third parties alleging breach of ProdCo's representations, warranties, or obligations under this Agreement.",
+            "source": "contract",
+            "source_document_id": "contract_2025_001",
+            "metadata": {
+                "client": "ProductionCo_A"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "ProdCo's indemnification obligations shall be limited to direct damages only and shall not exceed the greater of $100,000 or the fees paid under this Agreement in the prior 12 months.",
+            "source": "synthetic",
+            "metadata": {
+                "reason": "caps_on_indemnification"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "ProdCo shall not be required to indemnify Amazon for any claims arising from Amazon's own negligence or willful misconduct.",
+            "source": "contract",
+            "source_document_id": "contract_2024_rejected_003",
+            "metadata": {
+                "reason": "shifts_liability_to_amazon"
+            }
+        },
+        {
+            "label": "UNACCEPTABLE",
+            "text": "Both parties shall mutually indemnify each other for their respective breaches of representations and warranties, with Amazon's indemnification covering ProdCo's indirect and consequential damages.",
+            "source": "synthetic",
+            "metadata": {
+                "reason": "asymmetric_mutual_favoring_prodco"
+            }
+        },
+        {
+            "label": "NOT_COVERED",
+            "text": "In the event of intellectual property infringement claims, the parties shall cooperate in good faith to resolve such claims without assigning indemnification responsibility.",
+            "source": "synthetic",
+            "metadata": {
+                "reason": "novel_structure_not_in_playbook"
+            }
+        }
+    ]
+}

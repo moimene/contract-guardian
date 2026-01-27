@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ClauseRouterOutput",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "clause_id",
+        "detected_family",
+        "rule_candidates",
+        "coverage_confidence"
+    ],
+    "properties": {
+        "clause_id": {
+            "type": "string",
+            "minLength": 1
+        },
+        "detected_family": {
+            "type": "string",
+            "minLength": 1
+        },
+        "rule_candidates": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "rule_id",
+                    "score"
+                ],
+                "properties": {
+                    "rule_id": {
+                        "type": "string",
+                        "minLength": 1
+                    },
+                    "score": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                    }
+                }
+            }
+        },
+        "coverage_confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        }
+    }
+}

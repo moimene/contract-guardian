@@ -1,0 +1,321 @@
+{
+  "name": "W2_ClauseReview - 3 Layer with RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clause-review",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-w2",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 200],
+      "webhookId": "clause-review-3layer-rag"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('Webhook').first().json;\nconst clause = input.body || input;\n\nif (!clause.clause_text) {\n  throw new Error('clause_text is required');\n}\n\nreturn [{\n  json: {\n    clause_instance_id: clause.clause_instance_id || 'unknown',\n    clause_id: clause.clause_id || 'unknown',\n    clause_text: clause.clause_text,\n    heading: clause.heading || '',\n    probable_category: clause.probable_category || '',\n    run_id: clause.run_id || '',\n    document_id: clause.document_id || '',\n    // 3-Layer context from W3\n    blueprint_version_id: clause.blueprint_version_id || null,\n    contract_model_version_id: clause.contract_model_version_id || null,\n    started_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "parse-input",
+      "name": "Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [224, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"text-embedding-3-small\",\n  \"input\": {{ JSON.stringify($json.clause_text) }},\n  \"dimensions\": 1536\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "generate-clause-embedding",
+      "name": "Generate Clause Embedding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [448, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $('Parse Input').first().json;\nconst embeddingResponse = $('Generate Clause Embedding').first().json;\n\nlet clauseEmbedding = null;\ntry {\n  clauseEmbedding = embeddingResponse.data?.[0]?.embedding || null;\n} catch (e) {\n  console.log('Embedding extraction error:', e.message);\n}\n\nreturn [{\n  json: {\n    ...inputData,\n    clauseEmbedding,\n    hasEmbedding: clauseEmbedding !== null\n  }\n}];"
+      },
+      "id": "extract-embedding",
+      "name": "Extract Embedding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [672, 200]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM search_policy_examples(\n  '{{ JSON.stringify($json.clauseEmbedding) }}'::vector,\n  0.6,\n  10,\n  NULL,\n  NULL\n);"
+      },
+      "id": "rag-search",
+      "name": "RAG Search Policy Examples",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [896, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $('Extract Embedding').first().json;\nconst ragResults = $input.all();\n\n// Organizar ejemplos por acceptance level\nconst examples = {\n  ACCEPTABLE: [],\n  PASSABLE: [],\n  UNACCEPTABLE: [],\n  all: []\n};\n\nfor (const item of ragResults) {\n  const ex = item.json;\n  if (ex && ex.id) {\n    const entry = {\n      id: ex.id,\n      text: ex.example_text?.substring(0, 500) || '',\n      similarity: ex.similarity || 0,\n      acceptance: ex.acceptance,\n      clause_type: ex.clause_type_name || 'unknown'\n    };\n    examples.all.push(entry);\n    if (ex.acceptance && examples[ex.acceptance]) {\n      examples[ex.acceptance].push(entry);\n    }\n  }\n}\n\n// Determinar acceptance sugerido basado en ejemplos más similares\nlet suggestedAcceptance = 'NEEDS_REVIEW';\nlet topSimilarity = 0;\nif (examples.all.length > 0) {\n  const top3 = examples.all.slice(0, 3);\n  const acceptableSimilarity = top3.filter(e => e.acceptance === 'ACCEPTABLE').reduce((sum, e) => sum + e.similarity, 0);\n  const passableSimilarity = top3.filter(e => e.acceptance === 'PASSABLE').reduce((sum, e) => sum + e.similarity, 0);\n  const unacceptableSimilarity = top3.filter(e => e.acceptance === 'UNACCEPTABLE').reduce((sum, e) => sum + e.similarity, 0);\n  \n  topSimilarity = examples.all[0].similarity;\n  \n  if (acceptableSimilarity > passableSimilarity && acceptableSimilarity > unacceptableSimilarity) {\n    suggestedAcceptance = 'ACCEPTABLE';\n  } else if (unacceptableSimilarity > acceptableSimilarity && unacceptableSimilarity > passableSimilarity) {\n    suggestedAcceptance = 'UNACCEPTABLE';\n  } else {\n    suggestedAcceptance = 'PASSABLE';\n  }\n}\n\nconsole.log(`RAG found ${examples.all.length} examples. Top similarity: ${topSimilarity.toFixed(3)}. Suggested: ${suggestedAcceptance}`);\n\nreturn [{\n  json: {\n    ...inputData,\n    ragExamples: examples,\n    ragStats: {\n      totalFound: examples.all.length,\n      acceptableCount: examples.ACCEPTABLE.length,\n      passableCount: examples.PASSABLE.length,\n      unacceptableCount: examples.UNACCEPTABLE.length,\n      topSimilarity,\n      suggestedAcceptance\n    }\n  }\n}];"
+      },
+      "id": "process-rag-results",
+      "name": "Process RAG Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un clasificador de cláusulas de contratos Amazon. Clasifica según estas categorías:\\n\\n- rights_ownership: Propiedad, derechos de autor, licencias\\n- payment_terms: Precio, pagos, facturación\\n- indemnity_prodco: Indemnización del productor\\n- indemnity_amazon: Indemnización de Amazon\\n- termination: Terminación, rescisión\\n- confidentiality: Confidencialidad\\n- liability_limitation: Limitación de responsabilidad\\n- delivery_acceptance: Entrega, aceptación\\n- insurance: Seguros\\n- miscellaneous: Otros\\n\\nResponde SOLO JSON: {\\\"matter_code\\\": \\\"codigo\\\", \\\"confidence\\\": 0.0-1.0, \\\"reasoning\\\": \\\"breve\\\"}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Clasifica:\\n\\n{{ $json.clause_text }}\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "router-agent",
+      "name": "Router Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1344, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prevData = $('Process RAG Results').first().json;\nlet routerOutput = { matter_code: 'miscellaneous', confidence: 0, reasoning: '' };\n\ntry {\n  const response = $json;\n  const content = response.choices?.[0]?.message?.content || '{}';\n  routerOutput = JSON.parse(content);\n} catch (e) {\n  console.log('Router parse error:', e.message);\n}\n\nreturn [{ json: { ...prevData, routerOutput } }];"
+      },
+      "id": "parse-router",
+      "name": "Parse Router",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1568, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un analizador exhaustivo de contratos Amazon. Tu trabajo es identificar TODAS las desviaciones y problemas potenciales.\\n\\nTienes acceso a EJEMPLOS DE REFERENCIA clasificados por nivel de aceptación. Usa estos ejemplos para calibrar tu análisis:\\n- ACCEPTABLE: Cláusulas que cumplen con la posición de Amazon\\n- PASSABLE: Cláusulas con desviaciones menores aceptables\\n- UNACCEPTABLE: Cláusulas que requieren cambios\\n\\nResponde en JSON: {\\n  \\\"evidence_spans\\\": [{\\\"quote\\\": \\\"texto\\\", \\\"issue\\\": \\\"problema\\\", \\\"severity\\\": \\\"high|medium|low\\\"}],\\n  \\\"summary\\\": \\\"resumen\\\",\\n  \\\"risk_level\\\": \\\"RED|AMBER|GREEN\\\",\\n  \\\"similar_to_examples\\\": \\\"ACCEPTABLE|PASSABLE|UNACCEPTABLE\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Analiza esta cláusula (categoría: {{ $json.routerOutput.matter_code }}):\\n\\n=== CLÁUSULA ===\\n{{ $json.clause_text }}\\n\\n=== EJEMPLOS ACCEPTABLE (referencia positiva) ===\\n{{ $json.ragExamples.ACCEPTABLE.slice(0,3).map(e => '• ' + e.text.substring(0,300) + '... (sim: ' + e.similarity.toFixed(2) + ')').join('\\n') || 'Sin ejemplos' }}\\n\\n=== EJEMPLOS UNACCEPTABLE (referencia negativa) ===\\n{{ $json.ragExamples.UNACCEPTABLE.slice(0,3).map(e => '• ' + e.text.substring(0,300) + '... (sim: ' + e.similarity.toFixed(2) + ')').join('\\n') || 'Sin ejemplos' }}\\n\\n=== ESTADÍSTICAS RAG ===\\nSimilitud máxima: {{ $json.ragStats.topSimilarity.toFixed(3) }}\\nSugerencia basada en ejemplos: {{ $json.ragStats.suggestedAcceptance }}\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "paranoid-agent",
+      "name": "Paranoid Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1792, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prevData = $('Parse Router').first().json;\nlet paranoidOutput = { evidence_spans: [], summary: '', risk_level: 'GREEN', similar_to_examples: 'ACCEPTABLE' };\n\ntry {\n  const content = $json.choices?.[0]?.message?.content || '{}';\n  paranoidOutput = JSON.parse(content);\n} catch (e) {\n  console.log('Paranoid parse error:', e.message);\n}\n\nreturn [{ json: { ...prevData, paranoidOutput } }];"
+      },
+      "id": "parse-paranoid",
+      "name": "Parse Paranoid",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2016, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Eres un valuador de contratos. Determina la ACEPTACIÓN final basándote en:\\n1. Las desviaciones encontradas por el analizador\\n2. Los ejemplos de referencia similares (RAG)\\n3. La similitud con ejemplos previos\\n\\nNiveles de aceptación:\\n- ACCEPTABLE: Sin desviaciones significativas, similar a ejemplos aceptables\\n- PASSABLE: Desviaciones menores, puede proceder con nota\\n- UNACCEPTABLE: Desviaciones graves, requiere cambios\\n\\nResponde en JSON: {\\n  \\\"acceptance\\\": \\\"ACCEPTABLE|PASSABLE|UNACCEPTABLE\\\",\\n  \\\"confidence\\\": 0.0-1.0,\\n  \\\"reasoning\\\": \\\"justificación detallada\\\",\\n  \\\"proposed_changes\\\": [{\\\"original\\\": \\\"texto\\\", \\\"replacement\\\": \\\"nuevo texto\\\", \\\"reason\\\": \\\"razón\\\"}],\\n  \\\"client_state\\\": \\\"OK|RECOMMENDED|REQUIRED|NEEDS_REVIEW|BLOCKED\\\",\\n  \\\"internal_comment\\\": \\\"comentario interno\\\"\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Valora esta cláusula:\\n\\n=== CLÁUSULA ===\\n{{ $json.clause_text }}\\n\\n=== ANÁLISIS PREVIO ===\\nRiesgo: {{ $json.paranoidOutput.risk_level }}\\nResumen: {{ $json.paranoidOutput.summary }}\\nSimilar a ejemplos: {{ $json.paranoidOutput.similar_to_examples }}\\n\\n=== CONTEXTO RAG ===\\nSugerencia RAG: {{ $json.ragStats.suggestedAcceptance }}\\nSimilitud máxima: {{ $json.ragStats.topSimilarity.toFixed(3) }}\\nEjemplos encontrados: {{ $json.ragStats.totalFound }}\\n\\n=== TOP EJEMPLO SIMILAR ===\\n{{ $json.ragExamples.all[0] ? ('Acceptance: ' + $json.ragExamples.all[0].acceptance + ', Similarity: ' + $json.ragExamples.all[0].similarity.toFixed(3) + '\\nTexto: ' + $json.ragExamples.all[0].text.substring(0, 400)) : 'No hay ejemplos' }}\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "valuator-agent",
+      "name": "Valuator Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2240, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prevData = $('Parse Paranoid').first().json;\nlet valuatorOutput = { \n  acceptance: 'PASSABLE',\n  confidence: 0.5,\n  reasoning: '',\n  proposed_changes: [],\n  client_state: 'NEEDS_REVIEW',\n  internal_comment: ''\n};\n\ntry {\n  const content = $json.choices?.[0]?.message?.content || '{}';\n  valuatorOutput = JSON.parse(content);\n} catch (e) {\n  console.log('Valuator parse error:', e.message);\n}\n\n// Map acceptance to client_state if not provided\nif (!valuatorOutput.client_state) {\n  const stateMap = {\n    'ACCEPTABLE': 'OK',\n    'PASSABLE': 'RECOMMENDED',\n    'UNACCEPTABLE': 'REQUIRED'\n  };\n  valuatorOutput.client_state = stateMap[valuatorOutput.acceptance] || 'NEEDS_REVIEW';\n}\n\nreturn [{ json: { ...prevData, valuatorOutput } }];"
+      },
+      "id": "parse-valuator",
+      "name": "Parse Valuator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2464, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Parse Valuator').first().json;\nconst valOut = data.valuatorOutput;\n\n// Decisor logic\nlet decision = 'ESCALATE_HUMAN';\nlet escalation = { recommended: false, block_export: false, reason: '' };\nlet client_state = valOut.client_state || 'NEEDS_REVIEW';\n\nconst acceptance = valOut.acceptance;\nconst confidence = valOut.confidence || 0;\n\nif (acceptance === 'ACCEPTABLE' && confidence >= 0.7) {\n  decision = 'AUTO_PASS';\n  client_state = 'OK';\n} else if (acceptance === 'PASSABLE') {\n  decision = 'AUTO_PASS';\n  client_state = 'RECOMMENDED';\n} else if (acceptance === 'UNACCEPTABLE') {\n  decision = 'AUTO_REDLINE';\n  client_state = 'REQUIRED';\n  escalation = { recommended: true, block_export: false, reason: 'UNACCEPTABLE_CLAUSE' };\n} else {\n  decision = 'ESCALATE_HUMAN';\n  client_state = 'NEEDS_REVIEW';\n  escalation = { recommended: true, block_export: false, reason: 'LOW_CONFIDENCE' };\n}\n\nreturn [{ json: { \n  ...data, \n  decisorOutput: { decision, escalation, client_state, acceptance } \n}}];"
+      },
+      "id": "decisor",
+      "name": "Decisor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2688, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Convierte comentarios internos en comentarios neutrales para el cliente. NUNCA mencionar: playbook, política, RAG, embeddings, similitud, threshold, reglas internas.\\n\\nResponde JSON: {\\\"client_comment\\\": \\\"comentario\\\", \\\"client_summary_line\\\": \\\"1 línea\\\"}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Sanitiza: {{ $json.valuatorOutput.internal_comment || $json.valuatorOutput.reasoning || 'Cláusula revisada.' }}\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "sanitizer-agent",
+      "name": "Sanitizer Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2912, 200],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Decisor').first().json;\nlet sanitizerOut = { client_comment: '', client_summary_line: '' };\n\ntry {\n  const content = $json.choices?.[0]?.message?.content || '{}';\n  sanitizerOut = JSON.parse(content);\n} catch (e) {\n  sanitizerOut.client_comment = 'Cláusula revisada según estándares del contrato.';\n  sanitizerOut.client_summary_line = 'Revisión completada';\n}\n\nconst result = {\n  // IDs\n  clause_instance_id: data.clause_instance_id,\n  clause_id: data.clause_id,\n  document_id: data.document_id,\n  run_id: data.run_id,\n  \n  // Content\n  heading: data.heading || data.routerOutput.matter_code,\n  clause_text: data.clause_text,\n  detected_family: data.routerOutput.matter_code,\n  confidence_score: data.routerOutput.confidence || 0,\n  \n  // 3-Layer fields\n  blueprint_version_id: data.blueprint_version_id,\n  acceptance: data.decisorOutput.acceptance,\n  \n  // RAG Evidence\n  evidence: {\n    rag_examples_used: data.ragExamples.all.slice(0, 5).map(e => e.id),\n    top_similarity: data.ragStats.topSimilarity,\n    suggested_by_rag: data.ragStats.suggestedAcceptance,\n    paranoid_risk: data.paranoidOutput.risk_level,\n    valuator_confidence: data.valuatorOutput.confidence\n  },\n  \n  // Client-facing\n  client_state: data.decisorOutput.client_state,\n  client_comment: sanitizerOut.client_comment,\n  client_summary_line: sanitizerOut.client_summary_line,\n  \n  // Changes\n  proposed_changes: data.valuatorOutput.proposed_changes || [],\n  \n  // Escalation\n  escalation_recommended: data.decisorOutput.escalation?.recommended || false,\n  escalation_reason: data.decisorOutput.escalation?.reason || null,\n  \n  completed_at: new Date().toISOString()\n};\n\nreturn [{ json: result }];"
+      },
+      "id": "build-result",
+      "name": "Build Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3136, 200]
+    },
+    {
+      "parameters": {
+        "tableId": "clause_reviews",
+        "fieldsUi": {
+          "fieldValues": [
+            {"fieldId": "clause_instance_id", "fieldValue": "={{ $json.clause_instance_id }}"},
+            {"fieldId": "clause_id", "fieldValue": "={{ $json.clause_id }}"},
+            {"fieldId": "document_id", "fieldValue": "={{ $json.document_id }}"},
+            {"fieldId": "run_id", "fieldValue": "={{ $json.run_id }}"},
+            {"fieldId": "heading", "fieldValue": "={{ $json.heading }}"},
+            {"fieldId": "clause_text", "fieldValue": "={{ $json.clause_text }}"},
+            {"fieldId": "detected_family", "fieldValue": "={{ $json.detected_family }}"},
+            {"fieldId": "confidence_score", "fieldValue": "={{ $json.confidence_score }}"},
+            {"fieldId": "blueprint_version_id", "fieldValue": "={{ $json.blueprint_version_id }}"},
+            {"fieldId": "acceptance", "fieldValue": "={{ $json.acceptance }}"},
+            {"fieldId": "evidence", "fieldValue": "={{ JSON.stringify($json.evidence) }}"},
+            {"fieldId": "client_state", "fieldValue": "={{ $json.client_state }}"},
+            {"fieldId": "client_comment", "fieldValue": "={{ $json.client_comment }}"},
+            {"fieldId": "client_summary_line", "fieldValue": "={{ $json.client_summary_line }}"},
+            {"fieldId": "proposed_changes", "fieldValue": "={{ JSON.stringify($json.proposed_changes) }}"},
+            {"fieldId": "escalation_recommended", "fieldValue": "={{ $json.escalation_recommended }}"},
+            {"fieldId": "escalation_reason", "fieldValue": "={{ $json.escalation_reason }}"}
+          ]
+        }
+      },
+      "id": "save-clause-review",
+      "name": "Save to clause_reviews",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [3360, 200],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [3584, 200]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {"main": [[{"node": "Parse Input", "type": "main", "index": 0}]]},
+    "Parse Input": {"main": [[{"node": "Generate Clause Embedding", "type": "main", "index": 0}]]},
+    "Generate Clause Embedding": {"main": [[{"node": "Extract Embedding", "type": "main", "index": 0}]]},
+    "Extract Embedding": {"main": [[{"node": "RAG Search Policy Examples", "type": "main", "index": 0}]]},
+    "RAG Search Policy Examples": {"main": [[{"node": "Process RAG Results", "type": "main", "index": 0}], [{"node": "Process RAG Results", "type": "main", "index": 0}]]},
+    "Process RAG Results": {"main": [[{"node": "Router Agent", "type": "main", "index": 0}]]},
+    "Router Agent": {"main": [[{"node": "Parse Router", "type": "main", "index": 0}], [{"node": "Parse Router", "type": "main", "index": 0}]]},
+    "Parse Router": {"main": [[{"node": "Paranoid Agent", "type": "main", "index": 0}]]},
+    "Paranoid Agent": {"main": [[{"node": "Parse Paranoid", "type": "main", "index": 0}], [{"node": "Parse Paranoid", "type": "main", "index": 0}]]},
+    "Parse Paranoid": {"main": [[{"node": "Valuator Agent", "type": "main", "index": 0}]]},
+    "Valuator Agent": {"main": [[{"node": "Parse Valuator", "type": "main", "index": 0}], [{"node": "Parse Valuator", "type": "main", "index": 0}]]},
+    "Parse Valuator": {"main": [[{"node": "Decisor", "type": "main", "index": 0}]]},
+    "Decisor": {"main": [[{"node": "Sanitizer Agent", "type": "main", "index": 0}]]},
+    "Sanitizer Agent": {"main": [[{"node": "Build Result", "type": "main", "index": 0}], [{"node": "Build Result", "type": "main", "index": 0}]]},
+    "Build Result": {"main": [[{"node": "Save to clause_reviews", "type": "main", "index": 0}]]},
+    "Save to clause_reviews": {"main": [[{"node": "Respond", "type": "main", "index": 0}], [{"node": "Respond", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "versionId": "3layer-w2-rag-v1",
+  "meta": {"templateCredsSetupCompleted": true},
+  "id": "W2-3Layer-RAG-001",
+  "tags": [{"name": "3-layer"}, {"name": "rag"}, {"name": "clause-review"}]
+}

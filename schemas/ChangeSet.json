@@ -1,0 +1,156 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "ChangeSet",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "document_id",
+        "playbook_id",
+        "playbook_version",
+        "changes",
+        "docx_export"
+    ],
+    "properties": {
+        "document_id": {
+            "type": "string"
+        },
+        "playbook_id": {
+            "type": "string"
+        },
+        "playbook_version": {
+            "type": "string"
+        },
+        "changes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "change_id",
+                    "rule_id",
+                    "clause_instance_id",
+                    "ops",
+                    "comments"
+                ],
+                "properties": {
+                    "change_id": {
+                        "type": "string"
+                    },
+                    "rule_id": {
+                        "type": "string"
+                    },
+                    "clause_instance_id": {
+                        "type": "string"
+                    },
+                    "ops": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "op_id",
+                                "type",
+                                "anchor"
+                            ],
+                            "properties": {
+                                "op_id": {
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "INSERT",
+                                        "DELETE",
+                                        "REPLACE"
+                                    ]
+                                },
+                                "anchor": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "strategy",
+                                        "clause_id",
+                                        "context_hash"
+                                    ],
+                                    "properties": {
+                                        "strategy": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLAUSE_OFFSET_CONTEXT",
+                                                "PARAGRAPH_RUN_MAP"
+                                            ]
+                                        },
+                                        "clause_id": {
+                                            "type": "string"
+                                        },
+                                        "start_offset": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "end_offset": {
+                                            "type": "integer",
+                                            "minimum": 0
+                                        },
+                                        "before": {
+                                            "type": "string"
+                                        },
+                                        "after": {
+                                            "type": "string"
+                                        },
+                                        "context_hash": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "insert_text": {
+                                    "type": "string"
+                                },
+                                "delete_text": {
+                                    "type": "string"
+                                },
+                                "replace_from": {
+                                    "type": "string"
+                                },
+                                "replace_to": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "comments": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "internal",
+                            "client"
+                        ],
+                        "properties": {
+                            "internal": {
+                                "type": "string"
+                            },
+                            "client": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "docx_export": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "author_name_for_revisions",
+                "sanitize_client_comments"
+            ],
+            "properties": {
+                "author_name_for_revisions": {
+                    "type": "string"
+                },
+                "sanitize_client_comments": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

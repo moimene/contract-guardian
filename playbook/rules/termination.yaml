@@ -1,0 +1,75 @@
+# Termination Rule
+# Rule ID: termination
+# Version: 1.0.0
+
+rule_id: termination
+clause_family: Termination
+version: "1.0.0"
+required: true
+
+analysis_mode: MODE_ENUMERATED_DEVIATIONS
+
+standard_position:
+  title: "Termination Rights and Procedures"
+  text: |
+    Either party may terminate this Agreement upon 30 days prior written notice 
+    if the other party breaches any material term and fails to cure such breach 
+    within 30 days after receiving written notice of the breach.
+  text_fragment_id: termination_std_001
+
+acceptable_variations:
+  - "upon 30 days written notice with a 30-day cure period"
+  - "terminate for material breach with opportunity to cure"
+  - "30-day notice and 30-day cure period for material breaches"
+
+unacceptable_patterns:
+  - "terminate immediately without notice"
+  - "terminate without cause at any time"
+  - "terminate immediately upon written notice if ProdCo breaches"
+  - "no obligation to pay fees accrued but unpaid at termination"
+  - "waive all claims upon termination"
+
+guidance_internal: |
+  Standard Amazon PSA/DSA termination requires:
+  1. 30-day prior written notice
+  2. 30-day cure period for material breaches
+  3. Payment of accrued fees upon termination
+  
+  Watch for:
+  - Immediate termination without cure period (UNACCEPTABLE)
+  - Termination without cause (UNACCEPTABLE for Amazon-only rights)
+  - Waiver of payment obligations at termination (UNACCEPTABLE)
+  - Asymmetric termination rights favoring Amazon (requires review)
+
+anchors:
+  - "terminate"
+  - "termination"
+  - "written notice"
+  - "cure period"
+  - "material breach"
+  - "accrued fees"
+
+definitions_scope:
+  - "Material Breach"
+  - "Cure Period"
+  - "Effective Date of Termination"
+
+retrieval_profile:
+  vector_top_k: 5
+  coverage_threshold: 0.80
+  examples_top_k: 6
+
+routing_policy:
+  default_route: Termination
+  block_export_if_escalated: true
+
+decision_policy:
+  auto_redline_if_unacceptable: true
+  anchor_conf_threshold: 0.85
+  escalate_if_ambiguous: true
+  block_export_if_required_violated: true
+
+models:
+  paranoid: gpt-4o
+  valuator: gpt-4o-mini
+  sanitizer: gpt-4o-mini

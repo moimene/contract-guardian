@@ -1,0 +1,106 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SanitizerOutput",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "clause_id",
+        "client_comment",
+        "client_summary_line",
+        "locale",
+        "safety",
+        "redactions",
+        "model_info"
+    ],
+    "properties": {
+        "clause_id": {
+            "type": "string",
+            "minLength": 1
+        },
+        "client_comment": {
+            "type": "string"
+        },
+        "client_summary_line": {
+            "type": "string"
+        },
+        "locale": {
+            "type": "string",
+            "minLength": 2
+        },
+        "safety": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "blocked_terms_detected",
+                "leak_score",
+                "policy_leak_flags",
+                "pass"
+            ],
+            "properties": {
+                "blocked_terms_detected": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "leak_score": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                },
+                "policy_leak_flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "pass": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "redactions": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "field",
+                    "from",
+                    "to"
+                ],
+                "properties": {
+                    "field": {
+                        "type": "string",
+                        "enum": [
+                            "client_comment",
+                            "client_summary_line"
+                        ]
+                    },
+                    "from": {
+                        "type": "string"
+                    },
+                    "to": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model_info": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "model",
+                "prompt_version"
+            ],
+            "properties": {
+                "model": {
+                    "type": "string"
+                },
+                "prompt_version": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

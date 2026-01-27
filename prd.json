@@ -1,0 +1,102 @@
+{
+    "name": "Contract Guardian v2.1",
+    "branchName": "feature/v2.1-production",
+    "userStories": [
+        {
+            "id": "T-001",
+            "title": "Cargar dataset Harvey completo",
+            "description": "Cargar todos los policy_examples del dataset Harvey a Supabase y generar embeddings",
+            "priority": 1,
+            "acceptanceCriteria": [
+                "policy_examples contiene todos los registros Harvey",
+                "Todos los embeddings generados (100%)",
+                "search_policy_examples() retorna resultados correctos"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-002",
+            "title": "Webhook retorno contract_runs",
+            "description": "Implementar webhook de retorno para que n8n actualice el estado de contract_runs al completar procesamiento",
+            "priority": 2,
+            "acceptanceCriteria": [
+                "n8n puede llamar webhook al terminar",
+                "contract_runs.status se actualiza automáticamente",
+                "Frontend refleja cambio via Realtime"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-003",
+            "title": "Exportación Word/PDF con redlines",
+            "description": "Implementar exportación de documento con track changes marcados",
+            "priority": 3,
+            "acceptanceCriteria": [
+                "Botón de exportar en ContractReview",
+                "DOCX generado con cambios en track changes",
+                "Comentarios sanitizados (sin jerga interna)"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-004",
+            "title": "Desactivar IS_DEV_MODE",
+            "description": "Configurar producción desactivando modo desarrollo",
+            "priority": 4,
+            "acceptanceCriteria": [
+                "IS_DEV_MODE = false en producción",
+                "Auth real funcionando",
+                "No hay bypasses de seguridad activos"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-005",
+            "title": "RLS policies para tablas 3-layer",
+            "description": "Implementar Row Level Security en todas las tablas del schema 3-layer",
+            "priority": 5,
+            "acceptanceCriteria": [
+                "RLS habilitado en matters, clause_types, blueprints, policies, examples",
+                "Policies por tenant_id/organization_id",
+                "Security advisor sin warnings"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-006",
+            "title": "Knowledge Graph interactivo",
+            "description": "Implementar visualización interactiva del Knowledge Graph en configuración",
+            "priority": 6,
+            "acceptanceCriteria": [
+                "Página /config/knowledge-graph funcional",
+                "Visualización de nodos y edges",
+                "Zoom, pan, y selección de nodos"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-007",
+            "title": "Testing E2E",
+            "description": "Implementar tests end-to-end del pipeline completo",
+            "priority": 7,
+            "acceptanceCriteria": [
+                "Test upload -> review -> export funcional",
+                "Test RAG search con resultados esperados",
+                "CI/CD configurado para ejecutar tests"
+            ],
+            "passes": true
+        },
+        {
+            "id": "T-008",
+            "title": "Monitoreo y logs",
+            "description": "Configurar sistema de monitoreo y logging para producción",
+            "priority": 8,
+            "acceptanceCriteria": [
+                "Logs estructurados en Supabase",
+                "Alertas configuradas para errores críticos",
+                "Dashboard de métricas básicas"
+            ],
+            "passes": true
+        }
+    ]
+}

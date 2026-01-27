@@ -1,0 +1,137 @@
+# =============================================================================
+# Regla de Playbook - Nueva Planta: Responsabilidades
+# =============================================================================
+# Familia: Responsabilidades
+# Descripción: Análisis de obligaciones de las partes, responsabilidad civil,
+#              seguros, subcontratación y personal
+# =============================================================================
+
+rule_id: "NuevaPlanta:2026-01:Responsabilidades"
+version: "1.0.0"
+clause_family: "NuevaPlanta.Responsabilidades"
+required: true
+severity: "HIGH"
+
+analysis_mode: "MODE_ENUMERATED_DEVIATIONS"
+
+standard_position:
+  text: |
+    El Contratista será responsable de la correcta ejecución de los trabajos
+    conforme a las especificaciones técnicas y normativa aplicable.
+
+    El Contratista mantendrá vigentes durante toda la ejecución del contrato
+    las siguientes pólizas de seguro:
+    - Responsabilidad Civil: mínimo [X] euros
+    - Todo Riesgo Construcción (CAR): por el valor total de la obra
+    - Accidentes de trabajo: según legislación vigente
+
+    La responsabilidad del Contratista estará limitada al mayor de:
+    a) El precio del contrato, o
+    b) Los importes cubiertos por los seguros obligatorios
+
+  summary: "Responsabilidad limitada al precio del contrato con seguros obligatorios"
+
+acceptable_variations:
+  - id: "ACCEPT_01"
+    description: "Límite de responsabilidad entre 100-150% del precio"
+    pattern: "responsabilidad.*limitada.*(100|125|150)%"
+    condition: "El límite está dentro del rango razonable"
+
+  - id: "ACCEPT_02"
+    description: "Seguros con coberturas superiores al mínimo"
+    pattern: "seguro.*responsabilidad.*civil.*(2|3|5).*millones"
+    condition: "Cobertura superior al mínimo exigido"
+
+  - id: "ACCEPT_03"
+    description: "Subcontratación con autorización previa"
+    pattern: "subcontrat.*autorización.*previa|aprobar.*subcontratista"
+    condition: "Procedimiento de autorización razonable"
+
+passable_variations:
+  - id: "PASS_01"
+    description: "Responsabilidad solidaria con subcontratistas"
+    pattern: "responsabilidad.*solidaria.*subcontratista"
+    recommendation: "Acotar a aspectos de seguridad y calidad"
+    risk_level: "MEDIUM"
+
+  - id: "PASS_02"
+    description: "Obligación de personal clave nominado"
+    pattern: "personal.*clave|equipo.*técnico.*designado"
+    recommendation: "Establecer procedimiento de sustitución"
+    risk_level: "LOW"
+
+  - id: "PASS_03"
+    description: "Auditorías sin aviso previo"
+    pattern: "auditoría.*sin.*previo.*aviso|inspección.*cualquier.*momento"
+    recommendation: "Establecer preaviso mínimo de 24-48 horas"
+    risk_level: "LOW"
+
+unacceptable_patterns:
+  - id: "BLOCK_01"
+    description: "Responsabilidad ilimitada"
+    pattern: "responsabilidad.*ilimitada|sin.*límite.*responsabilidad"
+    reason: "La responsabilidad debe estar limitada"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_02"
+    description: "Indemnidad total al propietario"
+    pattern: "mantener.*indemne.*todo.*daño|exonerar.*cualquier.*responsabilidad"
+    reason: "La indemnidad debe estar acotada"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_03"
+    description: "Prohibición absoluta de subcontratación"
+    pattern: "prohibe.*subcontratación|no.*podrá.*subcontratar"
+    reason: "Se requiere flexibilidad para subcontratación especializada"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_04"
+    description: "Responsabilidad por daños consecuenciales ilimitados"
+    pattern: "daños.*consecuenciales|lucro.*cesante.*sin.*límite"
+    reason: "Los daños consecuenciales deben estar expresamente excluidos"
+    action: "BLOCK_EXPORT"
+
+suggested_clauses:
+  - id: "SUG_RESPONSABILIDAD"
+    title: "Limitación de Responsabilidad"
+    text: |
+      La responsabilidad total del Contratista bajo el presente contrato,
+      incluyendo cualquier incumplimiento, negligencia o responsabilidad
+      contractual o extracontractual, estará limitada al mayor de:
+
+      a) El 100% del precio del contrato, o
+      b) Los importes efectivamente recuperables bajo las pólizas de seguro
+         contratadas conforme al presente contrato.
+
+      En ningún caso el Contratista será responsable por:
+      - Daños indirectos, incidentales o consecuenciales
+      - Lucro cesante o pérdida de beneficios
+      - Pérdida de producción o de oportunidades de negocio
+      - Daños punitivos o ejemplarizantes
+
+  - id: "SUG_SEGUROS"
+    title: "Obligaciones de Seguro"
+    text: |
+      El Contratista mantendrá vigentes las siguientes pólizas de seguro:
+
+      1. Responsabilidad Civil General: cobertura mínima de [X] euros por
+         siniestro y [Y] euros en agregado anual.
+
+      2. Todo Riesgo Construcción (CAR): por el valor total de las obras,
+         incluyendo cobertura de responsabilidad civil cruzada.
+
+      3. Seguro de Accidentes de Trabajo: conforme a la legislación laboral
+         vigente para todo el personal.
+
+      El Propietario figurará como coasegurado en las pólizas de RC y CAR.
+
+metadata:
+  created_at: "2026-01-16"
+  updated_at: "2026-01-16"
+  author: "Legal Team"
+  applicable_jurisdictions:
+    - "ES"
+    - "LATAM"
+  related_families:
+    - "NuevaPlanta.LimitesResponsabilidad"
+    - "NuevaPlanta.TerminacionRescision"

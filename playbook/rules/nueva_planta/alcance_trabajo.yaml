@@ -1,0 +1,130 @@
+# =============================================================================
+# Regla de Playbook - Nueva Planta: Alcance del Trabajo
+# =============================================================================
+# Familia: AlcanceTrabajo
+# Descripción: Análisis de cláusulas de alcance, scope, trabajos incluidos/excluidos,
+#              modificaciones al alcance y órdenes de cambio
+# =============================================================================
+
+rule_id: "NuevaPlanta:2026-01:AlcanceTrabajo"
+version: "1.0.0"
+clause_family: "NuevaPlanta.AlcanceTrabajo"
+required: true
+severity: "HIGH"
+
+analysis_mode: "MODE_ENUMERATED_DEVIATIONS"
+
+standard_position:
+  text: |
+    El alcance del trabajo comprende la ingeniería, suministro, construcción,
+    montaje y puesta en marcha de la instalación según las especificaciones
+    técnicas del Anexo I.
+
+    Cualquier modificación al alcance deberá ser formalizada mediante una
+    Orden de Cambio, que requerirá acuerdo previo por escrito entre las partes
+    sobre el impacto en plazo y precio.
+
+    El Contratista será responsable de todos los trabajos necesarios para la
+    correcta ejecución del proyecto, incluyendo aquellos implícitamente incluidos
+    según las buenas prácticas de ingeniería y construcción.
+
+  summary: "EPC completo con modificaciones mediante Orden de Cambio acordada"
+
+acceptable_variations:
+  - id: "ACCEPT_01"
+    description: "Exclusiones claramente definidas"
+    pattern: "excluye|no incluye|queda fuera.*alcance"
+    condition: "Las exclusiones están listadas específicamente"
+
+  - id: "ACCEPT_02"
+    description: "Procedimiento de Orden de Cambio detallado"
+    pattern: "orden.*cambio|change.*order|modificación.*alcance"
+    condition: "Existe procedimiento formal con plazos definidos"
+
+  - id: "ACCEPT_03"
+    description: "Obligaciones implícitas razonables"
+    pattern: "buenas.*prácticas|estado.*arte|normativa.*aplicable"
+    condition: "Referencia a estándares de la industria"
+
+passable_variations:
+  - id: "PASS_01"
+    description: "Alcance sujeto a interpretación"
+    pattern: "según.*criterio.*cliente|a.*satisfacción.*propietario"
+    recommendation: "Objetivizar criterios de aceptación"
+    risk_level: "MEDIUM"
+
+  - id: "PASS_02"
+    description: "Modificaciones unilaterales limitadas"
+    pattern: "modificar.*hasta.*(5|10|15)%"
+    recommendation: "Limitar a máximo 10% sin acuerdo"
+    risk_level: "LOW"
+
+  - id: "PASS_03"
+    description: "Trabajos adicionales a precio unitario"
+    pattern: "trabajos.*adicionales.*precio.*unitario"
+    recommendation: "Definir catálogo de precios unitarios previamente"
+    risk_level: "LOW"
+
+unacceptable_patterns:
+  - id: "BLOCK_01"
+    description: "Alcance ilimitado o indefinido"
+    pattern: "todo.*necesario|cualquier.*trabajo|sin.*limitación"
+    reason: "Alcance indefinido genera riesgo de reclamaciones"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_02"
+    description: "Modificaciones unilaterales sin límite"
+    pattern: "modificar.*unilateralmente|cambiar.*sin.*acuerdo"
+    reason: "No se puede aceptar cambios unilaterales ilimitados"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_03"
+    description: "Obligación de resultado garantizado"
+    pattern: "garantiza.*resultado|asegura.*rendimiento.*específico"
+    reason: "Obligaciones de resultado deben estar claramente acotadas"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_04"
+    description: "Scope creep sin compensación"
+    pattern: "sin.*coste.*adicional|incluido.*precio|sin.*incremento"
+    reason: "Los cambios de alcance deben tener compensación"
+    action: "ESCALATE_HUMAN"
+
+suggested_clauses:
+  - id: "SUG_ALCANCE"
+    title: "Definición de Alcance"
+    text: |
+      El alcance del presente contrato comprende la ejecución de los trabajos
+      de [DESCRIPCIÓN] según las especificaciones técnicas detalladas en el
+      Anexo I (Especificaciones Técnicas) y los planos del Anexo II (Documentación Gráfica).
+
+      Quedan expresamente excluidos del alcance:
+      a) [EXCLUSIÓN 1]
+      b) [EXCLUSIÓN 2]
+      c) [EXCLUSIÓN 3]
+
+  - id: "SUG_ORDEN_CAMBIO"
+    title: "Órdenes de Cambio"
+    text: |
+      Cualquier modificación al alcance de los trabajos deberá tramitarse mediante
+      una Orden de Cambio. El procedimiento será el siguiente:
+
+      1. El Propietario notificará por escrito la modificación solicitada.
+      2. El Contratista presentará en un plazo de 15 días hábiles su propuesta
+         de impacto en precio y plazo.
+      3. Las partes negociarán de buena fe el ajuste correspondiente.
+      4. Una vez acordado, se formalizará la Orden de Cambio por escrito.
+      5. El Contratista no iniciará los trabajos modificados hasta la firma
+         de la Orden de Cambio.
+
+metadata:
+  created_at: "2026-01-16"
+  updated_at: "2026-01-16"
+  author: "Legal Team"
+  applicable_jurisdictions:
+    - "ES"
+    - "LATAM"
+  related_families:
+    - "NuevaPlanta.PrecioPagos"
+    - "NuevaPlanta.EntregablesHitos"
+    - "NuevaPlanta.Responsabilidades"

@@ -1,0 +1,219 @@
+{
+  "name": "W1_FileUpload - Nueva Planta v2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "file-upload",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "31c5e3c6-f9be-4972-ba66-c24d3a1204ce",
+      "name": "Webhook Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        48,
+        48
+      ],
+      "webhookId": "e7bda2f7-752c-4f6d-9bc2-000b5a565ad5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst input = $('Webhook Upload').first().json;\n\n// Extract file info from body\nlet file_name = 'contract.docx';\nlet contract_type = 'nueva_planta';\n\nif (input.body) {\n  file_name = input.body.file_name || input.body.fileName || 'contract.docx';\n  contract_type = input.body.contract_type || 'nueva_planta';\n}\n\n// Determine mime_type from extension\nlet mime_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';\nif (file_name.toLowerCase().endsWith('.pdf')) {\n  mime_type = 'application/pdf';\n}\n\nconst document_id = crypto.randomUUID();\nconst storage_path = `contracts/${document_id}/${file_name}`;\n\nreturn [{\n  json: {\n    document_id,\n    file_name,\n    mime_type,\n    storage_path,\n    contract_type,\n    playbook_id: 'nueva_planta',\n    playbook_version: '2026-01',\n    tenant_id: '00000000-0000-0000-0000-000000000001'\n  }\n}];"
+      },
+      "id": "313ac268-6a9e-4d68-8a77-19366d51b468",
+      "name": "Create Document",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "documents",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "document_id",
+              "fieldValue": "={{ $json.document_id }}"
+            },
+            {
+              "fieldId": "tenant_id",
+              "fieldValue": "={{ $json.tenant_id }}"
+            },
+            {
+              "fieldId": "file_name",
+              "fieldValue": "={{ $json.file_name }}"
+            },
+            {
+              "fieldId": "mime_type",
+              "fieldValue": "={{ $json.mime_type }}"
+            },
+            {
+              "fieldId": "storage_path",
+              "fieldValue": "={{ $json.storage_path }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "ingested"
+            },
+            {
+              "fieldId": "contract_type",
+              "fieldValue": "={{ $json.contract_type }}"
+            },
+            {
+              "fieldId": "playbook_id",
+              "fieldValue": "={{ $json.playbook_id }}"
+            },
+            {
+              "fieldId": "playbook_version",
+              "fieldValue": "={{ $json.playbook_version }}"
+            }
+          ]
+        }
+      },
+      "id": "1d49f568-3243-43be-a468-e181d7530090",
+      "name": "Insert Document",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        496,
+        48
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "contract_runs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "document_id",
+              "fieldValue": "={{ $('Create Document').first().json.document_id }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "CREATED"
+            }
+          ]
+        }
+      },
+      "id": "330f4317-80ed-4395-a447-2fcd67cda691",
+      "name": "Create Run",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        720,
+        48
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: true, document_id: $('Create Document').first().json.document_id, run_id: $('Create Run').first().json.run_id || $('Create Run').first().json.id, file_name: $('Create Document').first().json.file_name, status: 'ingested', message: 'Document uploaded. Ready for clause extraction.' } }}",
+        "options": {}
+      },
+      "id": "44632f7e-dbc6-4de9-8a96-6fb529811967",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { success: false, error: 'Upload failed: ' + JSON.stringify($json) } }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "c3e67821-8d0c-455d-953f-048f0455869b",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        48,
+        272
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Upload": {
+      "main": [
+        [
+          {
+            "node": "Create Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Document": {
+      "main": [
+        [
+          {
+            "node": "Insert Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Document": {
+      "main": [
+        [
+          {
+            "node": "Create Run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Run": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": true
+  },
+  "versionId": "1cf8a47a-05fd-4e2b-ba3e-3fcfd727a94b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e30f3d921a61d3f73e3eabe4fb1f4cfa51dfa5c1aaf9fb23188d4bcf355ee15a"
+  },
+  "id": "KFEFRtero2u5mqnA",
+  "tags": []
+}

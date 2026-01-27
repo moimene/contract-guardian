@@ -1,0 +1,71 @@
+# Indemnification ProdCo Rule
+# Rule ID: indemnity_prodco
+# Version: 1.0.0
+
+rule_id: indemnity_prodco
+clause_family: IndemnityProdCo
+version: "1.0.0"
+required: true
+
+analysis_mode: MODE_ENUMERATED_DEVIATIONS
+
+standard_position:
+  title: "ProdCo Indemnification Obligations"
+  text: |
+    ProdCo will indemnify, defend and hold harmless Amazon and its Affiliates 
+    from any losses, costs or damages arising from any third party claims 
+    alleging breach of ProdCo representations or warranties.
+  text_fragment_id: indemnity_prodco_std_001
+
+acceptable_variations:
+  - "ProdCo shall defend, indemnify and hold harmless Amazon"
+  - "ProdCo agrees to indemnify and defend Amazon"
+  - "ProdCo will indemnify Amazon against third party claims"
+
+unacceptable_patterns:
+  - "ProdCo waives all indemnification obligations"
+  - "ProdCo's indemnification is limited to direct damages only"
+  - "ProdCo shall not be required to indemnify"
+  - "Amazon shall indemnify ProdCo for ProdCo's breaches"
+
+guidance_internal: |
+  This is a REQUIRED clause. ProdCo must provide indemnification for their 
+  representations and warranties. Any attempt to limit, cap, or eliminate 
+  this indemnification should be flagged as UnacceptableDeviation.
+  
+  Key signals to watch:
+  - Caps on indemnification amounts
+  - Exclusion of consequential damages from indemnification
+  - Mutual indemnification that shifts Amazon's exposure to ProdCo
+
+anchors:
+  - "indemnify"
+  - "defend"
+  - "hold harmless"
+  - "third party claims"
+  - "representations or warranties"
+
+definitions_scope:
+  - "Affiliates"
+  - "Losses"
+  - "Claims"
+
+retrieval_profile:
+  vector_top_k: 5
+  coverage_threshold: 0.78
+  examples_top_k: 6
+
+routing_policy:
+  default_route: IndemnityProdCo
+  block_export_if_escalated: true
+
+decision_policy:
+  auto_redline_if_unacceptable: true
+  anchor_conf_threshold: 0.85
+  escalate_if_ambiguous: true
+  block_export_if_required_violated: true
+
+models:
+  paranoid: gpt-4o
+  valuator: gpt-4o-mini
+  sanitizer: gpt-4o-mini

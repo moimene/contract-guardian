@@ -1,0 +1,172 @@
+# =============================================================================
+# Regla de Playbook - Nueva Planta: Terminación y Rescisión
+# =============================================================================
+# Familia: TerminacionRescision
+# Descripción: Análisis de causas de terminación, procedimiento de rescisión,
+#              efectos de la terminación, liquidación y consecuencias
+# =============================================================================
+
+rule_id: "NuevaPlanta:2026-01:TerminacionRescision"
+version: "1.0.0"
+clause_family: "NuevaPlanta.TerminacionRescision"
+required: true
+severity: "HIGH"
+
+analysis_mode: "MODE_ENUMERATED_DEVIATIONS"
+
+standard_position:
+  text: |
+    El contrato podrá terminarse por las siguientes causas:
+
+    1. TERMINACIÓN POR CONVENIENCIA DEL PROPIETARIO:
+       El Propietario podrá terminar el contrato sin causa, con preaviso de
+       30 días. En tal caso, pagará al Contratista los trabajos ejecutados,
+       los materiales en obra/fabricación, y una compensación del 5% del
+       valor de los trabajos no ejecutados.
+
+    2. TERMINACIÓN POR INCUMPLIMIENTO:
+       Cualquiera de las partes podrá resolver por incumplimiento grave de
+       la otra, previa notificación y plazo de subsanación de 30 días.
+
+    3. TERMINACIÓN POR FUERZA MAYOR:
+       Si la fuerza mayor se prolonga más de 180 días, cualquier parte
+       podrá resolver sin penalización ni indemnización.
+
+    4. TERMINACIÓN POR INSOLVENCIA:
+       Concurso de acreedores, liquidación o insolvencia de cualquier parte.
+
+  summary: "Terminación por conveniencia con compensación, por incumplimiento con subsanación"
+
+acceptable_variations:
+  - id: "ACCEPT_01"
+    description: "Preaviso de terminación entre 30-60 días"
+    pattern: "preaviso.*(30|45|60).*días"
+    condition: "Preaviso dentro del rango razonable"
+
+  - id: "ACCEPT_02"
+    description: "Compensación por conveniencia entre 3-7%"
+    pattern: "compensación.*(3|4|5|6|7)%"
+    condition: "Compensación dentro del rango estándar"
+
+  - id: "ACCEPT_03"
+    description: "Plazo de subsanación de 15-30 días"
+    pattern: "subsanación.*(15|20|30).*días"
+    condition: "Plazo de subsanación razonable"
+
+passable_variations:
+  - id: "PASS_01"
+    description: "Terminación por conveniencia sin compensación explícita"
+    pattern: "terminación.*conveniencia|termination.*convenience"
+    recommendation: "Añadir cláusula de compensación por trabajos no ejecutados"
+    risk_level: "HIGH"
+
+  - id: "PASS_02"
+    description: "Causas de terminación adicionales"
+    pattern: "incumplimiento.*reiterado|demora.*superior"
+    recommendation: "Revisar que las causas sean objetivas y verificables"
+    risk_level: "MEDIUM"
+
+  - id: "PASS_03"
+    description: "Suspensión prolongada como causa de terminación"
+    pattern: "suspensión.*superior.*(90|120|180).*días"
+    recommendation: "Establecer compensación durante suspensión"
+    risk_level: "MEDIUM"
+
+unacceptable_patterns:
+  - id: "BLOCK_01"
+    description: "Terminación inmediata sin preaviso"
+    pattern: "terminación.*inmediata|resolver.*sin.*preaviso"
+    reason: "Se requiere preaviso mínimo para ordenada terminación"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_02"
+    description: "Terminación por conveniencia solo del Propietario"
+    pattern: "propietario.*podrá.*resolver.*conveniencia"
+    reason: "El derecho de terminación debe ser recíproco o con compensación"
+    action: "ESCALATE_HUMAN"
+
+  - id: "BLOCK_03"
+    description: "Confiscación de materiales sin compensación"
+    pattern: "propietario.*quedará.*materiales|confiscación.*equipos"
+    reason: "Los materiales deben pagarse en caso de terminación"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_04"
+    description: "Terminación automática por incumplimiento menor"
+    pattern: "resolución.*automática|ipso.*facto"
+    reason: "Se requiere notificación y oportunidad de subsanación"
+    action: "BLOCK_EXPORT"
+
+  - id: "BLOCK_05"
+    description: "Renuncia a indemnización en todos los casos"
+    pattern: "renuncia.*indemnización|sin.*derecho.*compensación"
+    reason: "Debe preservarse el derecho a compensación por trabajos realizados"
+    action: "BLOCK_EXPORT"
+
+suggested_clauses:
+  - id: "SUG_TERMINACION_CONVENIENCIA"
+    title: "Terminación por Conveniencia"
+    text: |
+      El Propietario podrá terminar el presente contrato sin necesidad de
+      alegar causa alguna, mediante notificación escrita al Contratista
+      con una antelación mínima de 30 días.
+
+      En caso de terminación por conveniencia, el Propietario abonará al
+      Contratista:
+      a) El valor de los trabajos correctamente ejecutados hasta la fecha
+         de terminación, conforme a los precios del contrato.
+      b) El coste de los materiales fabricados o en proceso de fabricación
+         que no puedan ser devueltos a proveedores.
+      c) Los costes de desmovilización debidamente justificados.
+      d) Una compensación equivalente al 5% del valor de los trabajos
+         no ejecutados, en concepto de lucro cesante.
+
+  - id: "SUG_TERMINACION_INCUMPLIMIENTO"
+    title: "Terminación por Incumplimiento"
+    text: |
+      Cualquiera de las partes podrá resolver el contrato por incumplimiento
+      grave de la otra parte de cualquiera de las obligaciones esenciales,
+      siempre que:
+
+      a) Se notifique por escrito el incumplimiento a la parte incumplidora.
+      b) Se conceda un plazo de 30 días para su subsanación.
+      c) Transcurrido dicho plazo sin que se haya producido la subsanación,
+         se notifique la resolución por escrito.
+
+      Se consideran obligaciones esenciales, entre otras:
+      - El pago del precio conforme a las condiciones pactadas.
+      - La ejecución de los trabajos conforme a especificaciones.
+      - El cumplimiento de los plazos contractuales.
+      - El mantenimiento de los seguros obligatorios.
+
+  - id: "SUG_EFECTOS_TERMINACION"
+    title: "Efectos de la Terminación"
+    text: |
+      En caso de terminación del contrato por cualquier causa:
+
+      1. El Contratista cesará inmediatamente los trabajos, salvo los
+         necesarios para la protección y conservación de la obra.
+
+      2. El Contratista entregará al Propietario toda la documentación
+         técnica desarrollada bajo el contrato.
+
+      3. Las partes realizarán un inventario conjunto del estado de la
+         obra, materiales y equipos en el plazo de 15 días.
+
+      4. El Propietario liquidará los importes debidos al Contratista
+         en el plazo de 60 días desde la terminación.
+
+      5. Las obligaciones de confidencialidad, limitación de responsabilidad
+         y resolución de disputas sobrevivirán a la terminación del contrato.
+
+metadata:
+  created_at: "2026-01-16"
+  updated_at: "2026-01-16"
+  author: "Legal Team"
+  applicable_jurisdictions:
+    - "ES"
+    - "LATAM"
+  related_families:
+    - "NuevaPlanta.PrecioPagos"
+    - "NuevaPlanta.Responsabilidades"
+    - "NuevaPlanta.FuerzaMayor"

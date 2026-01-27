@@ -1,0 +1,201 @@
+# Clause Typology Reference: Amazon PSA/DSA
+# Extracted from Legal Analysis - hiloLegalAnalisis.md
+# 9 Clause Families × 3 Categories × 20 Examples each
+
+families:
+  - id: PaymentCredits
+    name: Payment & Credit Terms
+    analysis_mode: MODE_ENUMERATED_DEVIATIONS
+    routing_policy:
+      type: ESCALATE_IF_UNACCEPTABLE
+      target_group: AmazonLegal
+      block_export: true
+    examples:
+      acceptable:
+        - Payment of Net Revenues within 45 days of month-end
+        - Standard 15-day invoice dispute window
+        - Interest at 1.5% monthly on late payments
+        - Payment in USD via wire transfer
+        - Revenue share at 50/50 split
+      passable:
+        - Payment within 60 days (requires approval)
+        - Extended 30-day dispute window for major studios
+        - Payment in EUR for European territories
+      unacceptable:
+        - Payment 90+ days after month-end
+        - No interest on late payments
+        - Unilateral revenue share changes by Amazon
+        - Set-off against unrelated obligations
+
+  - id: ThirdPartyCredits
+    name: Third-Party Credit Rights
+    analysis_mode: MODE_ENUMERATED_DEVIATIONS
+    routing_policy:
+      type: ESCALATE_IF_CHANGE
+      target_group: PolicyOwner
+      block_export: false
+    examples:
+      acceptable:
+        - Screen credit per guild requirements
+        - Paid advertising credit placement
+        - Logo prominence per contractual tier
+      passable:
+        - Reduced credit size for limited releases
+        - Digital-only credit requirements
+      unacceptable:
+        - No credit obligation
+        - Credit subject to Amazon sole discretion
+        - Waiver of guild minimums
+
+  - id: RepsProdCo
+    name: Representations & Warranties (Production Company)
+    analysis_mode: MODE_STRICT_NO_DEVIATIONS
+    routing_policy:
+      type: ESCALATE
+      target_group: SeniorCounsel
+      block_export: true
+    examples:
+      acceptable:
+        - Full chain of title warranty
+        - No third-party infringement warranty
+        - E&O insurance confirmation
+        - Authority to bind entity
+        - No pending litigation affecting rights
+      passable:
+        - Knowledge-qualified chain of title
+        - Limited E&O coverage scope
+      unacceptable:
+        - No chain of title warranty
+        - Disclaimer of infringement liability
+        - No E&O requirement
+
+  - id: RepsAmazon
+    name: Representations & Warranties (Amazon)
+    analysis_mode: MODE_ENUMERATED_DEVIATIONS
+    routing_policy:
+      type: AUTO_ACCEPT
+      target_group: null
+      block_export: false
+    examples:
+      acceptable:
+        - Standard platform availability warranty
+        - Technical delivery specifications warranty
+        - Authority to execute agreement
+      passable:
+        - Reduced platform availability SLA
+        - Modified delivery specifications
+      unacceptable:
+        - "As-is" platform with no warranty
+        - Complete disclaimer of technical obligations
+
+  - id: RepsTruthTerm
+    name: Representations Truth & Termination
+    analysis_mode: MODE_STRICT_NO_DEVIATIONS
+    routing_policy:
+      type: ESCALATE
+      target_group: SeniorCounsel
+      block_export: true
+    examples:
+      acceptable:
+        - Representations true as of execution and delivery
+        - Survival post-termination for X years
+        - Immediate termination right for material breach
+      passable:
+        - Representations true at execution only (not delivery)
+        - Reduced survival period
+      unacceptable:
+        - No survival clause
+        - Termination at Amazon's sole discretion
+        - No cure period for breach
+
+  - id: IndemnityProdCo
+    name: Indemnification (Production Company Obligations)
+    analysis_mode: MODE_ENUMERATED_DEVIATIONS
+    routing_policy:
+      type: ESCALATE_IF_UNACCEPTABLE
+      target_group: AmazonLegal
+      block_export: true
+    examples:
+      acceptable:
+        - Indemnify for third-party IP infringement claims
+        - Indemnify for breach of representations
+        - Defense obligation with choice of counsel
+        - Reasonable cooperation requirement
+      passable:
+        - Cap on indemnification amount
+        - Insurance-backed indemnification ceiling
+        - Joint defense arrangements
+      unacceptable:
+        - Unlimited indemnification with no cap
+        - Indemnify for Amazon's own negligence
+        - Waiver of right to participate in defense
+
+  - id: IndemnityAmazon
+    name: Indemnification (Amazon Obligations)
+    analysis_mode: MODE_ENUMERATED_DEVIATIONS
+    routing_policy:
+      type: ESCALATE_IF_CHANGE
+      target_group: PolicyOwner
+      block_export: false
+    examples:
+      acceptable:
+        - Amazon indemnifies for platform IP claims
+        - Amazon indemnifies for its technology infringement
+      passable:
+        - Limited scope of Amazon indemnification
+        - Cap at fees received
+      unacceptable:
+        - No Amazon indemnification obligation
+        - Amazon indemnification "subject to sole discretion"
+
+  - id: DefenseSettlement
+    name: Defense & Settlement Control
+    analysis_mode: MODE_ENUMERATED_DEVIATIONS
+    routing_policy:
+      type: ESCALATE_IF_UNACCEPTABLE
+      target_group: AmazonLegal
+      block_export: true
+    examples:
+      acceptable:
+        - Right to assume defense with reasonable counsel
+        - Settlement requires mutual consent
+        - Right to participate with own counsel
+        - Prompt notice of claims
+      passable:
+        - Sole control of defense with consent on settlement
+        - Approval not unreasonably withheld
+      unacceptable:
+        - Unilateral settlement rights on all claims
+        - No right to participate in own defense
+        - Settlement acknowledgment without consent
+
+  - id: SurvivalRemedies
+    name: Survival & Remedies
+    analysis_mode: MODE_STRICT_NO_DEVIATIONS
+    routing_policy:
+      type: ESCALATE
+      target_group: SeniorCounsel
+      block_export: true
+    examples:
+      acceptable:
+        - Standard provisions survive termination (confidentiality, indemnity, IP)
+        - Cumulative remedies not exclusive
+        - Injunctive relief available without bond
+        - Prevailing party attorney fees
+      passable:
+        - Limited survival to 3 years post-termination
+        - Bond requirement for injunctive relief
+      unacceptable:
+        - No survival provisions
+        - Exclusive remedy limitation
+        - Waiver of injunctive relief
+
+# Internal Guidance Notes (NEVER expose to client)
+internal_notes:
+  - "Acceptable = auto-pass, log only"
+  - "Passable = can accept WITH approval, creates escalation"
+  - "Unacceptable = propose redline, may block export"
+  - "Unknown/Not-covered = always escalate to SeniorCounsel"
+  - "Mode STRICT = any deviation is unacceptable"
+  - "Mode ENUMERATED = check against fallback list"
+  - "Mode JUDGMENT = requires policy interpretation"

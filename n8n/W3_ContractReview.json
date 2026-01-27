@@ -1,0 +1,527 @@
+{
+    "name": "ContractReview - Document Orchestrator",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "contract-review",
+                "httpMethod": "POST",
+                "responseMode": "responseNode"
+            },
+            "id": "webhook",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Workflow Configuration - Hardcoded\nconst config = {\n  SUPABASE_URL: 'https://hvlsuwdqtffiilvampxq.supabase.co',\n  N8N_WEBHOOK_BASE: 'https://mmenendeza.app.n8n.cloud',\n  PLAYBOOK_ID: 'amazon_psa_dsa',\n  PLAYBOOK_VERSION: 'v1.0.0',\n  CLAUSE_TIMEOUT: 120000\n};\n\nreturn [{ json: { config } }];"
+            },
+            "id": "config",
+            "name": "Workflow Config",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const crypto = require('crypto');\nconst input = $('Webhook').first().json;\nconst config = $json.config;\n\n// Validate required input\nconst document_id = input.body?.document_id || input.document_id;\nif (!document_id) {\n  throw new Error('document_id is required');\n}\n\nreturn [{\n  json: {\n    run_id: crypto.randomUUID(),\n    document_id,\n    config,\n    started_at: new Date().toISOString()\n  }\n}];"
+            },
+            "id": "create_run",
+            "name": "Create Run ID",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "tableId": "documents",
+                "filterType": "string",
+                "filterString": "document_id=eq.{{ $json.document_id }}",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldName": "status",
+                            "fieldValue": "processing"
+                        },
+                        {
+                            "fieldName": "processing_started_at",
+                            "fieldValue": "={{ $json.started_at }}"
+                        }
+                    ]
+                }
+            },
+            "id": "update_status",
+            "name": "Update Status",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                850,
+                300
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "",
+                    "name": "Supabase"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "getAll",
+                "tableId": "documents",
+                "filterType": "string",
+                "filterString": "document_id=eq.{{ $json.document_id }}",
+                "returnAll": false,
+                "limit": 1
+            },
+            "id": "fetch_document",
+            "name": "Fetch Document",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                1050,
+                300
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "",
+                    "name": "Supabase"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Extract clauses from document\n// TODO: Replace with actual clause extraction service call\n\nconst document = $json;\nconst runData = $('Create Run ID').first().json;\n\n// Placeholder clauses - in production, call extraction service\nconst clauses = [\n  {\n    clause_id: 'clause_1',\n    clause_instance_id: `${runData.document_id}_clause_1`,\n    sequence_number: 1,\n    heading: 'Payment Terms',\n    clause_text: document.clause_text || 'Sample clause text for testing the pipeline.',\n    run_id: runData.run_id,\n    document_id: runData.document_id\n  },\n  {\n    clause_id: 'clause_2',\n    clause_instance_id: `${runData.document_id}_clause_2`,\n    sequence_number: 2,\n    heading: 'Indemnification',\n    clause_text: 'The Producer shall indemnify Amazon against all claims.',\n    run_id: runData.run_id,\n    document_id: runData.document_id\n  }\n];\n\nreturn clauses.map(c => ({ json: c }));"
+            },
+            "id": "extract_clauses",
+            "name": "Extract Clauses",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "aggregate": "aggregateAllItemData",
+                "options": {}
+            },
+            "id": "prepare_loop",
+            "name": "Prepare Loop",
+            "type": "n8n-nodes-base.aggregate",
+            "typeVersion": 1,
+            "position": [
+                1450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "fieldToSplitOut": "data",
+                "options": {}
+            },
+            "id": "loop_clauses",
+            "name": "Loop Clauses",
+            "type": "n8n-nodes-base.splitOut",
+            "typeVersion": 1,
+            "position": [
+                1650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://mmenendeza.app.n8n.cloud/webhook/clause-review",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($json) }}",
+                "options": {
+                    "timeout": 120000
+                }
+            },
+            "id": "call_clause_review",
+            "name": "Call ClauseReview",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1850,
+                300
+            ],
+            "onError": "continueErrorOutput"
+        },
+        {
+            "parameters": {
+                "aggregate": "aggregateAllItemData",
+                "destinationFieldName": "results",
+                "options": {}
+            },
+            "id": "collect_results",
+            "name": "Collect Results",
+            "type": "n8n-nodes-base.aggregate",
+            "typeVersion": 1,
+            "position": [
+                2050,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Aggregate contract-level decision\nconst results = $json.results || [];\nconst runData = $('Create Run ID').first().json;\n\nlet hasBlock = false;\nlet hasReview = false;\nlet escalations = [];\nlet blockReasons = [];\n\nfor (const r of results) {\n  if (r.decision === 'BLOCK_EXPORT') {\n    hasBlock = true;\n    blockReasons.push(r.block_reason || r.clause_id);\n  }\n  if (r.needs_review) {\n    hasReview = true;\n    escalations.push(r.escalation_reason || r.clause_id);\n  }\n}\n\nlet contract_decision = 'READY_FOR_EXPORT';\nif (hasBlock) contract_decision = 'BLOCKED';\nelse if (hasReview) contract_decision = 'NEEDS_REVIEW';\n\nreturn [{\n  json: {\n    results,\n    run_id: runData.run_id,\n    document_id: runData.document_id,\n    config: runData.config,\n    contractDecision: {\n      contract_decision,\n      escalations_pending: escalations.length,\n      block_reasons: blockReasons\n    },\n    total_clauses: results.length\n  }\n}];"
+            },
+            "id": "aggregate_decision",
+            "name": "Aggregate Decision",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const crypto = require('crypto');\nconst data = $json;\n\nconst changeset = {\n  changeset_id: crypto.randomUUID(),\n  document_id: data.document_id,\n  playbook_id: data.config.PLAYBOOK_ID,\n  playbook_version: data.config.PLAYBOOK_VERSION,\n  created_at: new Date().toISOString(),\n  changes: (data.results || [])\n    .filter(r => r.proposed_changes && r.proposed_changes.length > 0)\n    .flatMap(r => r.proposed_changes.map(c => ({\n      change_id: crypto.randomUUID(),\n      rule_id: r.rule_id || r.route,\n      clause_instance_id: r.clause_instance_id,\n      ops: c.ops || [],\n      comments: { internal: c.internal_comment || '', client: c.client_comment || '' }\n    })))\n};\n\nreturn [{ json: { ...data, changeset } }];"
+            },
+            "id": "generate_changeset",
+            "name": "Generate ChangeSet",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "cond1",
+                            "leftValue": "={{ $json.contractDecision.contract_decision }}",
+                            "rightValue": "READY_FOR_EXPORT",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "check_export",
+            "name": "Ready for Export?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                2650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Generate redlined DOCX - placeholder\nconst data = $json;\n\nreturn [{\n  json: {\n    ...data,\n    redline: {\n      status: 'generated',\n      filename: `${data.document_id}_REDLINED.docx`\n    }\n  }\n}];"
+            },
+            "id": "generate_redline",
+            "name": "Generate Redline",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2850,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Handle blocked or needs-review\nconst data = $json;\n\nconsole.log('Document requires attention:', data.contractDecision);\n\nreturn [{ json: { ...data, notification_sent: true } }];"
+            },
+            "id": "notify_blocked",
+            "name": "Notify Blocked",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2850,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "create",
+                "tableId": "audit_events",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldName": "run_id",
+                            "fieldValue": "={{ $json.run_id }}"
+                        },
+                        {
+                            "fieldName": "document_id",
+                            "fieldValue": "={{ $json.document_id }}"
+                        },
+                        {
+                            "fieldName": "step",
+                            "fieldValue": "orchestrator"
+                        },
+                        {
+                            "fieldName": "action",
+                            "fieldValue": "contract_review_complete"
+                        },
+                        {
+                            "fieldName": "actor_type",
+                            "fieldValue": "system"
+                        },
+                        {
+                            "fieldName": "actor_id",
+                            "fieldValue": "ContractReview"
+                        }
+                    ]
+                }
+            },
+            "id": "audit_complete",
+            "name": "Audit Complete",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                3050,
+                300
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "",
+                    "name": "Supabase"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { success: true, run_id: $json.run_id, document_id: $json.document_id, contract_decision: $json.contractDecision.contract_decision, changeset_id: $json.changeset?.changeset_id, total_clauses: $json.total_clauses } }}",
+                "options": {}
+            },
+            "id": "respond",
+            "name": "Respond",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                3250,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Workflow Config",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Workflow Config": {
+            "main": [
+                [
+                    {
+                        "node": "Create Run ID",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Run ID": {
+            "main": [
+                [
+                    {
+                        "node": "Update Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Status": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Document",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Document": {
+            "main": [
+                [
+                    {
+                        "node": "Extract Clauses",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract Clauses": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Loop",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Loop": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Clauses",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Loop Clauses": {
+            "main": [
+                [
+                    {
+                        "node": "Call ClauseReview",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Call ClauseReview": {
+            "main": [
+                [
+                    {
+                        "node": "Collect Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Collect Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Collect Results": {
+            "main": [
+                [
+                    {
+                        "node": "Aggregate Decision",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Aggregate Decision": {
+            "main": [
+                [
+                    {
+                        "node": "Generate ChangeSet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate ChangeSet": {
+            "main": [
+                [
+                    {
+                        "node": "Ready for Export?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Ready for Export?": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Redline",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Notify Blocked",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Redline": {
+            "main": [
+                [
+                    {
+                        "node": "Audit Complete",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Notify Blocked": {
+            "main": [
+                [
+                    {
+                        "node": "Audit Complete",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Audit Complete": {
+            "main": [
+                [
+                    {
+                        "node": "Respond",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 1
+}

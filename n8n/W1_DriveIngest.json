@@ -1,0 +1,332 @@
+{
+    "name": "DriveIngest - Document Ingestion",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "drive-ingest",
+                "httpMethod": "POST",
+                "responseMode": "responseNode"
+            },
+            "id": "webhook",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                250,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Workflow Configuration - Hardcoded for Cloud Compatibility\nconst config = {\n  SUPABASE_URL: 'https://hvlsuwdqtffiilvampxq.supabase.co',\n  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok',\n  TENANT_ID: '00000000-0000-0000-0000-000000000001',\n  DRIVE_INPUT_FOLDER: '1jqn6PxNuMLunCLQm-WL2QZc7P4vZ8PN9',\n  DRIVE_OUTPUT_FOLDER: '12HXHipoRgwFdkcqj7wVa6KiGFRx8m0o6'\n};\n\nreturn [{ json: { config } }];"
+            },
+            "id": "config",
+            "name": "Workflow Config",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                450,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "const crypto = require('crypto');\nconst input = $('Webhook').first().json;\nconst config = $json.config;\n\n// Validate required inputs\nconst file_id = input.body?.file_id || input.file_id;\nconst file_name = input.body?.file_name || input.file_name;\n\nif (!file_id) {\n  throw new Error('file_id is required');\n}\nif (!file_name) {\n  throw new Error('file_name is required');\n}\n\nreturn [{\n  json: {\n    document_id: crypto.randomUUID(),\n    file_id,\n    file_name,\n    tenant_id: config.TENANT_ID,\n    supabase_url: config.SUPABASE_URL,\n    ingested_at: new Date().toISOString()\n  }\n}];"
+            },
+            "id": "create_document",
+            "name": "Create Document ID",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "download",
+                "fileId": {
+                    "__rl": true,
+                    "value": "={{ $json.file_id }}",
+                    "mode": "id"
+                },
+                "options": {
+                    "supportsAllDrives": true
+                }
+            },
+            "id": "download_drive",
+            "name": "Download from Drive",
+            "type": "n8n-nodes-base.googleDrive",
+            "typeVersion": 3,
+            "position": [
+                850,
+                300
+            ],
+            "credentials": {
+                "googleDriveOAuth2Api": {
+                    "id": "",
+                    "name": "Google Drive"
+                }
+            },
+            "onError": "continueErrorOutput"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "={{ $('Create Document ID').first().json.supabase_url }}/storage/v1/object/contracts/{{ $('Create Document ID').first().json.document_id }}/{{ $('Create Document ID').first().json.file_name }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "contentType": "binaryData",
+                "inputDataFieldName": "data",
+                "options": {
+                    "timeout": 30000
+                }
+            },
+            "id": "upload_storage",
+            "name": "Upload to Supabase Storage",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1050,
+                300
+            ],
+            "onError": "continueErrorOutput"
+        },
+        {
+            "parameters": {
+                "operation": "create",
+                "tableId": "documents",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldName": "document_id",
+                            "fieldValue": "={{ $('Create Document ID').first().json.document_id }}"
+                        },
+                        {
+                            "fieldName": "tenant_id",
+                            "fieldValue": "={{ $('Create Document ID').first().json.tenant_id }}"
+                        },
+                        {
+                            "fieldName": "file_name",
+                            "fieldValue": "={{ $('Create Document ID').first().json.file_name }}"
+                        },
+                        {
+                            "fieldName": "storage_path",
+                            "fieldValue": "=contracts/{{ $('Create Document ID').first().json.document_id }}/{{ $('Create Document ID').first().json.file_name }}"
+                        },
+                        {
+                            "fieldName": "status",
+                            "fieldValue": "ingested"
+                        },
+                        {
+                            "fieldName": "source_type",
+                            "fieldValue": "google_drive"
+                        }
+                    ]
+                }
+            },
+            "id": "insert_document",
+            "name": "Insert Document Record",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                1250,
+                300
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "",
+                    "name": "Supabase"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "create",
+                "tableId": "audit_events",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldName": "document_id",
+                            "fieldValue": "={{ $('Create Document ID').first().json.document_id }}"
+                        },
+                        {
+                            "fieldName": "step",
+                            "fieldValue": "ingest"
+                        },
+                        {
+                            "fieldName": "action",
+                            "fieldValue": "document_ingested"
+                        },
+                        {
+                            "fieldName": "actor_type",
+                            "fieldValue": "system"
+                        },
+                        {
+                            "fieldName": "actor_id",
+                            "fieldValue": "DriveIngest"
+                        }
+                    ]
+                }
+            },
+            "id": "audit_ingest",
+            "name": "Audit Ingestion",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                1450,
+                300
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "",
+                    "name": "Supabase"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { success: true, document_id: $('Create Document ID').first().json.document_id, file_name: $('Create Document ID').first().json.file_name, status: 'ingested' } }}",
+                "options": {}
+            },
+            "id": "respond_success",
+            "name": "Respond Success",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1650,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { success: false, error: $json.error?.message || 'Unknown error during ingestion' } }}",
+                "options": {
+                    "responseCode": 500
+                }
+            },
+            "id": "respond_error",
+            "name": "Respond Error",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1250,
+                500
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Workflow Config",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Workflow Config": {
+            "main": [
+                [
+                    {
+                        "node": "Create Document ID",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Document ID": {
+            "main": [
+                [
+                    {
+                        "node": "Download from Drive",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Download from Drive": {
+            "main": [
+                [
+                    {
+                        "node": "Upload to Supabase Storage",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond Error",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Upload to Supabase Storage": {
+            "main": [
+                [
+                    {
+                        "node": "Insert Document Record",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond Error",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Insert Document Record": {
+            "main": [
+                [
+                    {
+                        "node": "Audit Ingestion",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Audit Ingestion": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 1
+}

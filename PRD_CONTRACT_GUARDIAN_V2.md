@@ -2,9 +2,9 @@
 ## Sistema de Revision Automatizada de Contratos con RAG
 
 **Nombre del Producto**: Contract Guardian (anteriormente Amazon Redliner)
-**Version**: 2.0
+**Version**: 2.1
 **Fecha**: Enero 2026
-**Estado**: Produccion con RAG activo
+**Estado**: Produccion con RAG activo, Edge Functions desplegadas, Tests E2E pasando
 
 ---
 
@@ -65,7 +65,54 @@ Contract Guardian es un sistema de revision automatizada de contratos que utiliz
 
 ## 2. Arquitectura de 3 Capas
 
-### 2.1 Diagrama Conceptual
+### 2.1 Diagrama de Arquitectura Completa (v2.1)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              FRONTEND (Lovable)                              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│   │ NewAnalysis  │  │ContractReview│  │  Escalations │  │ KnowledgeGraph│   │
+│   └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
+└──────────┼─────────────────┼─────────────────┼─────────────────┼───────────┘
+           │                 │                 │                 │
+           ▼                 ▼                 ▼                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         SUPABASE EDGE FUNCTIONS (9)                          │
+│   ┌────────────────┐  ┌────────────────┐  ┌────────────────┐                │
+│   │  start_review  │  │update_run_status│ │generate_export │                │
+│   └────────┬───────┘  └────────┬───────┘  └────────┬───────┘                │
+│            │                   │                   │                         │
+│   ┌────────────────┐  ┌────────────────┐  ┌────────────────┐                │
+│   │   monitoring   │  │  request_review │  │   n8n-proxy   │                │
+│   └────────────────┘  └────────────────┘  └────────────────┘                │
+└──────────────────────────────────┬──────────────────────────────────────────┘
+                                   │
+           ┌───────────────────────┼───────────────────────┐
+           │                       │                       │
+           ▼                       ▼                       ▼
+┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
+│    n8n WORKFLOWS    │ │  SUPABASE POSTGRES  │ │   SUPABASE STORAGE  │
+│  ┌───────────────┐  │ │                     │ │                     │
+│  │ W1_DriveIngest│  │ │  • documents        │ │  • /contracts/      │
+│  ├───────────────┤  │ │  • contract_runs    │ │  • /exports/        │
+│  │W2_ClauseReview│  │ │  • clause_reviews   │ │                     │
+│  │    (RAG)      │  │ │  • matters (24)     │ │                     │
+│  ├───────────────┤  │ │  • clause_types(95) │ │                     │
+│  │W3_ContractRev │  │ │  • policy_examples  │ │                     │
+│  └───────────────┘  │ │    (1,367)          │ │                     │
+└─────────────────────┘ │  • audit_events     │ │                     │
+           │            └─────────────────────┘ └─────────────────────┘
+           ▼                       │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           OPENAI API                                         │
+│   ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐            │
+│   │ Embeddings │  │   Router   │  │  Paranoid  │  │  Valuator  │            │
+│   │text-embed-3│  │ gpt-4o-mini│  │   gpt-4o   │  │ gpt-4o-mini│            │
+│   └────────────┘  └────────────┘  └────────────┘  └────────────┘            │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Diagrama 3 Capas de Datos
 
 ```
 +------------------------------------------------------------------+
@@ -80,8 +127,8 @@ Contract Guardian es un sistema de revision automatizada de contratos que utiliz
 +------------------------------------------------------------------+
 |                  CAPA 1: BLUEPRINT (Politica)                    |
 |  +------------------+  +------------------+  +------------------+ |
-|  | matters (18)     |  | matter_policies  |  | policy_examples  | |
-|  | clause_types(67) |  | (config/agente)  |  | (909 con RAG)    | |
+|  | matters (24)     |  | matter_policies  |  | policy_examples  | |
+|  | clause_types(95) |  | (config/agente)  |  | (1,367 con RAG)  | |
 |  +------------------+  +------------------+  +------------------+ |
 |  +------------------+  +------------------+                      |
 |  | fallback_clauses |  | blueprint_vers   |                      |
@@ -248,15 +295,25 @@ CREATE TABLE clause_reviews (
 );
 ```
 
-### 3.2 Estadisticas Actuales de Datos
+### 3.2 Estadisticas Actuales de Datos (v2.1)
 
 | Entidad | Cantidad | Detalles |
 |---------|----------|----------|
-| **Matters** | 18 | 12 base + 6 Harvey |
-| **Clause Types** | 67 | ~50 base + 17 Harvey |
-| **Policy Examples** | 909 | 309 ACCEPTABLE, 304 PASSABLE, 296 UNACCEPTABLE |
-| **Embeddings** | 909/909 | 100% generados con text-embedding-3-small |
+| **Matters** | 24 | Categorias legales completas |
+| **Clause Types** | 95 | Tipos especificos de clausula |
+| **Policy Examples** | 1,367 | 456 ACCEPTABLE, 458 PASSABLE, 453 UNACCEPTABLE |
+| **Embeddings** | 1,367/1,367 | 100% generados con text-embedding-3-small |
+| **Edge Functions** | 9 | Todas activas y testeadas |
+| **Tests E2E** | 9/9 | 100% pasando |
 | **Fallback Clauses** | ~50 | Templates para redlines |
+
+### 3.2.1 Distribucion de Policy Examples por Acceptance
+
+```
+ACCEPTABLE:   456 (33.4%) ████████████████
+PASSABLE:     458 (33.5%) ████████████████
+UNACCEPTABLE: 453 (33.1%) ████████████████
+```
 
 ### 3.3 Enum Types
 
@@ -563,23 +620,22 @@ RETURNS TABLE (
 )
 ```
 
-### 5.3 Estadisticas de Embeddings
+### 5.3 Estadisticas de Embeddings (v2.1)
 
 | Metrica | Valor |
 |---------|-------|
-| Total policy_examples | 909 |
-| Con embedding | 909 (100%) |
+| Total policy_examples | **1,367** |
+| Con embedding | **1,367 (100%)** |
 | Modelo usado | text-embedding-3-small |
 | Dimensiones | 1536 |
 | Indice | HNSW (cosine) |
-| Tiempo generacion | ~5 minutos |
 
 ### 5.4 Distribucion por Acceptance Level
 
 ```
-ACCEPTABLE:   309 (34.0%) ████████████████
-PASSABLE:     304 (33.4%) ████████████████
-UNACCEPTABLE: 296 (32.6%) ████████████████
+ACCEPTABLE:   456 (33.4%) ████████████████
+PASSABLE:     458 (33.5%) ████████████████
+UNACCEPTABLE: 453 (33.1%) ████████████████
 ```
 
 ### 5.5 Evidencia RAG en clause_reviews
@@ -685,6 +741,76 @@ UNACCEPTABLE: 296 (32.6%) ████████████████
 | W1 | `/webhook/file-upload` | POST |
 | W2 | `/webhook/clause-review` | POST |
 | W3 | `/webhook/contract-review` | POST |
+
+### 6.5 Edge Functions Supabase
+
+El sistema cuenta con **9 Edge Functions** desplegadas en Supabase:
+
+| Funcion | Endpoint | JWT | Proposito |
+|---------|----------|-----|-----------|
+| `start_review` | POST /start_review | Si | Iniciar revision de contrato |
+| `update_run_status` | POST /update_run_status | No | Webhook retorno de n8n |
+| `generate_export` | POST /generate_export | No | Exportar documento (Markdown) |
+| `monitoring` | POST /monitoring | No | Dashboard de metricas |
+| `request_review` | POST /request_review | Si | Solicitar revision humana |
+| `export_doc` | POST /export_doc | Si | Exportar DOCX (via n8n) |
+| `n8n-proxy` | POST /n8n-proxy | No | Proxy seguro para n8n |
+| `admin_setup` | POST /admin_setup | No | Configuracion admin |
+
+#### Ejemplo: Iniciar Revision
+```bash
+curl -X POST "https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/start_review" \
+  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "document_id": "uuid",
+    "contract_type_id": "dsa_streaming_v1"
+  }'
+```
+
+#### Ejemplo: Obtener Metricas de Monitoreo
+```bash
+curl -s "https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/monitoring" | jq '.dashboard.overview'
+```
+
+Respuesta:
+```json
+{
+  "total_documents": 14,
+  "total_runs": 15,
+  "completed_runs": 8,
+  "processing_runs": 2,
+  "total_examples": 1367,
+  "total_reviews": 33
+}
+```
+
+### 6.6 Vistas de Monitoreo SQL
+
+```sql
+-- Overview general
+SELECT * FROM monitoring_overview;
+
+-- Actividad reciente (24h)
+SELECT * FROM monitoring_recent_activity;
+
+-- Performance de runs
+SELECT * FROM monitoring_run_performance;
+
+-- Errores
+SELECT * FROM monitoring_errors;
+
+-- Stats RAG por matter
+SELECT * FROM monitoring_rag_stats;
+```
+
+### 6.7 Funciones RPC
+
+| Funcion | Proposito |
+|---------|-----------|
+| `search_policy_examples()` | Busqueda semantica por embedding |
+| `get_monitoring_dashboard()` | Dashboard completo de metricas |
+| `is_superuser()` | Verificar permisos de superusuario |
 
 ---
 
@@ -1688,36 +1814,65 @@ WHERE escalation_recommended = true;
 
 ## 11. Roadmap
 
-### 11.1 Completado (v2.0)
+### 11.1 Completado (v2.1) ✅
 
+**Backend & RAG**:
 - [x] Arquitectura 3 capas implementada
-- [x] Dataset Harvey cargado (909 policy_examples)
-- [x] Embeddings 100% generados
-- [x] RAG funcional con search_policy_examples()
+- [x] Dataset expandido: **1,367 policy_examples**
+- [x] Taxonomia completa: **24 matters**, **95 clause_types**
+- [x] Embeddings 100% generados (text-embedding-3-small)
+- [x] RAG funcional con `search_policy_examples()`
 - [x] W2 refactorizado con RAG integration
 - [x] 4 agentes con contexto RAG
 - [x] Evidencia RAG guardada en clause_reviews
 
-### 11.2 En Progreso (v2.1)
+**Edge Functions**:
+- [x] 9 Edge Functions desplegadas y activas
+- [x] `start_review` - Iniciar revision
+- [x] `update_run_status` - Webhook retorno n8n
+- [x] `generate_export` - Exportacion Markdown
+- [x] `monitoring` - Dashboard metricas
+- [x] `request_review` - Solicitar revision humana
+- [x] `export_doc` - Exportar DOCX
+- [x] `n8n-proxy` - Proxy seguro n8n
 
-- [ ] Despliegue W2 RAG en produccion
-- [ ] UI para ver evidencia RAG
-- [ ] Dashboard de estadisticas RAG
-- [ ] Tests E2E del pipeline completo
+**Seguridad & Testing**:
+- [x] Row Level Security en 8 tablas
+- [x] Sistema de superusuarios (bypass RLS)
+- [x] Tests E2E completos: **9/9 pasados**
+- [x] Auditoria con `audit_events`
+- [x] Leakage protection (Sanitizer blocklist)
 
-### 11.3 Proximo (v2.2)
+**Frontend**:
+- [x] Frontend Lovable funcional
+- [x] NewAnalysis - Subir contratos
+- [x] ContractReview - Revisar clausulas
+- [x] Escalations - Gestion escalaciones
+- [x] ConfigKnowledgeGraph - Visualizar taxonomia
 
+### 11.2 En Progreso (v2.2) 🔄
+
+- [ ] Visualizacion interactiva Knowledge Graph
+- [ ] Exportacion DOCX con track changes (Aspose produccion)
+- [ ] CI/CD con tests automaticos
+- [ ] UI para ver evidencia RAG detallada
+
+### 11.3 Proximo (v2.3) 📋
+
+- [ ] Multi-tenant con organizaciones
+- [ ] Dashboard analytics avanzado
+- [ ] Integracion Slack para escalaciones
 - [ ] CRUD de policy_examples en UI
 - [ ] Auto-regeneracion de embeddings en cambios
-- [ ] Filtros RAG por materia/clause_type
-- [ ] Metricas de uso RAG en tiempo real
 
-### 11.4 Futuro (v3.0)
+### 11.4 Futuro (v3.0) 🚀
 
+- [ ] API publica documentada (OpenAPI)
 - [ ] GraphRAG para dependencias entre clausulas
 - [ ] Multi-language support (EN/ES)
 - [ ] Fine-tuning de embeddings domain-specific
 - [ ] A/B testing de prompts
+- [ ] Modelo on-premise (sin OpenAI)
 
 ---
 
@@ -1746,4 +1901,5 @@ WHERE escalation_recommended = true;
 ---
 
 *Documento generado: Enero 2026*
-*Ultima actualizacion: Con RAG de 909 policy_examples activo*
+*Ultima actualizacion: 2026-01-27 | Contract Guardian v2.1*
+*RAG: 1,367 policy_examples | Edge Functions: 9 activas | Tests E2E: 9/9 pasados*

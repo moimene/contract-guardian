@@ -131,8 +131,12 @@
               "value": "return=representation"
             },
             {
-              "name": "apiKey",
-              "value": "={{ $credentials.httpHeaderAuth.headerValue }}"
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
             }
           ]
         },
@@ -151,11 +155,12 @@
         6512,
         -15456
       ],
-      "onError": "continueErrorOutput"
+      "onError": "continueErrorOutput",
+      "alwaysOutputData": true
     },
     {
       "parameters": {
-        "jsCode": "const prevData = $('Parse Embedding').first().json;\nlet ragResults = [];\n\ntry {\n  // Parse RAG results\n  ragResults = Array.isArray($json) ? $json : [];\n} catch (e) {\n  console.log('RAG parse error:', e.message);\n}\n\n// Group examples by acceptance level\nconst acceptableExamples = ragResults.filter(r => r.acceptance === 'ACCEPTABLE').slice(0, 2);\nconst passableExamples = ragResults.filter(r => r.acceptance === 'PASSABLE').slice(0, 2);\nconst unacceptableExamples = ragResults.filter(r => r.acceptance === 'UNACCEPTABLE').slice(0, 2);\n\n// Format for prompt\nconst formatExample = (ex) => `[${ex.acceptance}] (similarity: ${(ex.similarity * 100).toFixed(0)}%)\\n${ex.example_text.substring(0, 500)}...`;\n\nconst ragContext = {\n  hasResults: ragResults.length > 0,\n  totalFound: ragResults.length,\n  acceptableExamples: acceptableExamples.map(formatExample),\n  passableExamples: passableExamples.map(formatExample),\n  unacceptableExamples: unacceptableExamples.map(formatExample),\n  topSimilarity: ragResults[0]?.similarity || 0,\n  topAcceptance: ragResults[0]?.acceptance || 'UNKNOWN'\n};\n\nreturn [{ json: { ...prevData, ragContext, ragResults } }];"
+        "jsCode": "const prevData = $('Parse Embedding').first().json;\nlet ragResults = [];\n\ntry {\n  // Handle both array response and empty response\n  const response = $input.first().json;\n  if (Array.isArray(response)) {\n    ragResults = response;\n  } else if (response && typeof response === 'object') {\n    // If it's an object with error, treat as empty\n    ragResults = [];\n  }\n} catch (e) {\n  console.log('RAG parse error:', e.message);\n  ragResults = [];\n}\n\n// Group examples by acceptance level\nconst acceptableExamples = ragResults.filter(r => r.acceptance === 'ACCEPTABLE').slice(0, 2);\nconst passableExamples = ragResults.filter(r => r.acceptance === 'PASSABLE').slice(0, 2);\nconst unacceptableExamples = ragResults.filter(r => r.acceptance === 'UNACCEPTABLE').slice(0, 2);\n\n// Format for prompt\nconst formatExample = (ex) => `[${ex.acceptance}] (similarity: ${(ex.similarity * 100).toFixed(0)}%)\\n${ex.example_text.substring(0, 500)}...`;\n\nconst ragContext = {\n  hasResults: ragResults.length > 0,\n  totalFound: ragResults.length,\n  acceptableExamples: acceptableExamples.map(formatExample),\n  passableExamples: passableExamples.map(formatExample),\n  unacceptableExamples: unacceptableExamples.map(formatExample),\n  topSimilarity: ragResults[0]?.similarity || 0,\n  topAcceptance: ragResults[0]?.acceptance || 'NONE'\n};\n\nreturn [{ json: { ...prevData, ragContext, ragResults } }];"
       },
       "id": "ef5ba05f-5071-4512-9fcd-146c10082d2b",
       "name": "Parse RAG Results",
@@ -194,7 +199,8 @@
           "id": "4xA4P6BVQQ2lcvuG",
           "name": "Amazon_redliner"
         }
-      }
+      },
+      "alwaysOutputData": true
     },
     {
       "parameters": {

@@ -1,20 +1,102 @@
-=== RALPH MODE: Contract Guardian ===
-Started: 2026-01-27T19:15
+# Contract Guardian - Ralph Testing Cycle
+# Started: 2026-01-30T08:47:59+01:00
+# Completed: 2026-01-30T08:50:00+01:00
 
-## Tareas Pendientes
-1. [x] Corregir contraste sidebar (estilos inline)
-2. [x] Verificar build pasa
-3. [x] Verificar que UI funciona sin errores
-4. [ ] Deploy a Vercel (requiere `vercel login`)
-5. [ ] Verificar deploy funciona
+## 🎯 OBJECTIVE
+Exhaustive verification of current system state and available functionalities.
 
-## Iteraciones
+---
 
-### Iteración 1 (19:15)
-- Corregido contraste sidebar: estilos inline #ffffff sobre #004438
-- Build: ✅ 489KB JS + 26KB CSS
-- UI verificada: navegación funcional, contraste OK
+## 📊 RALPH CYCLE 1 RESULTS
 
-### Iteración 2 (19:18)
-- vercel.json creado con rewrites SPA
-- Deploy: ❌ Token expirado - requiere `vercel login`
+### ✅ VERIFIED WORKING
+- [x] Frontend DEV_MODE bypass (authentication) - PASS
+- [x] Vite dev server on port 5175 - PASS
+- [x] Frontend serves HTML correctly - PASS
+- [x] Supabase REST API connection - PASS
+- [x] n8n W2 webhook responds - PASS (Decision Engine v2 working)
+- [x] policy_examples table - 1,367 records loaded
+- [ ] Dashboard page loads - NEEDS MANUAL VERIFICATION (browser unavailable)
+- [ ] Navigation works - NEEDS MANUAL VERIFICATION
+- [ ] Playbook page displays data - NEEDS MANUAL VERIFICATION
+
+### ⚠️ KNOWN ISSUES
+1. **Supabase Auth** - Returns 500 "Database error querying schema" ❌
+   - Cause: Broken trigger/function in auth.users
+   - Workaround: DEV_MODE=true enabled
+   
+2. **playbook_specs table** - Returns empty via anonymous API
+   - Could be RLS blocking or no data loaded
+   - Should verify in dashboard
+
+3. **Browser subagent** - Connection reset errors ❌
+   - All browser tests timeout
+   - Manual testing required
+
+### 📈 DATA STATUS
+| Table | Records | Status |
+|-------|---------|--------|
+| policy_examples | 1,367 | ✅ OK |
+| playbook_specs | 0* | ⚠️ Check RLS |
+| clause_reviews_internal | 0 | ℹ️ Normal (no reviews) |
+
+---
+
+## 🔌 n8n WEBHOOK TEST
+**Endpoint**: `https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag`
+
+**Test Payload**:
+```json
+{"test": true, "clause_id": "ralph-test-001", "clause_text": "Test clause for Ralph verification"}
+```
+
+**Response**: ✅ SUCCESS
+```json
+{
+  "detected_family": "OtherUnknown",
+  "decision": "ESCALATE_HUMAN",
+  "client_state": "REQUIRED",
+  "safety_pass": true,
+  "_internal": {
+    "escalation_reason": "UNKNOWN_FAMILY",
+    "confidence_overall": 0.7
+  }
+}
+```
+> Decision Engine v2 working correctly with ESCALATE for unknown clauses.
+
+---
+
+## 🏗️ ARCHITECTURE STATUS
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Frontend (React/Vite) | ✅ Running | Port 5175, DEV_MODE active |
+| Supabase Database | ✅ Connected | REST API working |
+| Supabase Auth | ❌ Broken | 500 error on login |
+| n8n Webhook (W2) | ✅ Working | Decision Engine v2 responds |
+| RAG Data | ✅ Loaded | 1,367 policy examples |
+
+---
+
+## 📋 NEXT STEPS (MANUAL VERIFICATION REQUIRED)
+
+1. **Open http://localhost:5175** in your browser
+2. Confirm Dashboard loads without errors
+3. Navigate to all pages:
+   - `/` - Dashboard
+   - `/new` - New Analysis
+   - `/escalations` - Escalations
+   - `/playbook` - Playbook
+4. Check console for errors
+5. Test data display on each page
+
+---
+
+## 📝 TESTING LOG
+
+### Cycle 1: System State Check - COMPLETE
+- Time: 2026-01-30T08:48-08:50
+- Method: curl + REST API verification
+- Browser: UNAVAILABLE (connection reset errors)
+- Result: Core systems operational, UI needs manual verification

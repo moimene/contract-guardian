@@ -1,0 +1,156 @@
+# ================================================================
+# PLAYBOOK SPEC: IndemnityProcedures
+# Indemnification Claim Procedures
+# ================================================================
+
+family_id: IndemnityProcedures
+display_name: "Indemnification Procedures"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon must retain meaningful control over defense and settlement of 
+    claims, even when ProdCo is the indemnifying party. Amazon should have 
+    the right to participate in defense, approve counsel, and veto 
+    settlements that impose obligations on Amazon or admit liability.
+  
+  core_requirements:
+    - Prompt notice (but late notice doesn't bar indemnity)
+    - ProdCo assumes defense with Amazon-approved counsel
+    - Amazon right to participate at own expense
+    - Amazon consent required for settlements affecting Amazon
+    - Cooperation requirements
+  
+  business_rationale: |
+    Amazon has reputational and business interests beyond the immediate 
+    claim. Settlements that admit liability or impose obligations could 
+    affect Amazon's content strategy, talent relationships, or other 
+    productions. Amazon must have veto over adverse settlements.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Procedures that protect Amazon's interests"
+    
+    required_elements:
+      - element: "Prompt notice requirement"
+        note: "Prompt notice required but not a condition to indemnity"
+      - element: "Defense assumption by indemnitor"
+        note: "ProdCo takes the lead"
+      - element: "Counsel approval"
+        note: "Amazon approves counsel (not unreasonably withheld)"
+      - element: "Amazon participation right"
+        note: "At Amazon's expense"
+      - element: "Settlement consent"
+        note: "Amazon consent for settlements affecting Amazon"
+    
+    example_acceptable:
+      - text: |
+          Amazon shall promptly notify ProdCo of any claim for which 
+          indemnification is sought. ProdCo shall assume the defense of 
+          such claim with counsel reasonably acceptable to Amazon. Amazon 
+          may participate in the defense at its own expense. ProdCo shall 
+          not settle any claim without Amazon's prior written consent if 
+          such settlement would impose any obligation on Amazon, admit 
+          liability on behalf of Amazon, or not fully release Amazon 
+          from all liability.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Procedures with minor variations"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Joint defense for large claims"
+        condition: "Above threshold triggers joint control"
+        example: |
+          For claims seeking damages in excess of $5,000,000, Amazon and 
+          ProdCo shall jointly control the defense, with costs allocated 
+          based on relative fault as determined at resolution.
+        risk_level: MEDIUM
+        
+      - variation: "Notice timing specification"
+        condition: "Reasonable period with prejudice standard"
+        example: |
+          Amazon shall notify ProdCo within thirty (30) days of receiving 
+          notice of a claim; provided that failure to provide timely 
+          notice shall not relieve ProdCo except to the extent of actual 
+          material prejudice.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Procedures that undermine Amazon's protection"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Notice as condition to indemnity"
+        example: |
+          ProdCo's indemnification obligation is conditioned on Amazon 
+          providing notice within ten (10) days of learning of the claim.
+        reason: "Creates technical defense to indemnification"
+        risk_level: CRITICAL
+        
+      - pattern: "ProdCo sole control of settlement"
+        example: |
+          ProdCo may settle any claim in its sole discretion without 
+          Amazon's consent.
+        reason: "Amazon may be bound by adverse settlements"
+        risk_level: CRITICAL
+        
+      - pattern: "Amazon waives participation"
+        example: |
+          Amazon waives any right to participate in the defense of 
+          indemnified claims.
+        reason: "Amazon has legitimate interest in defense strategy"
+        risk_level: HIGH
+        
+      - pattern: "Indemnitor-selected counsel only"
+        example: |
+          ProdCo shall select counsel without Amazon's approval.
+        reason: "Counsel must be acceptable to Amazon"
+        risk_level: MEDIUM
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Settlement consent"
+      position: "Amazon consent required for all settlements affecting Amazon"
+      fallback: "None - essential protection"
+      
+    - priority: 2
+      element: "Late notice"
+      position: "Late notice does not bar indemnity"
+      fallback: "Actual material prejudice standard"
+      
+    - priority: 3
+      element: "Participation right"
+      position: "Amazon may participate at own expense"
+      fallback: "None - standard right"
+  
+  common_counterparty_requests:
+    - request: "Strict notice deadline"
+      response: "Acceptable only with prejudice standard"
+      alternative: |
+        Accept deadline with: "provided that failure to provide timely 
+        notice shall not relieve ProdCo except to the extent of actual 
+        material prejudice caused by such delay."
+      
+    - request: "ProdCo sole control of defense"
+      response: "Unacceptable without settlement consent requirement"
+      alternative: "Accept sole control with settlement consent carveout"

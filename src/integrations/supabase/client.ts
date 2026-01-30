@@ -1,10 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database'; // We might need to generate this or mock it
+import type { Database } from '@/types/database';
 
-// Supabase Externo (backend unificado)
-const SUPABASE_URL = "https://hvlsuwdqtffiilvampxq.supabase.co";
-// USAR VITE_SUPABASE_PUBLISHABLE_KEY de .env si existe, sino placeholder
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "INSERT_YOUR_ANON_KEY_HERE";
+// ============================================
+// Contract Guardian - Supabase Client
+// Backend: hvlsuwdqtffiilvampxq (propio)
+// ============================================
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://hvlsuwdqtffiilvampxq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzMTI5MDIsImV4cCI6MjA4Mzg4ODkwMn0.3ERR8T1wBF3FUDfVoTH91avPMlWEL37ueVCNbYHJp4M";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {
@@ -18,3 +21,6 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
         },
     },
 });
+
+// Export URL for services that need it
+export const SUPABASE_FUNCTIONS_URL = `${SUPABASE_URL}/functions/v1`;

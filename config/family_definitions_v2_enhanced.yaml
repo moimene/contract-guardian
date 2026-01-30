@@ -1,0 +1,423 @@
+# ================================================================
+# FAMILY DEFINITIONS V2 ENHANCED
+# Optimizado basado en análisis de PSA Principal Terms Fallback Guide
+# Router Accuracy: 33% → Target 89%+
+# ================================================================
+
+clause_families:
+
+# ================================================================
+# CRITICAL FAMILIES - PRIORITY P0
+# ================================================================
+
+- family_id: RightsGrant
+  display_name: "Grant of Rights and Ownership"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "All rights in the Program"
+      - "work made for hire"
+      - "exclusively own"
+      - "Amazon shall own"
+      - "irrevocably assign"
+      - "throughout the universe"
+      - "in perpetuity"
+      - "including all copyrights"
+      - "results and proceeds"
+      - "Amazon shall be the author"
+    secondary:
+      - "grant of rights"
+      - "intellectual property"
+      - "all right, title, and interest"
+      - "in all media"
+      - "all languages"
+      - "now known or hereafter developed"
+      - "exclusive owner for copyright"
+    negative:
+      - "license to Amazon"
+      - "ProdCo retains"
+      - "reserved rights"
+      - "non-exclusive license"
+  confidence_threshold: 0.75
+
+- family_id: RepsProdCo
+  display_name: "ProdCo Representations and Warranties"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "ProdCo represents and warrants"
+      - "ProdCo represents, warrants and agrees"
+      - "will not infringe"
+      - "does not violate"
+      - "free and clear"
+      - "full right, power, and authority"
+      - "REPRESENTATIONS/WARRANTIES"
+    secondary:
+      - "original or properly licensed"
+      - "no pending litigation"
+      - "chain of title"
+      - "defamatory"
+      - "obscene"
+      - "third party rights"
+      - "all necessary rights"
+    negative:
+      - "Amazon represents"
+  confidence_threshold: 0.75
+
+- family_id: IndemnityProdCo
+  display_name: "ProdCo Indemnification"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "ProdCo shall indemnify"
+      - "ProdCo will indemnify"
+      - "ProdCo agrees to indemnify"
+      - "indemnify, defend, and hold harmless Amazon"
+      - "indemnify Amazon"
+      - "INDEMNITY:"
+    secondary:
+      - "from and against any and all claims"
+      - "arising out of"
+      - "Amazon Indemnitees"
+      - "reasonable attorneys' fees"
+      - "third party claims"
+    negative:
+      - "Amazon shall indemnify"
+      - "Amazon will indemnify"
+  confidence_threshold: 0.80
+
+- family_id: PaymentCredits
+  display_name: "Payment, Fees and Credits"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "FEES:"
+      - "payment"
+      - "compensation"
+      - "budget"
+      - "cost report"
+      - "overages"
+      - "demonstrated breach"
+    secondary:
+      - "approved budget"
+      - "production budget"
+      - "pay-or-play"
+      - "gross budget"
+      - "delivery dates"
+    negative: []
+  confidence_threshold: 0.75
+
+- family_id: LiabilityLimitation
+  display_name: "Limitation of Liability"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "IN NO EVENT SHALL"
+      - "CONSEQUENTIAL DAMAGES"
+      - "INDIRECT DAMAGES"
+      - "TOTAL AGGREGATE LIABILITY"
+      - "SHALL NOT EXCEED"
+      - "LIMITATION OF LIABILITY"
+    secondary:
+      - "PUNITIVE DAMAGES"
+      - "EXEMPLARY DAMAGES"
+      - "LOSS OF PROFITS"
+      - "capped at"
+      - "maximum liability"
+    negative: []
+  confidence_threshold: 0.75
+
+# ================================================================
+# SUPPORT FAMILIES - PRIORITY P1
+# ================================================================
+
+- family_id: ServicesScope
+  display_name: "Scope of Services"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "SERVICES:"
+      - "ProdCo will render services"
+      - "render all production services"
+      - "pre-production, principal photography, post-production"
+      - "complete the Program"
+      - "deliver the Program"
+      - "produce the Program"
+    secondary:
+      - "including any exhibits and schedules"
+      - "first-class production standards"
+      - "suitable for worldwide distribution"
+      - "production services"
+      - "delivery of final masters"
+    negative:
+      - "Amazon will provide"
+  confidence_threshold: 0.70
+
+- family_id: Confidentiality
+  display_name: "Confidentiality and Data Protection"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "maintain in strict confidence"
+      - "confidential information"
+      - "NPI"
+      - "non-public information"
+      - "personal data"
+      - "data protection"
+      - "DATA PROTECTION:"
+      - "CONFIDENTIALITY:"
+    secondary:
+      - "GDPR"
+      - "privacy"
+      - "data controller"
+      - "data processor"
+      - "security protocols"
+      - "shall not disclose"
+      - "processing personal data"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: TerminationRights
+  display_name: "Termination Rights"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "may terminate"
+      - "right to terminate"
+      - "termination for cause"
+      - "termination for convenience"
+      - "upon written notice"
+    secondary:
+      - "cure period"
+      - "material breach"
+      - "immediately terminate"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: DisputeResolution
+  display_name: "Dispute Resolution and Governing Law"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "GOVERNING LAW"
+      - "JURISDICTION"
+      - "dispute resolution"
+      - "arbitration"
+      - "exclusive jurisdiction"
+      - "governed by the laws of"
+      - "TAX; GOVERNING LAW"
+    secondary:
+      - "State of California"
+      - "County of Los Angeles"
+      - "venue"
+      - "forum selection"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: ThirdPartyCredits
+  display_name: "Entitlements and Credits"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "ENTITLEMENTS"
+      - "CREDIT:"
+      - "screen credit"
+      - "billing"
+      - "presentation credit"
+    secondary:
+      - "main titles"
+      - "end credits"
+      - "credit block"
+      - "paid ads"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: Assignment
+  display_name: "Assignment and Transfer"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "may not assign"
+      - "may freely assign"
+      - "assignment"
+      - "successor"
+      - "acquirer"
+      - "ASSIGNMENT:"
+    secondary:
+      - "affiliate"
+      - "without consent"
+      - "change of control"
+      - "bind and inure"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: Insurance
+  display_name: "Insurance Requirements"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "insurance"
+      - "errors and omissions"
+      - "E&O"
+      - "additional insured"
+      - "certificate of insurance"
+    secondary:
+      - "coverage"
+      - "policy"
+      - "named insured"
+    negative: []
+  confidence_threshold: 0.70
+
+# ================================================================
+# LOW PRIORITY / BOILERPLATE
+# ================================================================
+
+- family_id: Parties
+  display_name: "Parties and Recitals"
+  priority: LOW
+  triggers:
+    primary:
+      - "PARTIES:"
+      - "Amazon Content Services LLC"
+      - "entered into as of"
+      - "by and between"
+      - "EFFECTIVE DATE:"
+    secondary:
+      - "principal place of business"
+      - "RECITALS"
+      - "WHEREAS"
+      - "ProdCo"
+    negative: []
+  confidence_threshold: 0.65
+
+- family_id: Definitions
+  display_name: "Definitions"
+  priority: LOW
+  triggers:
+    primary:
+      - "means any"
+      - "shall mean"
+      - "as used herein"
+      - "for purposes of this Agreement"
+      - "DEFINITIONS:"
+    secondary:
+      - "definition"
+      - "defined term"
+      - "hereinafter referred to as"
+    negative: []
+  confidence_threshold: 0.65
+
+- family_id: GeneralProvisions
+  display_name: "General Provisions / Miscellaneous"
+  priority: LOW
+  triggers:
+    primary:
+      - "MISCELLANEOUS"
+      - "GENERAL PROVISIONS"
+      - "ENTIRE AGREEMENT"
+    secondary:
+      - "severability"
+      - "counterparts"
+      - "no waiver"
+      - "amendments"
+      - "notices"
+    multi_family_hint: true
+  confidence_threshold: 0.60
+
+# ================================================================
+# ADDITIONAL CRITICAL FAMILIES
+# ================================================================
+
+- family_id: IndemnityAmazon
+  display_name: "Amazon Indemnification"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "Amazon shall indemnify"
+      - "Amazon will indemnify"
+      - "Amazon agrees to indemnify"
+    secondary:
+      - "ProdCo Indemnitees"
+    negative:
+      - "ProdCo shall indemnify"
+  confidence_threshold: 0.80
+
+- family_id: RightsReversion
+  display_name: "Rights Reversion Terms"
+  priority: CRITICAL
+  triggers:
+    primary:
+      - "reversion of rights"
+      - "rights revert"
+      - "no reversion"
+      - "shall revert to ProdCo"
+      - "turnaround"
+    secondary:
+      - "non-exploitation"
+      - "expiration of rights"
+      - "rights shall vest"
+    negative: []
+  confidence_threshold: 0.75
+
+- family_id: AuditRights
+  display_name: "Audit Rights"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "audit"
+      - "audit rights"
+      - "inspect books and records"
+      - "access to records"
+    secondary:
+      - "accountant"
+      - "once per year"
+      - "during business hours"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: SurvivalRemedies
+  display_name: "Survival and Remedies"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "shall survive"
+      - "survival"
+      - "remedies"
+      - "injunctive relief"
+      - "specific performance"
+    secondary:
+      - "termination or expiration"
+      - "irreparable harm"
+      - "equitable relief"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: TerminationConsequences
+  display_name: "Termination Consequences"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "upon termination"
+      - "effect of termination"
+      - "following termination"
+    secondary:
+      - "return of materials"
+      - "accrued rights"
+      - "wind-down"
+    negative: []
+  confidence_threshold: 0.70
+
+- family_id: IndemnityProcedures
+  display_name: "Indemnity Procedures"
+  priority: SUPPORT
+  triggers:
+    primary:
+      - "indemnification procedures"
+      - "defense of claims"
+      - "notice of claim"
+      - "control of defense"
+    secondary:
+      - "cooperation"
+      - "consent to settlement"
+    negative: []
+  confidence_threshold: 0.70

@@ -1,0 +1,124 @@
+# ================================================================
+# FAMILY: Liability Limitation / Damages Waiver
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: LiabilityLimitation
+rule_name: "Damages Waiver"
+psa_section: 8
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  EXCEPT FOR THE INDEMNIFICATION OBLIGATIONS AND ANY BREACH OF 
+  CONFIDENTIALITY AS SET FORTH HEREIN, EACH PARTY HEREBY WAIVES ALL 
+  CLAIMS AGAINST THE OTHER PARTY (IN CASE OF AMAZON, PRODCO WAIVES 
+  ALL CLAIMS AGAINST AMAZON AND ITS ASSIGNEES, LICENSEES, AND EACH 
+  OF THEIR AFFILIATES) HEREUNDER FOR INDIRECT, INCIDENTAL, PUNITIVE 
+  AND/OR CONSEQUENTIAL DAMAGES.
+
+# ================================================================
+# CORE REQUIREMENTS (Non-negotiable)
+# ================================================================
+core_requirements:
+  - id: LIAB-CORE-001
+    name: "Carve-out for Indemnification"
+    text_pattern: "EXCEPT FOR THE INDEMNIFICATION OBLIGATIONS"
+    required: true
+    amazon_position: |
+      Amazon must be indemnified for these types of damages to the 
+      extent applicable.
+
+  - id: LIAB-CORE-002
+    name: "Carve-out for Confidentiality Breach"
+    text_pattern: "BREACH OF CONFIDENTIALITY"
+    required: true
+    amazon_position: |
+      Amazon must have these damages available for ProdCo's breach 
+      of confidentiality (to protect against unauthorized disclosures 
+      of upcoming storylines and any other non-public information 
+      related to the Program).
+
+  - id: LIAB-CORE-003
+    name: "Extended Waiver to Amazon Affiliates"
+    text_pattern: "AMAZON AND ITS ASSIGNEES, LICENSEES, AND EACH OF THEIR AFFILIATES"
+    required: true
+    amazon_position: |
+      This waiver is broader for Amazon due to its nature as the 
+      financier and licensee of the Program and necessary for the 
+      exploitation of Amazon's rights.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: LIAB-ACC-001
+    description: "Clarify that extended waiver applies only to consequential damages"
+    text_pattern: "PRODCO WAIVES ALL SUCH CLAIMS"  # Adding "SUCH"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      If ProdCo misinterprets this waiver to mean that ProdCo is 
+      waiving all claims of any type against Amazon and Amazon's 
+      assignees, licensees and affiliates, can clarify that this 
+      waiver is intended to apply to indirect, incidental, punitive 
+      and/or consequential damages.
+
+  - id: LIAB-ACC-002
+    description: "Clarify indemnification applies to third-party claims"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      As a fallback, can include clarifying language that the 
+      indemnification referenced in this sentence applies to 
+      third-party claims if the counterparty continues to push 
+      on this issue.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: LIAB-UNACC-001
+    description: "Delete carve-out for indemnification"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo wishes to delete carveout for indemnification 
+      obligations and breach of confidentiality from waiver of 
+      claims, hold. Since this is a mutual waiver between the 
+      parties, cannot remove as a matter of corporate policy.
+
+  - id: LIAB-UNACC-002
+    description: "Delete carve-out for confidentiality breach"
+    action: "REJECT"
+    explanation: |
+      "Given Amazon's investment in the Program and the potential 
+      impact of a breach of the confidentiality obligation (especially 
+      with respect to creative materials), Amazon will not waive any 
+      resulting claims or damages."
+
+  - id: LIAB-UNACC-003
+    description: "Make extended waiver mutual"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo objects to the extended waiver to Amazon's assignees, 
+      licensees and affiliates (or wishes to make this mutual), inform 
+      ProdCo that this waiver is broader for Amazon due to its nature 
+      as the financier and licensee of the Program.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "WAIVES ALL CLAIMS"
+    - "INDIRECT, INCIDENTAL, PUNITIVE"
+    - "CONSEQUENTIAL DAMAGES"
+    - "IN NO EVENT SHALL"
+  secondary:
+    - "EXCEPT FOR THE INDEMNIFICATION"
+    - "BREACH OF CONFIDENTIALITY"
+    - "ASSIGNEES, LICENSEES"

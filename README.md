@@ -1,6 +1,8 @@
-# Contract Guardian v2.1 🛡️
+# Contract Guardian v2.2 🛡️
 
 **Sistema Inteligente de Revisión de Contratos con IA**
+
+> 📋 **Estado Actual**: Ver [ESTADO_ACTUAL_SISTEMA.md](./ESTADO_ACTUAL_SISTEMA.md) para la arquitectura real implementada (Vite/React, NO Lovable).
 
 Plataforma de revisión automatizada de contratos empresariales mediante un pipeline de agentes de IA especializados, búsqueda semántica RAG, y sistema de gobernanza basado en políticas. Diseñado para contratos Amazon PSA/DSA (Program Service Agreement / Distribution Service Agreement).
 
@@ -17,7 +19,7 @@ Plataforma de revisión automatizada de contratos empresariales mediante un pipe
 - [Sistema RAG](#-sistema-rag)
 - [Edge Functions](#-edge-functions)
 - [Workflows n8n](#-workflows-n8n)
-- [Frontend Lovable](#-frontend-lovable)
+- [Frontend](#-frontend)
 - [Monitoreo](#-monitoreo)
 - [Configuración](#-configuración)
 - [Testing](#-testing)
@@ -60,9 +62,9 @@ Contract Guardian automatiza la revisión de cláusulas contractuales, identific
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND (Lovable)                              │
+│                        FRONTEND (React + Vite + Vercel)                      │
 │   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│   │ NewAnalysis  │  │ContractReview│  │  Escalations │  │ KnowledgeGraph│   │
+│   │  Dashboard   │  │ NewAnalysis  │  │ContractReview│  │  Escalations │   │
 │   └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
 └──────────┼─────────────────┼─────────────────┼─────────────────┼───────────┘
            │                 │                 │                 │
@@ -121,11 +123,13 @@ Contract Guardian automatiza la revisión de cláusulas contractuales, identific
 ### Frontend
 | Componente | Tecnología |
 |------------|------------|
-| Framework | React + TypeScript |
+| Framework | React 18 + TypeScript |
+| Build Tool | Vite 7 |
 | UI Library | shadcn/ui |
-| Styling | Tailwind CSS |
-| Platform | Lovable.dev |
-| State | React Context |
+| Styling | Tailwind CSS v4 |
+| Design System | Garrigues UX (Pantone 3308 C) |
+| Hosting | Vercel |
+| State | React Context + Supabase Realtime |
 
 ---
 
@@ -133,20 +137,24 @@ Contract Guardian automatiza la revisión de cláusulas contractuales, identific
 
 ```
 AMAZON REDLINER/
-├── 📁 src/                          # Frontend Lovable
-│   ├── 📁 components/               # Componentes React
-│   │   ├── 📁 contract-review/      # Componentes de revisión
-│   │   ├── 📁 layout/               # Layout principal
-│   │   └── 📁 ui/                   # shadcn/ui components
-│   ├── 📁 hooks/                    # Custom hooks
-│   │   └── useAuth.tsx              # Autenticación con superusuarios
-│   ├── 📁 pages/                    # Páginas principales
-│   │   ├── ConfigKnowledgeGraph.tsx # Visualización taxonomía
-│   │   ├── ConfigPlaybooks.tsx      # Configuración playbooks
-│   │   ├── ContractReview.tsx       # Revisión de contratos
-│   │   ├── Escalations.tsx          # Panel de escalaciones
-│   │   └── NewAnalysis.tsx          # Nueva revisión
-│   └── 📁 integrations/             # Integraciones externas
+├── 📁 web/                          # Frontend React + Vite
+│   ├── 📁 src/
+│   │   ├── 📁 components/           # Componentes React
+│   │   │   ├── 📁 layout/           # AppSidebar, Layout
+│   │   │   └── 📁 ui/               # shadcn/ui (Button, Card, Badge...)
+│   │   ├── 📁 pages/                # Páginas principales
+│   │   │   ├── Dashboard.tsx        # Vista principal con stats
+│   │   │   ├── NewAnalysis.tsx      # Subir contratos
+│   │   │   ├── ContractReview.tsx   # Revisar cláusulas
+│   │   │   └── Escalations.tsx      # Gestión escalaciones
+│   │   ├── 📁 lib/                  # Utilidades
+│   │   │   ├── supabase.ts          # Cliente Supabase
+│   │   │   └── utils.ts             # Helpers
+│   │   └── 📁 types/                # TypeScript types
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── vercel.json                  # Config deploy
 │
 ├── 📁 supabase/                     # Backend Supabase
 │   └── 📁 functions/                # Edge Functions
@@ -504,17 +512,23 @@ Fetch Clauses → Loop W2 → Aggregate → Generate Report → Export DOCX
 
 ---
 
-## 🖥️ Frontend Lovable
+## 🖥️ Frontend
+
+### URLs de Producción
+
+| Entorno | URL |
+|---------|-----|
+| **Producción** | https://web-tan-mu-35.vercel.app |
+| **Local dev** | http://localhost:5173 |
 
 ### Páginas Principales
 
 | Página | Ruta | Descripción |
 |--------|------|-------------|
-| NewAnalysis | `/` | Subir nuevo contrato |
+| Dashboard | `/` | Vista principal con stats y documentos |
+| NewAnalysis | `/new` | Subir nuevo contrato |
 | ContractReview | `/review/:id` | Revisar cláusulas |
 | Escalations | `/escalations` | Panel de escalaciones |
-| ConfigKnowledgeGraph | `/config/knowledge-graph` | Visualizar taxonomía |
-| ConfigPlaybooks | `/config/playbooks` | Gestionar playbooks |
 
 ### Autenticación
 
@@ -684,7 +698,7 @@ curl "$SUPABASE_URL/rest/v1/contract_runs?document_id=eq.uuid" \
 - [x] Row Level Security con superusuarios
 - [x] Monitoreo y dashboard
 - [x] Tests E2E (9/9 pasados)
-- [x] Frontend Lovable funcional
+- [x] Frontend React + Vite desplegado en Vercel
 - [x] Exportación Markdown
 
 ### En Progreso 🔄
@@ -710,8 +724,12 @@ Para issues o mejoras, contactar al equipo de desarrollo.
 
 ## 📄 Licencia
 
-Propiedad de Amazon Studios. Uso interno únicamente.
+**Propiedad Exclusiva**
+
+© 2026 **g-digital**, División de Negocio Digital de **J&A GARRIGUES, S.L.P.**
+
+Todos los derechos reservados. Este software es propiedad exclusiva de g-digital y está protegido por las leyes de propiedad intelectual aplicables. Queda prohibida su reproducción, distribución, modificación o uso no autorizado sin el consentimiento expreso por escrito de g-digital.
 
 ---
 
-*Última actualización: 2026-01-27 | Contract Guardian v2.1*
+*Última actualización: 2026-01-28 | Contract Guardian v2.1*

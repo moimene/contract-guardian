@@ -1,0 +1,223 @@
+# ================================================================
+# PLAYBOOK SPEC: SurvivalRemedies
+# Survival Provisions and Remedies
+# ================================================================
+
+family_id: SurvivalRemedies
+display_name: "Survival Provisions and Remedies"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Key protective provisions must survive termination or expiration 
+    in perpetuity. Remedies should include injunctive relief without 
+    bond requirement. No limitation on remedies or sole remedy clauses.
+  
+  core_requirements:
+    - Perpetual survival of ownership provisions
+    - Perpetual survival of indemnification
+    - Perpetual survival of confidentiality
+    - Perpetual survival of reps and warranties
+    - Survival of limitation of liability
+    - Injunctive relief available
+    - No bond requirement for injunctive relief
+    - Cumulative remedies (no sole remedy)
+    - Specific performance available
+  
+  business_rationale: |
+    Rights and risks extend beyond contract term. Content exploitation 
+    continues indefinitely; claims can arise decades later. Amazon must 
+    have access to all remedies including injunctive relief for IP 
+    protection and confidentiality breaches.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Comprehensive survival and remedy provisions"
+    
+    required_elements:
+      - element: "Survival list"
+        language: |
+          The following provisions shall survive termination or expiration 
+          of this Agreement: Sections [Ownership], [Indemnification], 
+          [Confidentiality], [Reps and Warranties], [Limitation of 
+          Liability], and [General Provisions].
+        required: true
+        
+      - element: "Perpetual survival for key provisions"
+        language: |
+          Sections [Ownership], [Indemnification], and [Reps] shall 
+          survive in perpetuity.
+        required: true
+        
+      - element: "Injunctive relief"
+        language: |
+          In the event of breach, the non-breaching party shall be 
+          entitled to seek injunctive relief without the necessity of 
+          proving actual damages.
+        required: true
+        
+      - element: "No bond requirement"
+        language: |
+          No bond or other security shall be required in connection 
+          with any injunctive relief.
+        required: true
+        
+      - element: "Cumulative remedies"
+        language: |
+          All remedies shall be cumulative and not exclusive.
+        required: true
+        
+      - element: "Specific performance"
+        language: |
+          Specific performance shall be available as a remedy for 
+          breach of this Agreement.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Sections 3 (Ownership), 5 (Reps), 6 (Indemnification), 7 
+          (Liability), 9 (Confidentiality), and 12 (General) shall 
+          survive termination or expiration; Sections 3, 5, and 6 shall 
+          survive in perpetuity. In the event of breach, the non-breaching 
+          party shall be entitled to injunctive relief and specific 
+          performance without the necessity of proving actual damages 
+          and without bond. All remedies shall be cumulative.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Survival and remedies with minor variations"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Limited survival for some provisions"
+        condition: "Only for non-essential provisions"
+        example: |
+          Audit rights shall survive for three (3) years following 
+          termination or expiration.
+        risk_level: LOW
+        notes: "Key provisions must still survive perpetually"
+        
+      - variation: "Confidentiality survival period"
+        condition: "Minimum 5 years; perpetual for trade secrets"
+        example: |
+          Confidentiality obligations shall survive for five (5) years; 
+          provided that obligations regarding trade secrets shall 
+          survive in perpetuity.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Inadequate survival or remedy limitations"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "No survival of indemnification"
+        example: |
+          All obligations shall terminate upon expiration.
+        reason: "Claims arise after termination; indemnification must survive"
+        risk_level: CRITICAL
+        
+      - pattern: "Limited survival for ownership"
+        example: |
+          Ownership provisions shall survive for ten (10) years.
+        reason: "Ownership must survive in perpetuity"
+        risk_level: CRITICAL
+        
+      - pattern: "Sole and exclusive remedy"
+        example: |
+          Indemnification shall be Amazon's sole and exclusive remedy 
+          for breach.
+        reason: "Amazon needs access to all remedies including injunction"
+        risk_level: CRITICAL
+        
+      - pattern: "No injunctive relief"
+        example: |
+          Neither party shall seek injunctive relief.
+        reason: "Injunctive relief essential for IP and confidentiality"
+        risk_level: CRITICAL
+        
+      - pattern: "Bond required for injunction"
+        example: |
+          The party seeking injunctive relief shall post a bond in 
+          the amount of $1,000,000.
+        reason: "Bond requirement impedes access to injunctive relief"
+        risk_level: HIGH
+        
+      - pattern: "Waiver of specific performance"
+        example: |
+          Specific performance shall not be available as a remedy.
+        reason: "Specific performance may be only adequate remedy"
+        risk_level: HIGH
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Perpetual survival of indemnification"
+      position: "Indemnification survives in perpetuity"
+      fallback: "Minimum 10 years; perpetual for IP claims"
+      
+    - priority: 2
+      element: "Injunctive relief"
+      position: "Available without bond"
+      fallback: "Bond waiver at minimum"
+      
+    - priority: 3
+      element: "Cumulative remedies"
+      position: "All remedies cumulative"
+      fallback: "None - essential"
+  
+  common_counterparty_requests:
+    - request: "Limit survival to 3 years"
+      response: "Unacceptable for key provisions"
+      alternative: |
+        Accept limited survival only for audit rights and mechanical 
+        provisions; key protections must be perpetual.
+      
+    - request: "Sole remedy for breach is indemnification"
+      response: "Unacceptable"
+      alternative: |
+        Indemnification is primary remedy for third-party claims; 
+        other remedies (injunction, damages) available for other 
+        breaches.
+      
+    - request: "Bond for injunctive relief"
+      response: "Unacceptable"
+      alternative: |
+        No bond for injunctive relief; irreparable harm presumed for 
+        IP and confidentiality breaches.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Content exploitation timeline"
+      high_risk: "Long-tail content with indefinite exploitation"
+      low_risk: "Time-sensitive content"
+      
+    - factor: "IP sensitivity"
+      high_risk: "Content with significant IP/confidentiality"
+      low_risk: "Lower sensitivity content"
+  
+  escalation_triggers:
+    - "Limited survival for ownership or indemnification"
+    - "Sole remedy provisions"
+    - "No injunctive relief"
+    - "Bond requirement for injunction"

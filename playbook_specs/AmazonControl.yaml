@@ -1,0 +1,48 @@
+# ================================================================
+# FAMILY: Amazon Control
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: AmazonControl
+rule_name: "Amazon Control"
+psa_section: 8
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  As between ProdCo and Amazon, Amazon has sole and final control 
+  over the Program.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: CTRL-UNACC-001
+    description: "Subject to ProdCo approval rights"
+    text_patterns:
+      - "subject to ProdCo's approval"
+      - "subject to ProdCo's consent"
+    action: "REJECT"
+    amazon_position: |
+      Amazon Position: If ProdCo requests to make this language subject 
+      to ProdCo's approval rights and/or control of "day-to-day" 
+      operations, Amazon must be clear that it has final control of the 
+      Program as the commissioner/financier. ProdCo can rely on its 
+      approval rights (if any) granted in Exhibit A, however these rights 
+      (and ProdCo's control of day-to-day operations as the production 
+      company) do not negate or condition Amazon's final control.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "sole and final control"
+    - "Amazon has sole"
+    - "final control over the Program"
+  secondary:
+    - "As between ProdCo and Amazon"

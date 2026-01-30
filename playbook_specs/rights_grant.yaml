@@ -1,0 +1,243 @@
+# ================================================================
+# PLAYBOOK SPEC: RightsGrant
+# Grant of Rights and Ownership
+# ================================================================
+
+family_id: RightsGrant
+display_name: "Grant of Rights and Ownership"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon must own the Program outright as a work made for hire, with 
+    backup assignment for any elements that don't qualify. Ownership must 
+    be exclusive, perpetual, worldwide, in all media, with full exploitation 
+    rights including derivatives. No reserved rights or reversions.
+  
+  core_requirements:
+    - Work made for hire designation
+    - Backup assignment of all rights
+    - Exclusive ownership
+    - Perpetual duration
+    - Worldwide territory ("throughout the universe")
+    - All media now known or hereafter developed
+    - All languages
+    - Full exploitation rights
+    - Derivative works rights
+    - No reversion under any circumstances
+    - Further assurances with power of attorney
+  
+  business_rationale: |
+    Amazon invests substantial capital in production and exploitation 
+    infrastructure. Exclusive perpetual ownership enables long-term 
+    exploitation, franchise development, merchandising, and platform 
+    exclusivity. Any limitation on rights undermines the economic model.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Complete ownership with all required elements"
+    
+    required_elements:
+      - element: "Work made for hire"
+        language: |
+          The Program and all Materials shall be considered a "work made 
+          for hire" for Amazon under the United States Copyright Act.
+        required: true
+        
+      - element: "Backup assignment"
+        language: |
+          To the extent any element does not qualify as a work made for 
+          hire, ProdCo hereby irrevocably assigns to Amazon all right, 
+          title, and interest.
+        required: true
+        
+      - element: "Exclusive ownership"
+        language: "Amazon shall own exclusively"
+        required: true
+        
+      - element: "Perpetuity"
+        language: "in perpetuity"
+        required: true
+        
+      - element: "Universe-wide"
+        language: "throughout the universe"
+        required: true
+        
+      - element: "All media"
+        language: "in all media now known or hereafter developed"
+        required: true
+        
+      - element: "All IP rights"
+        language: |
+          including all copyrights, trademarks, patents, trade secrets, 
+          and all other intellectual property rights
+        required: true
+    
+    example_acceptable:
+      - text: |
+          The Program and all Materials shall be considered a "work made 
+          for hire" for Amazon under the United States Copyright Act. To 
+          the extent any element does not qualify as a work made for hire, 
+          ProdCo hereby irrevocably assigns to Amazon all right, title, 
+          and interest in and to such element, including all copyrights, 
+          in perpetuity throughout the universe. Amazon shall own 
+          exclusively and in perpetuity, throughout the universe, in all 
+          languages, and in all media now known or hereafter developed, 
+          all right, title, and interest in and to the Program and 
+          Materials, including without limitation all copyrights, 
+          trademarks, patents, trade secrets, and all other intellectual 
+          property rights therein.
+        rating: ACCEPTABLE
+        confidence: 0.98
+
+  passable:
+    description: "Ownership with minor clarifications needed"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Moral rights waiver specification"
+        condition: "Required for non-US talent"
+        example: |
+          ProdCo shall obtain from all creators a waiver of moral rights 
+          to the fullest extent permitted by applicable law.
+        risk_level: LOW
+        
+      - variation: "Separated rights acknowledgment"
+        condition: "Per WGA requirements"
+        example: |
+          Subject to separated rights that may be reserved to writers 
+          pursuant to the WGA MBA, Amazon shall own all rights in the 
+          Program.
+        risk_level: MEDIUM
+        notes: "Requires understanding of specific separated rights"
+
+  unacceptable:
+    description: "Ownership with material gaps or limitations"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "License instead of ownership"
+        example: |
+          ProdCo grants Amazon an exclusive license to exploit the 
+          Program.
+        reason: "Amazon requires ownership, not license"
+        risk_level: CRITICAL
+        
+      - pattern: "Term limitation"
+        example: |
+          Amazon shall own the Program for a period of twenty-five (25) 
+          years.
+        reason: "Perpetual ownership required"
+        risk_level: CRITICAL
+        
+      - pattern: "Territory limitation"
+        example: |
+          Amazon shall own the Program for exploitation in North America 
+          and Europe.
+        reason: "Worldwide rights required"
+        risk_level: CRITICAL
+        
+      - pattern: "Reserved rights to ProdCo"
+        example: |
+          ProdCo reserves the right to exploit the Program in theatrical 
+          and home video.
+        reason: "All exploitation rights must vest in Amazon"
+        risk_level: CRITICAL
+        
+      - pattern: "Reversion provision"
+        example: |
+          If Amazon does not exploit the Program within five (5) years, 
+          rights shall revert to ProdCo.
+        reason: "No reversion under any circumstances"
+        risk_level: CRITICAL
+        
+      - pattern: "Co-ownership"
+        example: |
+          Amazon and ProdCo shall jointly own the Program and Materials.
+        reason: "Exclusive ownership required; no co-ownership"
+        risk_level: CRITICAL
+        
+      - pattern: "Missing backup assignment"
+        example: |
+          [Work made for hire provision without backup assignment]
+        reason: "Some elements may not qualify as WFH; assignment needed"
+        risk_level: HIGH
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Exclusive ownership"
+      position: "100% Amazon ownership, no shared rights"
+      fallback: "None - essential"
+      
+    - priority: 2
+      element: "Perpetuity"
+      position: "No term limitations"
+      fallback: "None - essential"
+      
+    - priority: 3
+      element: "All rights"
+      position: "No reserved exploitation rights"
+      fallback: "Consider separated rights per guild requirements only"
+      
+    - priority: 4
+      element: "No reversion"
+      position: "No reversion under any circumstances"
+      fallback: "None - essential"
+  
+  common_counterparty_requests:
+    - request: "Retain theatrical rights"
+      response: "Unacceptable"
+      alternative: "Can discuss theatrical release strategy but Amazon retains rights"
+      
+    - request: "Reversion after X years of non-exploitation"
+      response: "Unacceptable"
+      alternative: "None - no reversion provisions"
+      
+    - request: "Joint ownership"
+      response: "Unacceptable"
+      alternative: "None - exclusive ownership required"
+      
+    - request: "Separate sequel/remake rights"
+      response: "Unacceptable"
+      alternative: |
+        Can discuss participation in sequels/remakes but Amazon owns 
+        all derivative rights.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Underlying rights complexity"
+      high_risk: "Adaptation of existing IP with retained rights"
+      medium_risk: "Original with some licensed elements"
+      low_risk: "Fully original work-for-hire"
+      
+    - factor: "International elements"
+      high_risk: "Non-US production with moral rights issues"
+      low_risk: "US production only"
+  
+  escalation_triggers:
+    - "Any license instead of ownership language"
+    - "Any term or territory limitations"
+    - "Any reserved rights to ProdCo"
+    - "Any reversion provisions"
+    - "Missing work-for-hire or assignment language"

@@ -1,0 +1,69 @@
+# ================================================================
+# FAMILY: Confidentiality / NPI
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: Confidentiality
+rule_name: "Confidentiality / NPI"
+psa_section: 8
+required: true
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  ProdCo will not release or authorize any publicity or marketing 
+  relating to the Program or use any Amazon trademark without Amazon's 
+  prior written approval, and ProdCo will keep confidential all 
+  non-public information relating to the Program ("NPI").
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: CONF-ACC-001
+    description: "Standard carve-outs to confidentiality obligation"
+    text_patterns:
+      - "as required to fulfill its obligations hereunder"
+      - "to its affiliates, employees, contractors, agents or professional service providers"
+      - "as expressly permitted in writing by Amazon"
+      - "as required by law or the valid order of a court"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      ProdCo requests to include standard carve-outs to ProdCo's 
+      confidentiality obligation for disclosures required at law, 
+      disclosure to legal representatives, information which makes 
+      its way into public domain by not fault of ProdCo, etc., OK 
+      to make these changes as a general matter upon request.
+
+# ================================================================
+# AI POLICY REQUIREMENT
+# ================================================================
+ai_policy:
+  standard_position: |
+    ProdCo has not and will not input or permit others to input any 
+    NPI, the Program, or the Materials into any artificial intelligence 
+    service or tool unless and to the extent compliant with Amazon policy.
+  required: true
+  action_if_missing: "ADD"
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "keep confidential"
+    - "non-public information"
+    - "NPI"
+    - "confidential all"
+  secondary:
+    - "prior written approval"
+    - "publicity or marketing"
+    - "Amazon trademark"
+    - "artificial intelligence"
+  heading_patterns:
+    - "MISCELLANEOUS"
+    - "CONFIDENTIAL"

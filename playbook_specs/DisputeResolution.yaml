@@ -1,0 +1,158 @@
+# ================================================================
+# FAMILY: Tax; Governing Law; Jurisdiction
+# Source: PSA Section 10 "TAX; GOVERNING LAW; JURISDICTION"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: DisputeResolution
+rule_name: "Tax; Governing Law; Jurisdiction"
+psa_section: 10
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION - CALIFORNIA (From PSA Fallback Guide)
+# ================================================================
+standard_position_california: |
+  THIS AGREEMENT WILL BE CONSTRUED AND ENFORCED IN ACCORDANCE WITH 
+  THE LAW OF THE STATE OF CALIFORNIA APPLICABLE THEREIN, REGARDLESS 
+  OF WHERE NEGOTIATION, EXECUTION OR PERFORMANCE OF THIS AGREEMENT 
+  MAY ACTUALLY OCCUR. ANY DISPUTE RELATING TO THIS AGREEMENT OR THE 
+  PROGRAM WILL BE SUBJECT TO CONFIDENTIAL, BINDING ARBITRATION 
+  PURSUANT TO AND ADMINISTERED BY JAMS IN ACCORDANCE WITH ITS U.S. 
+  RULES AND THE U.S. FEDERAL ARBITRATION ACT/CALIFORNIA LAW, WITHOUT 
+  REGARD TO CONFLICT OF LAWS, AND CONDUCTED IN ENGLISH IN LOS ANGELES 
+  COUNTY, WITH EACH PARTY RESPONSIBLE FOR ITS OWN ATTORNEY'S FEES 
+  AND COSTS. ANY COURT IN LOS ANGELES COUNTY MAY CONFIRM AND ENTER 
+  JUDGMENT ON THE FINAL AWARD (AND THE PARTIES CONSENT TO SUCH 
+  PERSONAL JURISDICTION/VENUE).
+
+# ================================================================
+# ACCEPTABLE DEVIATION - NEW YORK
+# ================================================================
+acceptable_deviations:
+  - id: DR-ACC-001
+    description: "Change to New York governing law"
+    text_pattern: |
+      This Agreement will be governed and construed in accordance with 
+      the internal laws of the State of New York applicable to contracts 
+      entered into and fully to be performed therein. The parties consent 
+      and agree to the exclusive jurisdiction and venue of the state and 
+      federal courts having jurisdiction over New York, New York, with 
+      respect to any action that any party desires to commence arising 
+      out of or in connection with this Agreement or any breach or 
+      alleged breach of any provision of this Agreement. The parties 
+      waive any objection to such venue, any claim that any state or 
+      federal court of New York is an inconvenient forum and further 
+      waive any right, in any state or federal court proceeding to jury 
+      trial, and the parties agree that there will be no jury trial in 
+      the event of a dispute between them.
+    approval_required: false
+    approval_level: "NTD"
+    condition: "Confirm foreign court judgment is enforceable in applicable country"
+    guidance: |
+      Amazon Position: If ProdCo requests to change to New York governing 
+      law, Amazon can agree to change from California governing law to 
+      New York governing law, provided that you confirm a foreign court 
+      judgment is enforceable in your country.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: DR-UNACC-001
+    description: "Local law (non-US)"
+    action: "REJECT"
+    amazon_position: |
+      Amazon Position: If ProdCo requests to change governing law 
+      language to local law or some "neutral" law, hold to form. 
+      Governing law should be expressly addressed and agreed upon in 
+      the closed deal terms and we must maintain U.S. governing law 
+      per practice standards as Amazon is a U.S. entity. Any exception 
+      to this requires Amazon Legal L8 approval and Litigation approval.
+
+  - id: DR-UNACC-002
+    description: "Neutral law (e.g., English law, Swiss law)"
+    text_patterns:
+      - "English law"
+      - "laws of England"
+      - "Swiss law"
+      - "laws of Switzerland"
+    action: "ESCALATE_L8_AND_LITIGATION"
+    amazon_position: |
+      Any exception to US governing law requires Amazon Legal L8 approval 
+      and Litigation approval.
+
+  - id: DR-UNACC-003
+    description: "Removal of arbitration clause"
+    action: "REJECT"
+    amazon_position: |
+      Confidential, binding arbitration is Amazon's standard position 
+      for dispute resolution.
+
+  - id: DR-UNACC-004
+    description: "Removal of jury trial waiver"
+    action: "REJECT"
+    amazon_position: |
+      Jury trial waiver is a core requirement.
+
+# ================================================================
+# TAX PROVISIONS
+# ================================================================
+tax_provisions:
+  standard_position: |
+    Each party will be responsible for identifying and paying all taxes 
+    and other governmental fees and charges that are legally imposed on 
+    that party upon or with respect to the transactions and payments 
+    under this Agreement. All amounts to be paid by Amazon are inclusive 
+    of all transaction taxes that ProdCo may be legally obligated to 
+    charge to Amazon on a valid tax invoice. Amazon may deduct or 
+    withhold any taxes that Amazon may be legally obligated to deduct 
+    or withhold from any amounts payable to ProdCo under this Agreement.
+    
+  acceptable_deviations:
+    - id: TAX-ACC-001
+      description: "Change 'inclusive' to 'exclusive' of transaction taxes"
+      approval_required: true
+      approval_level: "AMAZON_TAX_FINANCE_BA"
+      guidance: |
+        Amazon Position: If ProdCo objects to fees being inclusive of 
+        all transaction taxes, push back and hold to form. Any changes 
+        to the language regarding transaction taxes needs to be 
+        preapproved by Amazon Tax, Finance, and BA.
+        
+    - id: TAX-ACC-002
+      description: "Provide withholding documentation"
+      text_pattern: |
+        If a payment to ProdCo is reduced by such a deduction or 
+        withholding, Amazon will provide ProdCo with documentation 
+        supporting the amount of such deduction or withholding as 
+        legally obligated, which shall be satisfied by providing 
+        IRS Form 1042-S or a similar form issued by a tax authority.
+      approval_required: true
+      approval_level: "AMAZON_TAX_FINANCE"
+      guidance: |
+        Please confirm with Amazon Tax, and, if applicable, we can 
+        agree to the wording if ProdCo insists.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "GOVERNING LAW"
+    - "JURISDICTION"
+    - "TAX"
+    - "arbitration"
+    - "JAMS"
+  secondary:
+    - "State of California"
+    - "State of New York"
+    - "jury trial"
+    - "binding arbitration"
+    - "withholding tax"
+    - "transaction taxes"
+  heading_patterns:
+    - "^10\\.\\s*TAX"
+    - "GOVERNING\\s+LAW"
+    - "JURISDICTION"

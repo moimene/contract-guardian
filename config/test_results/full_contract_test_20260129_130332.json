@@ -1,0 +1,670 @@
+{
+  "timestamp": "20260129_130332",
+  "document": "contratos de test/PSA Principal Terms Fallback Guide (20 October 2025) - Prueba 1.docx",
+  "total_clauses": 9,
+  "family_distribution": {
+    "OtherUnknown": 6,
+    "PaymentCredits": 1,
+    "ThirdPartyCredits": 1,
+    "DisputeResolution": 1
+  },
+  "decision_distribution": {
+    "ESCALATE_HUMAN": 9
+  },
+  "results": [
+    {
+      "idx": 1,
+      "heading": "PARTIES",
+      "text_preview": "PARTIES: Amazon Content Services LLC (\"Amazon\")...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-001",
+        "clause_id": "clause-1",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:03:43.030Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-001",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-001",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 2,
+      "heading": "SERVICES",
+      "text_preview": "SERVICES: ProdCo will render services as set forth in this agreement, including any exhibits and sch...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-002",
+        "clause_id": "clause-2",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:03:47.174Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-002",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-002",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 3,
+      "heading": "RIGHTS",
+      "text_preview": "RIGHTS: All rights in the Program, including all materials commissioned (including the results and p...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-003",
+        "clause_id": "clause-3",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:03:51.589Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-003",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-003",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 4,
+      "heading": "FEES",
+      "text_preview": "FEES: If ProdCo is not in demonstrated breach of this Agreement, subject to any other applicable ter...",
+      "family": "PaymentCredits",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-004",
+        "clause_id": "clause-4",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "PaymentCredits",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:04:00.198Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-004",
+          "detected_family": "PaymentCredits",
+          "rule_id": "PB:v2026-01:PaymentCredits-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "text": "Payment not explicitly tied to verifiable milestones or delivery conditions.",
+                "type": "deviation",
+                "requirement": "Milestone-based payment schedule",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "No mention of offset rights.",
+                "type": "deviation",
+                "requirement": "Offset rights",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "No mention of audit rights.",
+                "type": "deviation",
+                "requirement": "Audit rights",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "No mention of credit approval rights.",
+                "type": "deviation",
+                "requirement": "Credit approval rights",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause lacks explicit mention of milestone-based payments, offset rights, audit rights, and credit approval rights, which are critical requirements according to Amazon's standard position.",
+            "risk_level": "high"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-004",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 5,
+      "heading": "ENTITLEMENTS;",
+      "text_preview": "ENTITLEMENTS; CREDIT: If ProdCo is not in material breach of this Agreement, and completes ProdCo's ...",
+      "family": "ThirdPartyCredits",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-005",
+        "clause_id": "clause-5",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "ThirdPartyCredits",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:04:06.518Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-005",
+          "detected_family": "ThirdPartyCredits",
+          "rule_id": "default:ThirdPartyCredits",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-005",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 6,
+      "heading": "REPRESENTATIONS/WARRANTIES; INDEMNITY: ProdCo repr",
+      "text_preview": "REPRESENTATIONS/WARRANTIES; INDEMNITY: ProdCo represents, warrants and agrees that: (i) the Program ...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-006",
+        "clause_id": "clause-6",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:04:10.780Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-006",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-006",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 7,
+      "heading": "MISCELLANEOUS",
+      "text_preview": "MISCELLANEOUS (CONDITIONS PRECEDENT, DAMAGES, INJUNCTIVE RELIEF, ASSIGNMENT, ETC.): Amazon's obligat...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-007",
+        "clause_id": "clause-7",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluation completed.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:04:14.658Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-007",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-007",
+          "client_summary_line": "Clause evaluation completed.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 8,
+      "heading": "DATA PROTECTION",
+      "text_preview": "DATA PROTECTION: When processing personal data in connection with this Agreement, Amazon or ProdCo s...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-008",
+        "clause_id": "clause-8",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:04:20.996Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-008",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-008",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 9,
+      "heading": "TAX;",
+      "text_preview": "TAX; GOVERNING LAW; JURISDICTION: Each party will be responsible for identifying and paying all taxe...",
+      "family": "DisputeResolution",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-009",
+        "clause_id": "clause-9",
+        "document_id": "2ede019f-0f20-4a4b-a6ba-39105f6b8491",
+        "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+        "detected_family": "DisputeResolution",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T12:04:33.342Z",
+        "_internal": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-009",
+          "detected_family": "DisputeResolution",
+          "rule_id": "PB:v2026-01:DisputeResolution-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "text": "The clause specifies that disputes will be subject to binding arbitration administered by JAMS in Los Angeles County, California, under California law, which deviates from the standard requirement of AAA rules in Seattle with Delaware law.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The governing law is specified as New York, which is a variation that requires approval, as the standard is Delaware law.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The venue for arbitration is Los Angeles County, which is a critical deviation from the standard Seattle venue.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause mentions litigation in state and federal courts in New York for any action arising out of or in connection with the agreement, which deviates from the standard requirement of arbitration.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "There is no explicit mention of an injunctive relief carveout, which is a critical requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause includes a waiver of jury trial, which aligns with the standard requirements.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause deviates from the standard dispute resolution requirements by specifying JAMS arbitration in Los Angeles under California law, with New York governing law for litigation, and lacks an injunctive relief carveout. It includes a jury trial waiver, which is compliant.",
+            "risk_level": "critical"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "b050a6b1-5f6e-43d5-8c52-549d6277b093",
+          "clause_instance_id": "psa-clause-009",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    }
+  ]
+}

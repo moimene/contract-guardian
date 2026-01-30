@@ -1,0 +1,9 @@
+{
+    "clause_instance_id": "test-indemnity-001",
+    "clause_id": "7.1",
+    "clause_text": "7.1 Alcance limitado. ProdCo indemnizará a Amazon exclusivamente por daños finalmente determinados por sentencia firme que deriven del dolo de ProdCo, hasta un máximo del 10% de los honorarios pagados en los doce meses anteriores. Esta obligación se limita al territorio de España.",
+    "run_id": "test-compound-001",
+    "document_id": "doc-inaceptable-001",
+    "playbook_id": "PB_DSA_V1",
+    "contract_type": "nueva_planta"
+}

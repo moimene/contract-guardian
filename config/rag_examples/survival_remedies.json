@@ -1,0 +1,124 @@
+{
+    "family_id": "SurvivalRemedies",
+    "display_name": "Survival of Provisions",
+    "version": "1.0",
+    "examples": [
+        {
+            "id": "SR-001",
+            "text": "The following provisions shall survive termination: Articles 3, 5, 6, 7, 9, 10, 11, and any other provision that by its nature should survive.",
+            "article": "8.5",
+            "header": "TERMINATION - Survival",
+            "triggers_found": [
+                "shall survive termination",
+                "provisions shall survive",
+                "by its nature should survive"
+            ],
+            "confidence": 0.95,
+            "notes": "Enumerated survival list with catch-all"
+        },
+        {
+            "id": "SR-002",
+            "text": "The representations and warranties set forth in this Article 5 shall survive the expiration or termination of this Agreement in perpetuity.",
+            "article": "5.2",
+            "header": "REPRESENTATIONS - Survival",
+            "triggers_found": [
+                "shall survive the expiration or termination",
+                "in perpetuity"
+            ],
+            "confidence": 0.92,
+            "notes": "Specific article survival with duration"
+        },
+        {
+            "id": "SR-003",
+            "text": "Confidentiality obligations shall survive for five (5) years after termination, except that trade secret obligations shall survive indefinitely.",
+            "article": "9.5",
+            "header": "CONFIDENTIALITY - Survival",
+            "triggers_found": [
+                "shall survive",
+                "after termination",
+                "survive indefinitely"
+            ],
+            "confidence": 0.90,
+            "notes": "Survival with specific duration and exception"
+        },
+        {
+            "id": "SR-004",
+            "text": "All provisions that by their nature should survive termination shall survive, including without limitation ownership, indemnification, confidentiality, and limitation of liability.",
+            "article": "13.9",
+            "header": "GENERAL - Survival",
+            "triggers_found": [
+                "by their nature should survive",
+                "shall survive termination"
+            ],
+            "confidence": 0.93,
+            "notes": "Blanket survival with examples"
+        },
+        {
+            "id": "SR-005",
+            "text": "ProdCo's indemnification obligations under Article 6 shall survive any expiration or termination of this Agreement and shall continue in full force and effect indefinitely.",
+            "article": "6.4",
+            "header": "INDEMNIFICATION - Survival",
+            "triggers_found": [
+                "shall survive any expiration or termination",
+                "continue in full force and effect",
+                "indefinitely"
+            ],
+            "confidence": 0.91,
+            "notes": "Specific indemnification survival"
+        },
+        {
+            "id": "SR-006",
+            "text": "The following Sections shall survive termination of this Agreement: 3.1, 3.2, 3.5, 5.1, 6.1, 6.2, 7.1, 7.2, 9.1, 9.5, 12.1, 12.2, and this Section 13.5.",
+            "article": "13.5",
+            "header": "GENERAL - Survival",
+            "triggers_found": [
+                "shall survive termination"
+            ],
+            "confidence": 0.94,
+            "notes": "Section-specific enumerated survival"
+        },
+        {
+            "id": "SR-007",
+            "text": "Survival. Notwithstanding any termination, the obligations set forth in Articles 3, 5, 6, 7, 9, and 12 shall remain in full force and effect.",
+            "article": "8.5",
+            "header": "TERMINATION - Survival",
+            "triggers_found": [
+                "Notwithstanding any termination",
+                "remain in full force and effect"
+            ],
+            "confidence": 0.88,
+            "notes": "Alternative survival phrasing"
+        }
+    ],
+    "negative_examples": [
+        {
+            "id": "SR-NEG-001",
+            "text": "Amazon may terminate this Agreement upon thirty (30) days' written notice.",
+            "actual_family": "TerminationRights",
+            "why_not_survival": "This is a termination trigger, not a survival provision",
+            "triggers_that_redirect": [
+                "may terminate",
+                "written notice"
+            ]
+        },
+        {
+            "id": "SR-NEG-002",
+            "text": "Upon termination, all rights shall remain vested in Amazon.",
+            "actual_family": "TerminationConsequences",
+            "why_not_survival": "This describes what happens at termination, not which provisions survive",
+            "triggers_that_redirect": [
+                "Upon termination",
+                "shall remain vested"
+            ]
+        },
+        {
+            "id": "SR-NEG-003",
+            "text": "ProdCo represents and warrants that it has full authority.",
+            "actual_family": "RepsProdCo",
+            "why_not_survival": "This is the actual representation, not a statement about its survival",
+            "triggers_that_redirect": [
+                "represents and warrants"
+            ]
+        }
+    ]
+}

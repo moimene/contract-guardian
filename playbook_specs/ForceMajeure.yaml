@@ -1,0 +1,130 @@
+# ================================================================
+# FAMILY: Suspension / Force Majeure
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: ForceMajeure
+rule_name: "Suspension / Force Majeure"
+psa_section: 8
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  Amazon may elect to suspend any services, and any option exercise 
+  and/or other applicable dates under this Agreement will automatically 
+  extend, for a period of up to the length of (i) any unavailability, 
+  disability or death of any key personnel or cast, or any "force 
+  majeure" event (earthquake or other natural event, government action, 
+  labor dispute, acts of war or terrorism, epidemic, pandemic, or any 
+  other event beyond the control of Amazon), which interrupts or 
+  interferes with the Program; and/or (ii) any claims or litigation 
+  relating to the Program and/or ProdCo's breach, plus 30 days 
+  following cessation of any of the foregoing events in clause (i) 
+  and/or (ii) as applicable.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: FM-ACC-001
+    description: "Reduce resumption period from 30 to 15 days"
+    text_pattern: "plus 15 days following cessation"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      Amazon Position: If ProdCo wishes to limit the time periods to 
+      resume activities following a suspension/extension, Amazon is 
+      willing to lower this period to 15 days, however this is the 
+      shortest period Amazon will agree to. Amazon needs a reasonable 
+      period of time after the cessation of the applicable suspension / 
+      extension event to resume activities.
+
+  - id: FM-ACC-002
+    description: "Cap force majeure extension"
+    text_pattern: |
+      provided that the cumulative suspension of such events listed 
+      in clause (i) [excluding events related to Amazon's breach] will 
+      not exceed [X] days (or months) [in aggregate / per each force 
+      majeure event]
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      Amazon Position: If ProdCo wishes to limit time periods for 
+      suspension/extension for force majeure, Amazon is willing to 
+      cap the extensions for force majeure on a limited basis.
+
+  - id: FM-ACC-003
+    description: "Cap claims/litigation extension"
+    text_pattern: |
+      provided that the cumulative suspension of such events listed 
+      in clause (ii) [excluding events related to ProdCo's breach] 
+      will not exceed [X] days (or months) [in aggregate / per each 
+      claim or litigation]
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      Amazon Position: If ProdCo wishes to limit time periods for 
+      suspension/extension for claims/litigation, Amazon is willing 
+      to cap the extensions for individual claims on a limited basis.
+
+  - id: FM-ACC-004
+    description: "Termination right after extended force majeure"
+    text_pattern: |
+      provided that, in the event that the force majeure event continues 
+      for a period in excess of [X] consecutive months, either party 
+      may notify the other of its intention to terminate this Agreement 
+      and, if the force majeure event continues for [X] months after 
+      such notice, this Agreement will automatically terminate
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      Amazon Position: If ProdCo wishes to include a termination right 
+      following extended force majeure events. To include the ability 
+      for either party to terminate post-force majeure, with Amazon 
+      Legal approval, the alternate language may be used.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: FM-UNACC-001
+    description: "Limit suspension for ProdCo's breach"
+    action: "REJECT"
+    amazon_position: |
+      Amazon Position: If ProdCo wishes to limit time periods for 
+      suspension/extension for ProdCo's breach, hold to form. Amazon 
+      does not allow a limitation on suspension/extension for ProdCo's 
+      breach. All of the suspension/extension events are outside of 
+      Amazon's control. Some suspension/extension events may not be 
+      caused by ProdCo, but, since ProdCo's breach is caused by ProdCo's 
+      act or omission, Amazon will not agree to any accommodations 
+      around this language.
+
+  - id: FM-UNACC-002
+    description: "Remove Amazon's right to suspend"
+    action: "REJECT"
+    amazon_position: |
+      Amazon must maintain the right to suspend services during force 
+      majeure events to protect its investment.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "force majeure"
+    - "suspend any services"
+    - "automatically extend"
+    - "beyond the control"
+  secondary:
+    - "earthquake"
+    - "pandemic"
+    - "epidemic"
+    - "government action"
+    - "labor dispute"
+    - "acts of war or terrorism"
+    - "unavailability, disability or death"

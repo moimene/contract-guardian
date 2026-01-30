@@ -1,0 +1,449 @@
+# Clause Family Definitions - Contract Guardian PSA Router
+# Version: 2.0
+# Last Updated: 2026-01-29
+
+---
+# CRITICAL FAMILIES (Require Playbook Analysis)
+---
+
+IndemnityProdCo:
+  display_name: "ProdCo Indemnification Obligations"
+  description: "Clauses where ProdCo indemnifies Amazon against third-party claims"
+  priority: CRITICAL
+  rule_id: "PB:v2026-01:Indemnity-ProdCo-Core"
+  
+  primary_triggers:
+    - "ProdCo shall indemnify"
+    - "indemnify, defend, and hold harmless"
+    - "Amazon Indemnitees"
+    - "ProdCo agrees to indemnify"
+    - "indemnification by ProdCo"
+  
+  secondary_triggers:
+    - "hold harmless Amazon"
+    - "defend Amazon"
+    - "ProdCo's indemnification"
+    - "indemnify Amazon and its"
+  
+  context_indicators:
+    - Article header contains "Indemnification" or "Indemnity"
+    - ProdCo is the obligor (party providing indemnity)
+    - References to "claims", "damages", "losses"
+    - Lists of indemnifiable events
+  
+  negative_indicators:
+    - "Amazon shall indemnify"  # → IndemnityAmazon
+    - Only discusses procedures  # → IndemnityProcedures
+  
+  confidence_threshold: 0.85
+
+
+IndemnityAmazon:
+  display_name: "Amazon Indemnification Obligations"
+  description: "Clauses where Amazon indemnifies ProdCo (typically narrow)"
+  priority: HIGH
+  rule_id: "PB:v2026-01:Indemnity-Amazon-Core"
+  
+  primary_triggers:
+    - "Amazon shall indemnify"
+    - "Amazon agrees to indemnify"
+    - "indemnify ProdCo"
+    - "Amazon's indemnification"
+  
+  secondary_triggers:
+    - "hold ProdCo harmless"
+    - "defend ProdCo"
+  
+  context_indicators:
+    - Amazon is the obligor
+    - Often narrow/limited scope
+    - May have carveouts/exceptions
+    - Typically follows ProdCo indemnification
+  
+  negative_indicators:
+    - "ProdCo shall indemnify"  # → IndemnityProdCo
+  
+  confidence_threshold: 0.85
+
+
+RepsProdCo:
+  display_name: "ProdCo Representations and Warranties"
+  description: "Clauses where ProdCo makes representations/warranties to Amazon"
+  priority: CRITICAL
+  rule_id: "PB:v2026-01:RepsProdCo-Core"
+  
+  primary_triggers:
+    - "ProdCo represents and warrants"
+    - "ProdCo represents"
+    - "ProdCo warrants"
+    - "ProdCo hereby represents"
+    - "represents and warrants to Amazon"
+  
+  secondary_triggers:
+    - "full right, power, and authority"
+    - "free and clear of any liens"
+    - "wholly original"
+    - "will not infringe"
+    - "will not violate"
+    - "no claim, litigation, or proceeding pending"
+    - "not defamatory"
+    - "compliance with applicable laws"
+  
+  context_indicators:
+    - Article header contains "Representations", "Warranties"
+    - Enumerated list with (a), (b), (c) structure
+    - ProdCo is the party making the statement
+  
+  negative_indicators:
+    - "Amazon represents"  # → RepsAmazon
+    - Survival clause only  # → SurvivalRemedies
+  
+  confidence_threshold: 0.80
+
+
+RepsAmazon:
+  display_name: "Amazon Representations and Warranties"
+  description: "Clauses where Amazon makes representations/warranties"
+  priority: HIGH
+  rule_id: "PB:v2026-01:RepsAmazon-Core"
+  
+  primary_triggers:
+    - "Amazon represents and warrants"
+    - "Amazon represents"
+    - "Amazon warrants"
+  
+  confidence_threshold: 0.80
+
+
+PaymentCredits:
+  display_name: "Payment and Compensation Terms"
+  description: "Clauses governing Amazon's payment obligations to ProdCo"
+  priority: HIGH
+  rule_id: "PB:v2026-01:Fees-Core"
+  
+  primary_triggers:
+    - "Amazon shall pay"
+    - "shall pay ProdCo"
+    - "Production Fee"
+    - "in full consideration"
+    - "compensation payable"
+    - "payment schedule"
+  
+  secondary_triggers:
+    - "contingent compensation"
+    - "Net Receipts"
+    - "profit participation"
+    - "backend participation"
+    - "residuals"
+    - "bonuses payable"
+    - "deferred compensation"
+    - "payment terms"
+    - "amounts due"
+  
+  context_indicators:
+    - Article header contains "Compensation", "Payment", "Fees"
+    - References to "Exhibit" with payment schedule
+    - Payment timing language
+    - Currency or dollar amounts
+  
+  negative_indicators:
+    - "termination payment" only  # → TerminationConsequences
+    - "indemnification costs"  # → IndemnityProdCo
+    - Insurance premiums  # → Insurance
+  
+  confidence_threshold: 0.80
+
+
+LiabilityLimitation:
+  display_name: "Limitation of Liability"
+  description: "Clauses limiting or excluding certain types of damages"
+  priority: CRITICAL
+  rule_id: "default:LiabilityLimitation"
+  
+  primary_triggers:
+    - "IN NO EVENT SHALL"
+    - "limitation of liability"
+    - "shall not be liable"
+    - "liability cap"
+    - "aggregate liability"
+    - "shall not exceed"
+  
+  secondary_triggers:
+    - "CONSEQUENTIAL"
+    - "INDIRECT"
+    - "INCIDENTAL"
+    - "SPECIAL"
+    - "PUNITIVE"
+    - "EXEMPLARY"
+    - "lost profits"
+    - "loss of business"
+  
+  context_indicators:
+    - ALL CAPS formatting
+    - Article header mentions "Liability"
+    - Dollar amount caps
+  
+  confidence_threshold: 0.90
+
+
+TerminationRights:
+  display_name: "Termination Rights and Triggers"
+  description: "Clauses specifying when/how parties may terminate"
+  priority: CRITICAL
+  rule_id: "default:TerminationRights"
+  
+  primary_triggers:
+    - "may terminate"
+    - "termination for convenience"
+    - "termination for cause"
+    - "right to terminate"
+    - "shall terminate"
+  
+  secondary_triggers:
+    - "upon written notice"
+    - "sole discretion"
+    - "material breach"
+    - "immediately upon"
+    - "cure period"
+  
+  context_indicators:
+    - Article header contains "Termination"
+    - Lists triggering events
+  
+  negative_indicators:
+    - Effects of termination  # → TerminationConsequences
+    - Survival provisions  # → SurvivalRemedies
+  
+  confidence_threshold: 0.85
+
+
+TerminationConsequences:
+  display_name: "Termination Consequences and Effects"
+  description: "Clauses specifying what happens upon termination"
+  priority: HIGH
+  rule_id: "default:TerminationConsequences"
+  
+  primary_triggers:
+    - "upon termination"
+    - "effect of termination"
+    - "following termination"
+    - "as a result of termination"
+    - "termination payment"
+  
+  secondary_triggers:
+    - "shall remain vested"
+    - "deliver all Materials"
+    - "work in progress"
+    - "no further payments"
+  
+  confidence_threshold: 0.80
+
+
+RightsGrant:
+  display_name: "Grant of Rights and Ownership"
+  description: "Clauses granting or assigning rights to Amazon"
+  priority: CRITICAL
+  rule_id: "default:RightsGrant"
+  
+  primary_triggers:
+    - "work made for hire"
+    - "hereby assigns"
+    - "irrevocably assigns"
+    - "Amazon shall own"
+    - "grants to Amazon"
+    - "all right, title, and interest"
+  
+  secondary_triggers:
+    - "in perpetuity"
+    - "throughout the universe"
+    - "all media now known or hereafter developed"
+    - "intellectual property rights"
+  
+  context_indicators:
+    - Article header contains "Ownership", "Rights"
+    - References to Copyright Act
+  
+  confidence_threshold: 0.85
+
+
+RightsReversion:
+  display_name: "Rights Reversion Terms"
+  description: "Clauses addressing whether/when rights revert to ProdCo"
+  priority: CRITICAL
+  rule_id: "default:RightsReversion"
+  
+  primary_triggers:
+    - "no reversion"
+    - "shall not revert"
+    - "reversion of rights"
+    - "turnaround"
+  
+  confidence_threshold: 0.85
+
+
+---
+# SUPPORT FAMILIES (Standard Review)
+---
+
+SurvivalRemedies:
+  display_name: "Survival of Provisions"
+  description: "Clauses specifying which provisions survive termination"
+  priority: MEDIUM
+  rule_id: "PB:v2026-01:SurvivalRemedies-Core"
+  
+  primary_triggers:
+    - "shall survive termination"
+    - "shall survive expiration"
+    - "survive termination of this Agreement"
+    - "provisions shall survive"
+    - "following provisions shall survive"
+  
+  secondary_triggers:
+    - "by its nature should survive"
+    - "continue in effect after termination"
+    - "survive indefinitely"
+    - "survive in perpetuity"
+  
+  context_indicators:
+    - End of Termination article or General Provisions
+    - Lists article/section numbers
+    - Short clause format
+  
+  confidence_threshold: 0.75
+
+
+DefenseSettlement:
+  display_name: "Defense and Settlement Procedures"
+  description: "Indemnification procedures for claim handling"
+  priority: HIGH
+  rule_id: "PB:v2026-01:DefenseSettlement-Core"
+  
+  primary_triggers:
+    - "indemnification procedures"
+    - "promptly notify"
+    - "assume the defense"
+    - "counsel reasonably acceptable"
+    - "settlement"
+  
+  context_indicators:
+    - Follows core indemnification
+    - Notice, defense, settlement provisions
+  
+  confidence_threshold: 0.80
+
+
+Confidentiality:
+  display_name: "Confidentiality and Non-Disclosure"
+  description: "Clauses governing protection of confidential information"
+  priority: HIGH
+  rule_id: "default:Confidentiality"
+  
+  primary_triggers:
+    - "Confidential Information"
+    - "shall maintain in strict confidence"
+    - "shall not disclose"
+    - "confidentiality obligations"
+  
+  confidence_threshold: 0.85
+
+
+Insurance:
+  display_name: "Insurance Requirements"
+  description: "Clauses specifying required insurance coverage"
+  priority: HIGH
+  rule_id: "default:Insurance"
+  
+  primary_triggers:
+    - "shall obtain and maintain"
+    - "insurance"
+    - "Commercial General Liability"
+    - "Errors and Omissions"
+  
+  confidence_threshold: 0.90
+
+
+DisputeResolution:
+  display_name: "Dispute Resolution and Governing Law"
+  description: "Clauses governing how disputes are resolved"
+  priority: MEDIUM
+  rule_id: "default:DisputeResolution"
+  
+  primary_triggers:
+    - "governing law"
+    - "shall be governed by"
+    - "arbitration"
+    - "jurisdiction"
+  
+  confidence_threshold: 0.85
+
+
+ThirdPartyCredits:
+  display_name: "Third Party Credits and Acknowledgments"
+  description: "Clauses about credits and third party acknowledgments"
+  priority: HIGH
+  rule_id: "PB:v2026-01:ThirdPartyCredits-Core"
+  
+  primary_triggers:
+    - "credit"
+    - "acknowledgment"
+    - "third party"
+  
+  confidence_threshold: 0.75
+
+
+RepsTruthTerm:
+  display_name: "Representations Truth and Termination"
+  description: "Truth representations and termination conditions"
+  priority: MEDIUM
+  rule_id: "PB:v2026-01:RepsTruth-Core"
+  
+  primary_triggers:
+    - "true and correct"
+    - "materially true"
+    - "termination upon breach"
+  
+  confidence_threshold: 0.75
+
+
+---
+# LOW PRIORITY FAMILIES
+---
+
+Definitions:
+  display_name: "Contract Definitions"
+  description: "Definition sections"
+  priority: LOW
+  rule_id: "default:Definitions"
+  
+  primary_triggers:
+    - "means"
+    - defined terms in quotes
+  
+  confidence_threshold: 0.70
+
+
+GeneralProvisions:
+  display_name: "General/Boilerplate Provisions"
+  description: "Standard boilerplate provisions"
+  priority: LOW
+  rule_id: "default:GeneralProvisions"
+  
+  primary_triggers:
+    - "entire agreement"
+    - "severability"
+    - "counterparts"
+    - "no waiver"
+    - "notices"
+    - "independent contractor"
+  
+  confidence_threshold: 0.70
+
+
+OtherUnknown:
+  display_name: "Unclassified Clauses"
+  description: "Clauses that don't match any defined family"
+  priority: LOW
+  rule_id: "default:OtherUnknown"
+  
+  note: "Use ONLY when clause doesn't match any family above"
+  confidence_threshold: 0.50

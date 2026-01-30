@@ -1,0 +1,118 @@
+# ================================================================
+# FAMILY: Indemnity by Amazon
+# Source: PLAYBOOK_DSA_Amazon - Rules "Indemnity by Amazon 1/2/3/4"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: IndemnityAmazon
+rule_name: "Indemnity by Amazon"
+psa_section: 7
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (Verbatim from Playbook)
+# ================================================================
+standard_position: |
+  Amazon will indemnify, defend, and hold harmless ProdCo against any 
+  Losses arising out of any third-party claim in connection with the 
+  distribution and exploitation of the Program by Amazon or its 
+  affiliates, other than with respect to any Losses for which ProdCo 
+  is required to indemnify Amazon under this Agreement.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: IND-AMZ-ACC-001
+    description: "Add 'and its affiliates' to indemnitees"
+    text_pattern: "hold harmless ProdCo and its affiliates"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: The fallback extending the hold harmless obligation to not 
+      only ProdCo but also "its affiliates" may be accepted directly, 
+      without Amazon's approval.
+
+  - id: IND-AMZ-ACC-002
+    description: "Add marketing and/or advertising"
+    text_pattern: "distribution, marketing, advertising and exploitation"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Do not include directly all inclusions contained in the 
+      fallback, but only those expressly requested by ProdCo 
+      ("distribution, marketing, advertising", as applicable). This 
+      fallback may be granted directly, without Amazon Legal's approval.
+
+  - id: IND-AMZ-ACC-003
+    description: "Add 'all ancillary rights therein and thereto'"
+    text_pattern: "and all ancillary rights therein and thereto"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: The acceptable deviation (or any substantially equivalent 
+      language) may be accepted directly, without Amazon's approval.
+
+  - id: IND-AMZ-ACC-004
+    description: "Add Amazon's breach as indemnity trigger"
+    text_pattern: "Amazon's breach of any of its agreements, representations or warranties"
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      If ProdCo wishes Amazon to indemnify for Amazon's breach or torts 
+      (e.g., negligence or willful misconduct), please respond: "Amazon 
+      has broad indemnity obligations hereunder that should cover your 
+      concern." If receive repeated pushback, with Amazon Legal approval, 
+      can add an indemnity trigger for Amazon's breach (with addition of 
+      the one applicable representation and warranty).
+
+  - id: IND-AMZ-ACC-005
+    description: "Add directors/officers/employees to indemnitees"
+    text_patterns:
+      - "and each of their directors"
+      - "officers"
+      - "members"
+      - "shareholders"
+      - "employees"
+      - "representatives"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      OK to include the additional entity/individuals to Amazon's 
+      indemnification as outlined. As a note, Amazon will not include 
+      "successors" or "assigns" as ProdCo should not be able to assign 
+      this agreement without Amazon's approval.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: IND-AMZ-UNACC-001
+    description: "Add successors or assigns to indemnitees"
+    text_patterns:
+      - "successors"
+      - "assigns"
+      - "assignees"
+    context: "as ProdCo indemnitees"
+    action: "REJECT"
+    guidance: |
+      Do not accept extending the obligation to ProdCo's "successors" 
+      or "assignees", as ProdCo should not be able to assign this 
+      agreement without Amazon's approval.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "Amazon will indemnify"
+    - "Amazon shall indemnify"
+    - "hold harmless ProdCo"
+  secondary:
+    - "distribution and exploitation"
+    - "by Amazon or its affiliates"
+    - "other than with respect to any Losses"
+  negative:
+    - "ProdCo will indemnify"
+    - "ProdCo shall indemnify"

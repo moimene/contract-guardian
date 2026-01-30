@@ -1,0 +1,157 @@
+{
+  "test_run": "20260129_213443",
+  "results": [
+    {
+      "test_id": "6.1",
+      "expected": "IndemnityProdCo",
+      "detected": "IndemnityProdCo",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "6.1 ProdCo Indemnification"
+    },
+    {
+      "test_id": "5.1",
+      "expected": "RepsProdCo",
+      "detected": "RepsProdCo",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "5.1 ProdCo Representations"
+    },
+    {
+      "test_id": "4.1",
+      "expected": "PaymentCredits",
+      "detected": "PaymentCredits",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "4.1 Production Fee"
+    },
+    {
+      "test_id": "4.2",
+      "expected": "PaymentCredits",
+      "detected": "PaymentCredits",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "4.2 Contingent Compensation"
+    },
+    {
+      "test_id": "3.1",
+      "expected": "RightsGrant",
+      "detected": "RightsGrant",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "3.1 Work Made for Hire"
+    },
+    {
+      "test_id": "3.2",
+      "expected": "RightsGrant",
+      "detected": "RightsGrant",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "3.2 Scope of Rights"
+    },
+    {
+      "test_id": "3.5",
+      "expected": "RightsReversion",
+      "detected": "RightsGrant",
+      "confidence": 0,
+      "status": "FAIL",
+      "description": "3.5 No Reversion"
+    },
+    {
+      "test_id": "7.1",
+      "expected": "LiabilityLimitation",
+      "detected": "LiabilityLimitation",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "7.1 Exclusion of Consequential Damages"
+    },
+    {
+      "test_id": "7.2",
+      "expected": "LiabilityLimitation",
+      "detected": "LiabilityLimitation",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "7.2 Liability Cap"
+    },
+    {
+      "test_id": "8.1",
+      "expected": "TerminationRights",
+      "detected": "TerminationRights",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "8.1 Termination for Convenience"
+    },
+    {
+      "test_id": "8.2",
+      "expected": "TerminationRights",
+      "detected": "TerminationRights",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "8.2 Termination for Cause"
+    },
+    {
+      "test_id": "8.5",
+      "expected": "SurvivalRemedies",
+      "detected": "SurvivalRemedies",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "8.5 Survival"
+    },
+    {
+      "test_id": "8.3",
+      "expected": "TerminationConsequences",
+      "detected": "TerminationConsequences",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "8.3 Effect of Termination"
+    },
+    {
+      "test_id": "6.2",
+      "expected": "IndemnityProcedures",
+      "detected": "IndemnityProcedures",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "6.2 Indemnification Procedures"
+    },
+    {
+      "test_id": "6.3",
+      "expected": "IndemnityAmazon",
+      "detected": "IndemnityAmazon",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "6.3 Amazon Indemnification"
+    },
+    {
+      "test_id": "9.1",
+      "expected": "Confidentiality",
+      "detected": "Confidentiality",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "9.1 Confidentiality Obligations"
+    },
+    {
+      "test_id": "11.1",
+      "expected": "Insurance",
+      "detected": "Insurance",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "11.1 Required Coverage"
+    },
+    {
+      "test_id": "12.1",
+      "expected": "DisputeResolution",
+      "detected": "DisputeResolution",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "12.1 Governing Law"
+    },
+    {
+      "test_id": "12.2",
+      "expected": "DisputeResolution",
+      "detected": "DisputeResolution",
+      "confidence": 0,
+      "status": "PASS",
+      "description": "12.2 Arbitration"
+    }
+  ]
+}

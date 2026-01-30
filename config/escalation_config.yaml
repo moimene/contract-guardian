@@ -1,0 +1,192 @@
+# ================================================================
+# ESCALATION CONFIGURATION
+# Version: 2.0
+# ================================================================
+
+version: "2.0"
+
+# ================================================================
+# APPROVAL LEVELS
+# ================================================================
+approval_levels:
+  NTD:
+    name: "Note To Drafter"
+    description: "Can be accepted directly without Amazon approval"
+    auto_approve: true
+    notify: []
+    
+  OC_DISCRETION:
+    name: "Outside Counsel Discretion"
+    description: "May be granted at OC's discretion without Amazon Legal approval"
+    auto_approve: false
+    notify: ["outside_counsel"]
+    
+  AMAZON_LEGAL:
+    name: "Amazon Legal Approval"
+    description: "Requires Amazon Legal team approval"
+    auto_approve: false
+    notify: ["amazon_legal"]
+    sla_hours: 48
+    
+  AMAZON_LEGAL_REGIONAL_LEAD:
+    name: "Amazon Legal Regional Lead"
+    description: "Requires Amazon Legal Regional Lead approval (e.g., Hendrik for International)"
+    auto_approve: false
+    notify: ["amazon_legal", "regional_lead"]
+    sla_hours: 72
+    
+  AMAZON_LEGAL_L8:
+    name: "Amazon Legal L8"
+    description: "Requires Amazon Legal L8 level approval"
+    auto_approve: false
+    notify: ["amazon_legal_l8"]
+    sla_hours: 96
+    
+  AMAZON_TAX_FINANCE_BA:
+    name: "Amazon Tax, Finance, and BA"
+    description: "Requires approval from Tax, Finance, and Business Affairs"
+    auto_approve: false
+    notify: ["amazon_tax", "amazon_finance", "amazon_ba"]
+    sla_hours: 72
+    
+  LITIGATION:
+    name: "Litigation Approval"
+    description: "Requires Litigation team approval"
+    auto_approve: false
+    notify: ["amazon_litigation"]
+    sla_hours: 96
+
+# ================================================================
+# DECISION OUTCOMES
+# ================================================================
+decision_outcomes:
+  AUTO_PASS:
+    display: "✅ Auto-Approved"
+    color: "green"
+    allows_export: true
+    requires_review: false
+    
+  APPROVE_WITH_NOTES:
+    display: "⚠️ Approved with Notes"
+    color: "yellow"
+    allows_export: true
+    requires_review: false
+    notes_visible: true
+    
+  ESCALATE_HUMAN:
+    display: "🔍 Requires Review"
+    color: "orange"
+    allows_export: false  # Until reviewed
+    requires_review: true
+    
+  BLOCKED:
+    display: "🔴 Blocked"
+    color: "red"
+    allows_export: false
+    requires_review: true
+    must_resolve: true
+
+# ================================================================
+# ESCALATION TRIGGERS
+# ================================================================
+escalation_triggers:
+  # Automatic blocks
+  - trigger: "unacceptable_deviation"
+    outcome: "BLOCKED"
+    message: "Contains unacceptable deviation per playbook"
+    
+  - trigger: "unknown_family"
+    outcome: "BLOCKED"
+    message: "Clause family not recognized"
+    
+  - trigger: "critical_risk"
+    outcome: "ESCALATE_HUMAN"
+    message: "Critical risk level detected"
+    
+  # Approval-based escalations
+  - trigger: "requires_amazon_legal"
+    outcome: "ESCALATE_HUMAN"
+    approval_level: "AMAZON_LEGAL"
+    
+  - trigger: "requires_regional_lead"
+    outcome: "ESCALATE_HUMAN"
+    approval_level: "AMAZON_LEGAL_REGIONAL_LEAD"
+    
+  - trigger: "requires_l8"
+    outcome: "ESCALATE_HUMAN"
+    approval_level: "AMAZON_LEGAL_L8"
+    
+  - trigger: "governing_law_exception"
+    outcome: "ESCALATE_HUMAN"
+    approval_level: "AMAZON_LEGAL_L8"
+    additional_approval: "LITIGATION"
+    message: "Exception to US governing law requires L8 and Litigation approval"
+
+# ================================================================
+# THRESHOLDS BY FAMILY PRIORITY
+# ================================================================
+thresholds:
+  CRITICAL:
+    auto_approve_confidence: 0.95
+    approve_with_notes_confidence: 0.85
+    escalate_confidence: 0.75
+    max_observations_for_auto: 0
+    max_observations_for_notes: 2
+    escalate_on_critical_issue: true
+    
+  SUPPORT:
+    auto_approve_confidence: 0.90
+    approve_with_notes_confidence: 0.80
+    escalate_confidence: 0.70
+    max_observations_for_auto: 1
+    max_observations_for_notes: 3
+    escalate_on_critical_issue: true
+    
+  LOW:
+    auto_approve_confidence: 0.85
+    approve_with_notes_confidence: 0.75
+    escalate_confidence: 0.65
+    max_observations_for_auto: 2
+    max_observations_for_notes: 5
+    escalate_on_critical_issue: false
+
+# ================================================================
+# FAMILY PRIORITY MAPPING
+# ================================================================
+family_priority:
+  # CRITICAL - Core commercial/legal terms
+  CRITICAL:
+    - PaymentCredits
+    - ThirdPartyCredits
+    - RepsProdCo
+    - IndemnityProdCo
+    - IndemnityAmazon
+    - IndemnityProcedures
+    - RightsGrant
+    - RightsReversion
+    - LiabilityLimitation
+    - InjunctiveReliefWaiver
+    - Assignment
+    - ForceMajeure
+    - AmazonControl
+    - TerminationRights
+    - TerminationConsequences
+    - DisputeResolution
+    
+  # SUPPORT - Important but more flexibility
+  SUPPORT:
+    - Confidentiality
+    - DataProtection
+    - ServicesScope
+    - PowerOfAttorney
+    - Insurance
+    - StandardTerms
+    - ConditionsPrecedent
+    - TaxProvisions
+    
+  # LOW - Boilerplate
+  LOW:
+    - Definitions
+    - GeneralProvisions
+    - Parties
+    - Severability

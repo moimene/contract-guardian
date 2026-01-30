@@ -1,0 +1,203 @@
+# ================================================================
+# PLAYBOOK SPEC: LiabilityLimitation
+# Limitation of Liability
+# ================================================================
+
+family_id: LiabilityLimitation
+display_name: "Limitation of Liability"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon's liability should be capped at the Production Fee paid, with 
+    exclusion of consequential and special damages. ProdCo's liability 
+    for indemnification obligations should remain uncapped. Liability 
+    limitations should be asymmetric, reflecting Amazon's payor status 
+    and ProdCo's content creation risks.
+  
+  core_requirements:
+    - Cap Amazon direct liability at Production Fee
+    - Exclude Amazon consequential/special damages
+    - ProdCo indemnification remains uncapped
+    - ProdCo consequential damages exclusion for Amazon claims only
+    - Carveouts for fraud, willful misconduct, breach of confidentiality
+    - Asymmetric structure reflecting risk allocation
+  
+  business_rationale: |
+    Amazon is the payor; its maximum exposure should be what it paid. 
+    Content risks (IP infringement, defamation, etc.) are ProdCo's to 
+    bear without limitation. Consequential damages exclusion prevents 
+    disproportionate exposure to ProdCo's lost profits claims.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Asymmetric limitations favoring Amazon"
+    
+    required_elements:
+      - element: "Amazon direct liability cap"
+        language: |
+          Amazon's aggregate liability for direct damages shall not 
+          exceed the Production Fee actually paid.
+        required: true
+        
+      - element: "Amazon consequential damages exclusion"
+        language: |
+          In no event shall Amazon be liable for any indirect, incidental, 
+          special, consequential, or punitive damages.
+        required: true
+        
+      - element: "ProdCo indemnification uncapped"
+        language: |
+          Nothing in this Section shall limit ProdCo's indemnification 
+          obligations under Section 6.1.
+        required: true
+        
+      - element: "Appropriate carveouts"
+        language: |
+          The foregoing limitations shall not apply to: (a) fraud or 
+          willful misconduct; (b) breach of confidentiality; (c) ProdCo's 
+          indemnification obligations.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Except for ProdCo's indemnification obligations under Section 
+          6.1, which shall be uncapped, Amazon's aggregate liability 
+          under this Agreement for direct damages shall not exceed the 
+          Production Fee actually paid to ProdCo. Neither party shall be 
+          liable for any indirect, incidental, special, consequential, 
+          or punitive damages; provided that this exclusion shall not 
+          apply to (a) fraud or willful misconduct, (b) breach of 
+          confidentiality, or (c) ProdCo's indemnification obligations.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Balanced limitations with adequate protections"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Higher Amazon cap"
+        condition: "Production Fee plus 50% or similar"
+        example: |
+          Amazon's aggregate liability shall not exceed one hundred fifty 
+          percent (150%) of the Production Fee actually paid.
+        risk_level: MEDIUM
+        
+      - variation: "Mutual consequential damages exclusion"
+        condition: "With appropriate carveouts for third-party claims"
+        example: |
+          Neither party shall be liable for consequential damages except 
+          for amounts paid or payable to third parties pursuant to 
+          indemnification obligations.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Limitations that expose Amazon to excessive risk"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Cap on ProdCo indemnification"
+        example: |
+          ProdCo's indemnification obligations shall not exceed the 
+          Production Fee.
+        reason: "Third-party claims can far exceed production budget"
+        risk_level: CRITICAL
+        
+      - pattern: "Mutual symmetric liability cap"
+        example: |
+          Each party's aggregate liability shall not exceed the 
+          Production Fee.
+        reason: "ProdCo's content risks require uncapped liability"
+        risk_level: CRITICAL
+        
+      - pattern: "Amazon liable for consequential damages"
+        example: |
+          Amazon shall be liable for lost profits resulting from its 
+          breach.
+        reason: "Amazon's exposure should be limited to direct damages"
+        risk_level: CRITICAL
+        
+      - pattern: "Low Amazon cap"
+        example: |
+          Amazon's liability shall not exceed fifty percent (50%) of 
+          the Production Fee.
+        reason: "Cap should be at least Production Fee paid"
+        risk_level: HIGH
+        
+      - pattern: "No carveouts"
+        example: |
+          The limitations in this Section shall apply to all claims 
+          regardless of type.
+        reason: "Fraud and willful misconduct must be excluded"
+        risk_level: HIGH
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "ProdCo indemnification uncapped"
+      position: "No cap on third-party claim indemnification"
+      fallback: "Insurance-backed floor only in extreme cases"
+      
+    - priority: 2
+      element: "Amazon cap at Production Fee"
+      position: "Cap at Production Fee actually paid"
+      fallback: "Up to 150% of Production Fee if needed"
+      
+    - priority: 3
+      element: "Consequential damages exclusion"
+      position: "No consequential damages for Amazon"
+      fallback: "Mutual exclusion with third-party claim carveout"
+  
+  common_counterparty_requests:
+    - request: "Cap ProdCo indemnity at Production Fee"
+      response: "Unacceptable"
+      alternative: |
+        Ensure E&O insurance covers claims; ProdCo remains liable for 
+        uninsured/underinsured amounts.
+      
+    - request: "Amazon liable for lost profits on termination"
+      response: "Unacceptable"
+      alternative: |
+        Termination remedies addressed in termination section; no 
+        consequential damages.
+      
+    - request: "Higher Amazon liability cap"
+      response: "Resist; Production Fee reflects Amazon's commitment"
+      alternative: "Possible 150% cap if justified by deal structure"
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Production budget size"
+      high_risk: "Large budget creates large nominal cap"
+      low_risk: "Smaller budget limits exposure"
+      
+    - factor: "Content risk profile"
+      high_risk: "High risk content (real events, public figures)"
+      low_risk: "Low risk content (original fiction)"
+  
+  escalation_triggers:
+    - "Any cap on ProdCo indemnification"
+    - "Amazon liable for consequential damages"
+    - "Amazon cap below Production Fee"
+    - "Symmetric liability structure"

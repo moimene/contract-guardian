@@ -1,0 +1,44 @@
+# ================================================================
+# FAMILY: Conditions Precedent
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: ConditionsPrecedent
+rule_name: "Conditions Precedent"
+psa_section: 8
+required: true
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  Amazon's obligations hereunder are subject to any conditions precedent 
+  set forth in Exhibit A.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: CP-ACC-001
+    description: "Acknowledge conditions as satisfied"
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      Amazon Position: If ProdCo requests to acknowledge the conditions 
+      precedent as satisfied (or waived), inform ProdCo of the outstanding 
+      steps required to satisfy the conditions. To the extent applicable, 
+      with Amazon Legal approval, conditions can be acknowledged satisfied 
+      via email.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "conditions precedent"
+    - "subject to any conditions"
+  secondary:
+    - "Exhibit A"
+    - "obligations hereunder"

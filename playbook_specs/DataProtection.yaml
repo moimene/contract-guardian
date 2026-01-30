@@ -1,0 +1,100 @@
+# ================================================================
+# FAMILY: Data Protection
+# Source: PSA Section 9 "DATA PROTECTION"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: DataProtection
+rule_name: "Data Protection"
+psa_section: 9
+required: true  # May vary by country
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  When processing personal data in connection with this Agreement, 
+  Amazon or ProdCo shall act as independent data controllers and 
+  shall be individually and separately responsible for their own 
+  compliance with applicable data protection legislation, including, 
+  where applicable, the European General Data Protection Regulation 
+  and any implementing or equivalent national laws. Where applicable, 
+  ProdCo agrees to provide Amazon's privacy notice (as amended from 
+  time to time) to, and if relevant, seek the consent of any data 
+  subject whose personal data is processed by Amazon for the purpose 
+  of the Agreement.
+
+# ================================================================
+# NOTES
+# ================================================================
+notes: |
+  Note: This Section will vary from country to country (and may not 
+  be included at all in the form for some countries) depending on 
+  the applicable country's data protection laws. Please raise with 
+  Amazon Legal to discuss in the event you receive material or 
+  repeated pushback on the language in this Section (otherwise, hold 
+  to form) or should your country's form not include this concept 
+  and you feel that it is necessary.
+
+# ================================================================
+# CORE REQUIREMENTS
+# ================================================================
+core_requirements:
+  - id: DP-CORE-001
+    name: "Independent Controllers"
+    text_pattern: "independent data controllers"
+    required: true
+    
+  - id: DP-CORE-002
+    name: "Separate Compliance Responsibility"
+    text_pattern: "individually and separately responsible"
+    required: true
+    
+  - id: DP-CORE-003
+    name: "GDPR Reference (where applicable)"
+    text_pattern: "European General Data Protection Regulation"
+    required: true
+    context: "For EU/EEA related productions"
+    
+  - id: DP-CORE-004
+    name: "Privacy Notice Obligation"
+    text_pattern: "provide Amazon's privacy notice"
+    required: true
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: DP-UNACC-001
+    description: "Amazon as data processor"
+    text_patterns:
+      - "Amazon shall act as data processor"
+      - "Amazon processes data on behalf of ProdCo"
+    action: "ESCALATE_AMAZON_LEGAL"
+    amazon_position: |
+      Amazon and ProdCo act as independent data controllers. Any 
+      change to this structure requires Amazon Legal review.
+
+  - id: DP-UNACC-002
+    description: "Removal of data protection section entirely"
+    action: "ESCALATE_AMAZON_LEGAL"
+    amazon_position: |
+      Data protection section may be required depending on applicable 
+      law. Consult Amazon Legal before removing.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "DATA PROTECTION"
+    - "personal data"
+    - "data controllers"
+    - "data protection legislation"
+  secondary:
+    - "GDPR"
+    - "General Data Protection Regulation"
+    - "privacy notice"
+    - "data subject"
+    - "processing personal data"

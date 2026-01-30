@@ -1,0 +1,680 @@
+{
+  "timestamp": "20260129_211332",
+  "document": "contratos de test/PSA Principal Terms Fallback Guide (20 October 2025) - Prueba 1.docx",
+  "total_clauses": 7,
+  "family_distribution": {
+    "ServicesScope": 1,
+    "RightsGrant": 1,
+    "PaymentCredits": 1,
+    "RepsProdCo": 1,
+    "LiabilityLimitation": 1,
+    "OtherUnknown": 1,
+    "DisputeResolution": 1
+  },
+  "decision_distribution": {
+    "ESCALATE_HUMAN": 7
+  },
+  "results": [
+    {
+      "idx": 1,
+      "heading": "SERVICES",
+      "text_preview": "SERVICES: ProdCo will render services as set forth in this agreement, including any exhibits and sch...",
+      "family": "ServicesScope",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-001",
+        "clause_id": "clause-1",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "ServicesScope",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:13:47.843Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-001",
+          "detected_family": "ServicesScope",
+          "rule_id": "default:ServicesScope",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-001",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 2,
+      "heading": "RIGHTS",
+      "text_preview": "RIGHTS: All rights in the Program, including all materials commissioned (including the results and p...",
+      "family": "RightsGrant",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-002",
+        "clause_id": "clause-2",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "RightsGrant",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluation completed.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:14:00.356Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-002",
+          "detected_family": "RightsGrant",
+          "rule_id": "PB:v2026-01:RightsGrant-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "text": "The clause specifies that all rights in the Program shall be owned by Amazon exclusively, which aligns with the requirement for exclusive ownership.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause states that the rights are owned throughout the universe, which aligns with the requirement for worldwide (universe-wide) territory.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause mentions ownership in perpetuity or for the maximum legal term of protection, if shorter. This could be seen as a potential deviation since the standard requires perpetual duration without qualification.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause includes a backup assignment, stating that if the work made for hire does not fully vest rights in Amazon, ProdCo grants, transfers, and assigns all rights to Amazon.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause specifies that the Materials constitute 'works made for hire,' which aligns with the requirement for work made for hire.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause includes a waiver of moral rights, which is a variation that may require approval, especially for non-US talent.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause does not mention any reserved rights or reversion provisions, which aligns with the requirement for no reserved rights or reversions.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause generally aligns with Amazon's standard position, granting exclusive, universe-wide, and perpetual ownership of the Program to Amazon, with a backup assignment and work made for hire provision. However, the mention of 'perpetuity (or for the maximum legal term of protection, if shorter)' could be a potential deviation from the requirement for perpetual duration without qualification. The waiver of moral rights is noted as a variation that may require approval.",
+            "risk_level": "low"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-002",
+          "client_summary_line": "Clause evaluation completed.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 3,
+      "heading": "FEES",
+      "text_preview": "FEES: If ProdCo is not in demonstrated breach of this Agreement, subject to any other applicable ter...",
+      "family": "PaymentCredits",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-003",
+        "clause_id": "clause-3",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "PaymentCredits",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:14:16.724Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-003",
+          "detected_family": "PaymentCredits",
+          "rule_id": "PB:v2026-01:PaymentCredits-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "text": "Payment not tied to verifiable milestones or delivery conditions.",
+                "issue": "The clause does not specify that payment is tied to verifiable milestones or delivery conditions, which is a core requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "No mention of offset rights.",
+                "issue": "The clause does not mention offset rights, which is a critical requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "No mention of audit rights.",
+                "issue": "The clause does not mention audit rights, which is a critical requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "No mention of credit approval rights.",
+                "issue": "The clause does not mention credit approval rights, which is a core requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause lacks several core requirements: it does not tie payment to verifiable milestones or delivery conditions, and it omits offset rights, audit rights, and credit approval rights.",
+            "risk_level": "Critical"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-003",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 4,
+      "heading": "ENTITLEMENTS",
+      "text_preview": "ENTITLEMENTS; CREDIT: If ProdCo is not in material breach of this Agreement, and completes ProdCo's ...",
+      "family": "RepsProdCo",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-004",
+        "clause_id": "clause-4",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "RepsProdCo",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:14:27.979Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-004",
+          "detected_family": "RepsProdCo",
+          "rule_id": "PB:v2026-01:RepsProdCo-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "issue": "Materiality qualifier",
+                "description": "The clause includes a materiality qualifier in the entitlements section, which is not acceptable as it can limit the scope of the representations and warranties.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "issue": "Missing chain of title",
+                "description": "The clause does not explicitly mention a complete chain of title, which is a critical requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "issue": "Limited survival",
+                "description": "The clause does not specify that the representations and warranties survive in perpetuity, which is a standard requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause contains a materiality qualifier, lacks an explicit mention of a complete chain of title, and does not specify perpetual survival of representations and warranties.",
+            "risk_level": "High"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-004",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 5,
+      "heading": "MISCELLANEOUS",
+      "text_preview": "MISCELLANEOUS (CONDITIONS PRECEDENT, DAMAGES, INJUNCTIVE RELIEF, ASSIGNMENT, ETC.): Amazon's obligat...",
+      "family": "LiabilityLimitation",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-005",
+        "clause_id": "clause-5",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "LiabilityLimitation",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated based on industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:14:42.445Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-005",
+          "detected_family": "LiabilityLimitation",
+          "rule_id": "PB:v2026-01:LiabilityLimitation-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "issue": "The clause does not explicitly mention a cap on Amazon's direct liability at the Production Fee, which is a core requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "issue": "The clause includes a mutual waiver of claims for indirect, incidental, punitive, and/or consequential damages, but does not explicitly state an exclusion for Amazon's consequential damages, which is a core requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "issue": "The clause does not explicitly state that ProdCo's indemnification is uncapped, which is a core requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "issue": "The clause includes a carveout for breaches of confidentiality, which aligns with the core requirements, but does not mention carveouts for fraud or willful misconduct.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "issue": "The clause suggests a mutual waiver of claims for consequential damages, which could imply a symmetric liability cap, a critical pattern.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause lacks explicit mention of a cap on Amazon's direct liability at the Production Fee and does not clearly exclude Amazon's consequential damages. It also does not confirm that ProdCo's indemnification is uncapped. While it includes a carveout for confidentiality breaches, it lacks carveouts for fraud and willful misconduct. The mutual waiver of claims for consequential damages suggests a potential symmetric liability cap, which is a critical issue.",
+            "risk_level": "High"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-005",
+          "client_summary_line": "Clause evaluated based on industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 6,
+      "heading": "DATA PROTECTION",
+      "text_preview": "DATA PROTECTION: When processing personal data in connection with this Agreement, Amazon or ProdCo s...",
+      "family": "OtherUnknown",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": false,
+      "full_response": {
+        "clause_instance_id": "psa-clause-006",
+        "clause_id": "clause-6",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "OtherUnknown",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:14:48.064Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-006",
+          "detected_family": "OtherUnknown",
+          "rule_id": "default:OtherUnknown",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [],
+            "summary": {
+              "counts": {
+                "total": 0,
+                "missing": 0,
+                "added": 0,
+                "modified": 0
+              },
+              "coverage_confidence": 0.7
+            }
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-006",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    },
+    {
+      "idx": 7,
+      "heading": "TAX",
+      "text_preview": "TAX; GOVERNING LAW; JURISDICTION: Each party will be responsible for identifying and paying all taxe...",
+      "family": "DisputeResolution",
+      "decision": "ESCALATE_HUMAN",
+      "has_playbook_spec": true,
+      "full_response": {
+        "clause_instance_id": "psa-clause-007",
+        "clause_id": "clause-7",
+        "document_id": "3251aff0-551c-42af-8935-3b9ef76cac4b",
+        "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+        "detected_family": "DisputeResolution",
+        "client_state": "REQUIRED",
+        "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+        "client_summary_line": "Clause evaluated against industry practices.",
+        "decision": "ESCALATE_HUMAN",
+        "safety_pass": true,
+        "completed_at": "2026-01-29T20:14:59.453Z",
+        "_internal": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-007",
+          "detected_family": "DisputeResolution",
+          "rule_id": "PB:v2026-01:DisputeResolution-Core",
+          "analysis_mode": "MODE_ENUMERATED_DEVIATIONS",
+          "observations": {
+            "observations": [
+              {
+                "offset": 0,
+                "text": "The clause specifies that disputes will be subject to binding arbitration administered by JAMS in Los Angeles County, California, under California law, which deviates from the standard requirement of AAA rules in Seattle with Delaware law.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The governing law is specified as New York, which deviates from the standard requirement of Delaware law.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The venue for arbitration is Los Angeles County, California, which deviates from the standard requirement of Seattle.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause mentions litigation in state and federal courts in New York, which deviates from the standard requirement of arbitration.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "There is no explicit mention of an injunctive relief carveout, which is a critical requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              },
+              {
+                "offset": 0,
+                "text": "The clause includes a waiver of jury trial, which aligns with the standard requirement.",
+                "offsets": {
+                  "start": 0,
+                  "end": 0
+                },
+                "confidence": 0.7,
+                "change_type": "modified"
+              }
+            ],
+            "summary": "The clause deviates from the standard dispute resolution requirements by specifying JAMS arbitration in Los Angeles under California law, with New York governing law and potential litigation in New York courts. It lacks an explicit injunctive relief carveout.",
+            "risk_level": "critical"
+          },
+          "observations_count": 0,
+          "final_status": "Ambiguous",
+          "proposed_changes": [],
+          "anchor_confidence": 1,
+          "confidence_overall": 0.7,
+          "decision": "ESCALATE_HUMAN",
+          "escalation_recommended": true,
+          "escalation_reason": "AMBIGUOUS_POLICY_JUDGMENT",
+          "block_export": false,
+          "validation_passed": true,
+          "processing_time_ms": 0
+        },
+        "_sanitized": {
+          "run_id": "abf47252-2c5d-4caf-83d6-8914cbf24bf9",
+          "clause_instance_id": "psa-clause-007",
+          "client_summary_line": "Clause evaluated against industry practices.",
+          "client_comment": "The clause has been evaluated in accordance with established industry practices.",
+          "client_status": "REQUIRED",
+          "safety_pass": true,
+          "blocked_terms_detected": [],
+          "leak_score": 0,
+          "proposed_changes_client": []
+        }
+      }
+    }
+  ]
+}

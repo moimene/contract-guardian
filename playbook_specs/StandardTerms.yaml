@@ -1,0 +1,82 @@
+# ================================================================
+# FAMILY: Standard Terms
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: StandardTerms
+rule_name: "Standard Terms"
+psa_section: 8
+required: true
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  ProdCo has or will obtain signed agreements from each principal, 
+  employee or other individual prior to rendering services in 
+  connection with the Program on terms consistent with this Agreement 
+  (including rights and assignment terms hereof) and in a form 
+  approved by Amazon. Any production order of the Program will not 
+  be effective unless in written notice signed by Amazon. This 
+  Agreement includes and incorporates industry custom standard terms 
+  and conditions for agreements of this type, such as insurance and 
+  additional representations/warranties, indemnification and remedies. 
+  At Amazon's request, these additional terms will be formalized as 
+  part of this Agreement subject to good faith negotiation within 
+  Amazon's customary parameters; provided that unless and until such 
+  time, industry custom standard terms and conditions will prevail.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: ST-ACC-001
+    description: "Trigger STCs after option exercise"
+    text_pattern: |
+      At Amazon's request or, if earlier, after Amazon's exercise of 
+      its option to order production of the initial season of the Program
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Can add trigger for STCs negotiation after option exercise.
+
+  - id: ST-ACC-002
+    description: "Change to 'customary industry parameters'"
+    text_pattern: "customary industry parameters for agreements of this type"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      Amazon Position: If ProdCo takes issue with language that 
+      negotiation of the additional terms will be "within Amazon's 
+      customary parameters", OK to change to customary industry 
+      parameters.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: ST-UNACC-001
+    description: "Remove industry custom prevails clause"
+    action: "REJECT"
+    amazon_position: |
+      Amazon Position: If ProdCo takes issue with language that industry 
+      custom standard terms and conditions will prevail until the 
+      additional terms are negotiated, hold to form. This language 
+      applies to both parties, affects both parties equally (as industry 
+      custom is in neither party's control) and is a reasonable compromise 
+      until the appropriate time to negotiate the additional terms.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "standard terms and conditions"
+    - "industry custom"
+    - "signed agreements from each principal"
+  secondary:
+    - "good faith negotiation"
+    - "customary parameters"
+    - "production order"

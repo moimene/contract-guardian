@@ -1,0 +1,92 @@
+{
+    "family_id": "RightsGrant",
+    "display_name": "Grant of Rights and Ownership",
+    "version": "1.0",
+    "examples": [
+        {
+            "id": "RG-001",
+            "text": "The Program and all Materials shall be considered a 'work made for hire' for Amazon under the United States Copyright Act. To the extent any element does not qualify as a work made for hire, ProdCo hereby irrevocably assigns to Amazon all right, title, and interest in and to such element, including all copyrights, in perpetuity throughout the universe.",
+            "article": "3.1",
+            "header": "OWNERSHIP AND GRANT OF RIGHTS - Work Made for Hire",
+            "triggers_found": [
+                "work made for hire",
+                "irrevocably assigns",
+                "all right, title, and interest",
+                "in perpetuity",
+                "throughout the universe"
+            ],
+            "confidence": 0.98,
+            "notes": "Core work-for-hire and assignment provision"
+        },
+        {
+            "id": "RG-002",
+            "text": "Amazon shall own exclusively and in perpetuity, throughout the universe, in all languages, and in all media now known or hereafter developed, all right, title, and interest in and to the Program and Materials, including without limitation all copyrights, trademarks, patents, trade secrets, and all other intellectual property rights therein.",
+            "article": "3.2",
+            "header": "OWNERSHIP - Scope of Rights",
+            "triggers_found": [
+                "Amazon shall own",
+                "exclusively",
+                "in perpetuity",
+                "throughout the universe",
+                "all media now known or hereafter developed",
+                "all right, title, and interest",
+                "intellectual property rights"
+            ],
+            "confidence": 0.97,
+            "notes": "Comprehensive ownership scope provision"
+        },
+        {
+            "id": "RG-003",
+            "text": "Amazon shall have the exclusive right to exploit, distribute, exhibit, reproduce, adapt, modify, and otherwise use the Program in any manner and through any medium, without restriction, limitation, or additional compensation to ProdCo except as expressly set forth herein.",
+            "article": "3.3",
+            "header": "OWNERSHIP - Exploitation Rights",
+            "triggers_found": [
+                "exclusive right",
+                "exploit",
+                "distribute",
+                "any manner",
+                "any medium"
+            ],
+            "confidence": 0.95,
+            "notes": "Exploitation rights provision"
+        },
+        {
+            "id": "RG-004",
+            "text": "Amazon shall have the exclusive right to create and exploit derivative works based on the Program, including sequels, prequels, spin-offs, remakes, merchandise, and interactive media, without any obligation to involve ProdCo in such derivative works.",
+            "article": "3.4",
+            "header": "OWNERSHIP - Derivative Works",
+            "triggers_found": [
+                "exclusive right",
+                "derivative works"
+            ],
+            "confidence": 0.93,
+            "notes": "Derivative works provision"
+        },
+        {
+            "id": "RG-005",
+            "text": "ProdCo hereby grants to Amazon an exclusive, perpetual, irrevocable, worldwide license to use ProdCo's name, logo, and likeness in connection with the promotion and exploitation of the Program.",
+            "article": "3.6",
+            "header": "OWNERSHIP - Promotional Rights",
+            "triggers_found": [
+                "grants to Amazon",
+                "exclusive",
+                "perpetual",
+                "irrevocable"
+            ],
+            "confidence": 0.90,
+            "notes": "Promotional license grant"
+        }
+    ],
+    "negative_examples": [
+        {
+            "id": "RG-NEG-001",
+            "text": "There shall be no reversion of rights to ProdCo under any circumstances.",
+            "actual_family": "RightsReversion",
+            "why_not_rights_grant": "This specifically addresses reversion, not the initial grant",
+            "triggers_that_redirect": [
+                "no reversion",
+                "under any circumstances"
+            ]
+        }
+    ]
+}

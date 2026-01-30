@@ -1,0 +1,122 @@
+# ================================================================
+# FAMILY: Assignment
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: Assignment
+rule_name: "Assignment"
+psa_section: 8
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  ProdCo may not assign this Agreement or any rights or obligations 
+  without Amazon's prior written consent. This Agreement, in whole 
+  or in part (including rights and obligations), may be freely 
+  assigned by Amazon, and any such assignment will be binding upon 
+  ProdCo and inure to the benefit of such assignee.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: ASSIGN-ACC-001
+    description: "Amazon secondary liability unless assigned to financially responsible party"
+    text_pattern: |
+      provided that Amazon will remain secondarily liable hereunder 
+      unless the assignee assumes in writing all of Amazon's obligations 
+      as of the date of such assignment or such assignee is: (i) a 
+      so-called "major", "mini-major" or "major independent" motion 
+      picture company, national television network or studio, or 
+      similarly financially responsible party (as determined by Amazon 
+      in its discretion at the time of assignment); or (ii) an entity 
+      affiliated with, owned or controlled by, or owning or controlling 
+      Amazon, or an entity that succeeds to substantially all of the 
+      assets of Amazon
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      Amazon Position: ProdCo is pushing back on the free assignability 
+      of the agreement by Amazon, hold on Amazon right to assign to 
+      anyone. That said, Amazon is willing to accept secondary liability 
+      unless assigned to a financially responsible entity that assumes 
+      in writing Amazon's obligations.
+
+  - id: ASSIGN-ACC-002
+    description: "Notice of assignment by Amazon"
+    text_pattern: |
+      Amazon will make reasonable efforts to notify ProdCo of an 
+      assignment by Amazon of this Agreement in whole (for clarity, 
+      Amazon will not need to make such efforts to notify ProdCo for 
+      a partial assignment of this Agreement including with respect 
+      to Amazon's assignment of its rights) unless such assignment 
+      is to an Amazon affiliate, provided that inadvertent failure 
+      to do so will not be deemed a breach of this Agreement nor 
+      affect the validity of such assignment.
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      With Amazon Legal approval can provide notice prior to Amazon 
+      assignment.
+
+  - id: ASSIGN-ACC-003
+    description: "Restrict Amazon assignment to affiliates only (no 3P)"
+    text_pattern: |
+      On a non-precedential, non-citable basis, Amazon may not assign 
+      this Agreement without ProdCo's prior written consent; provided, 
+      however, that Amazon may assign (i) this Agreement to an entity 
+      affiliated with, owned or controlled by, or owning or controlling 
+      Amazon, or an entity that succeeds to substantially all of the 
+      assets of Amazon, and (ii) any of Amazon's rights hereunder to 
+      any third parties.
+    approval_required: true
+    approval_level: "AMAZON_LEGAL_REGIONAL_LEAD"
+    guidance: |
+      With Amazon Legal Regional Lead (e.g., Hendrik for International) 
+      approval, we can agree to only assign to Amazon affiliates (so 
+      no 3P assignment). But we should add clarifying language that 
+      any restriction on assignment does not limit or impact Amazon's 
+      right to license or assign exploitation rights to the series or 
+      movie. Should add a carve out to this restriction that excludes 
+      an entity into which Amazon is merged, or to an acquirer of all 
+      or substantially all of Amazon's business or assets.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: ASSIGN-UNACC-001
+    description: "ProdCo free assignment"
+    text_patterns:
+      - "ProdCo may assign"
+      - "ProdCo may freely assign"
+    action: "REJECT"
+    amazon_position: |
+      ProdCo should not be able to assign this agreement without 
+      Amazon's approval.
+
+  - id: ASSIGN-UNACC-002
+    description: "Removal of Amazon's free assignment right"
+    action: "REJECT"
+    amazon_position: |
+      Hold on Amazon right to assign to anyone. Amazon's ability to 
+      freely assign is fundamental to exploitation of rights.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "may not assign"
+    - "may be freely assigned"
+    - "assignment"
+    - "assignee"
+  secondary:
+    - "prior written consent"
+    - "binding upon ProdCo"
+    - "inure to the benefit"
+    - "secondarily liable"

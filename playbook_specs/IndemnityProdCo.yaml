@@ -1,0 +1,112 @@
+# ================================================================
+# FAMILY: Indemnity by ProdCo
+# Source: PLAYBOOK_DSA_Amazon - Rule "Indemnity by ProdCo"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: IndemnityProdCo
+rule_name: "Indemnity by ProdCo"
+psa_section: 7
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (Verbatim from Playbook)
+# ================================================================
+standard_position: |
+  ProdCo will indemnify, defend (at Amazon's option), and hold harmless 
+  Amazon and its assignees, licensees, and each of their affiliates 
+  against any losses, liability, damages, judgements, cost or expenses 
+  ("Losses") arising out of any third-party claim in connection with 
+  the development and production by ProdCo of the Program, ProdCo's 
+  breach or alleged breach of any of its agreements, representations 
+  or warranties under this Agreement and/or ProdCo's negligence or 
+  willful misconduct.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: IND-PROD-ACC-001
+    description: "Delete 'alleged breach'"
+    text_pattern: "breach of any of its agreements"  # Without "alleged"
+    approval_required: false
+    approval_level: "OC_DISCRETION"
+    guidance: |
+      NTD: If the deletion of "alleged breach" is requested by ProdCo, 
+      do not accept it automatically, but please push back, as per 
+      Amazon's policies. However, if ProdCo insists, this should not be 
+      a deal-breaker, so it may be granted in the future at OC's 
+      discretion, without Amazon Legal's approval.
+    amazon_position: |
+      While the preference is to keep the wording as is to avoid a 
+      dispute between ProdCo/Amazon if ProdCo indeed committed a breach 
+      or not and to avoid Amazon having to wait for a determination to 
+      be made whether ProdCo actually committed a breach before seeking 
+      indemnity from ProdCo, this should not become a deal-breaker.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: IND-PROD-UNACC-001
+    description: "Add 'uncured' or 'material' qualifier to breach"
+    text_patterns:
+      - "uncured breach"
+      - "material breach"
+      - "uncured, material breach"
+    context: "indemnity trigger"
+    action: "REJECT"
+    amazon_position: |
+      Do NOT add "material" or "uncured" before breach under ProdCo's 
+      indemnity as a matter of policy. Because a claim can arise out 
+      of any breach (whether or not material and/or cured by ProdCo), 
+      if we incur third-party liability as a result of ProdCo's breach, 
+      even if non-material or cured, ProdCo should be required to 
+      indemnify us.
+
+  - id: IND-PROD-UNACC-002
+    description: "Remove defense obligation"
+    text_pattern: null  # Absence of "defend"
+    action: "REJECT"
+    amazon_position: |
+      ProdCo requests to remove the obligation to defend Amazon. We're 
+      unable to accommodate ProdCo's request. Amazon recognizes a line 
+      item in the budget for E&O and general liability insurance funded 
+      by Amazon that covers tort claims regardless of the ProdCo's 
+      negligence or intent, provided there is no fraud, so it is more 
+      appropriate for insurance to pay for a defense than to transfer 
+      this obligation to Amazon. Amazon has the ability to decide 
+      whether to control defense, however this does not affect ProdCo's 
+      obligation to do so.
+
+  - id: IND-PROD-UNACC-003
+    description: "Cap on indemnity obligation"
+    text_patterns:
+      - "indemnity shall be limited"
+      - "indemnity capped at"
+      - "maximum indemnity"
+    action: "REJECT"
+    guidance: |
+      ProdCo's indemnification obligations should be uncapped. Any 
+      limitation on indemnity is unacceptable.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "ProdCo will indemnify"
+    - "ProdCo shall indemnify"
+    - "indemnify, defend"
+    - "hold harmless Amazon"
+  secondary:
+    - "arising out of any third-party claim"
+    - "development and production by ProdCo"
+    - "breach or alleged breach"
+    - "negligence or willful misconduct"
+  negative:
+    - "Amazon will indemnify"
+    - "Amazon shall indemnify"
+  heading_patterns:
+    - "INDEMNITY"

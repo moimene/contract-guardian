@@ -4,7 +4,17 @@
 **Nombre del Producto**: Contract Guardian (anteriormente Amazon Redliner)
 **Version**: 2.1
 **Fecha**: Enero 2026
-**Estado**: Produccion con RAG activo, Edge Functions desplegadas, Tests E2E pasando
+**Estado**: ✅ PRODUCCION - Pipeline W2 100% Operativo
+
+### Estado del Sistema (2026-01-27)
+
+| Componente | Estado | Detalles |
+|------------|--------|----------|
+| **Pipeline W2** | ✅ Operativo | ~10s por clausula |
+| **RAG Search** | ✅ Activo | 1,367 policy_examples |
+| **Edge Functions** | ✅ 9 activas | Todas testeadas |
+| **Tests E2E** | ✅ 9/9 pasados | 100% coverage |
+| **Router Agent** | ✅ 24 familias | confidence 0.95 |
 
 ---
 
@@ -16,11 +26,12 @@
 4. [Pipeline de Revision (4 Agentes)](#4-pipeline-de-revision-4-agentes)
 5. [Sistema RAG](#5-sistema-rag)
 6. [Flujos de Trabajo n8n](#6-flujos-de-trabajo-n8n)
-7. [Interfaz de Usuario (Lovable)](#7-interfaz-de-usuario-lovable)
+7. [Interfaz de Usuario (React + Vite + Vercel)](#7-interfaz-de-usuario-react--vite--vercel)
 8. [Historias de Usuario](#8-historias-de-usuario)
 9. [Especificaciones Tecnicas](#9-especificaciones-tecnicas)
 10. [Metricas y KPIs](#10-metricas-y-kpis)
 11. [Roadmap](#11-roadmap)
+12. [Licencia](#12-licencia)
 
 ---
 
@@ -43,7 +54,7 @@ Contract Guardian es un sistema de revision automatizada de contratos que utiliz
 | Inconsistencia entre revisores | Playbook centralizado con ejemplos RAG |
 | Dificultad de escalar el equipo legal | Sistema multi-tenant escalable |
 | Falta de trazabilidad | Audit trail completo por clausula |
-| Conocimiento no estructurado | 909 policy_examples con embeddings |
+| Conocimiento no estructurado | 1,367 policy_examples con embeddings |
 
 ### 1.3 Usuarios Objetivo
 
@@ -56,7 +67,7 @@ Contract Guardian es un sistema de revision automatizada de contratos que utiliz
 
 ### 1.4 Diferenciadores Clave
 
-- **RAG con 909 ejemplos reales** clasificados por aceptabilidad
+- **RAG con 1,367 ejemplos reales** clasificados por aceptabilidad
 - **4 agentes especializados** con roles distintos (no un solo LLM)
 - **Arquitectura 3 capas** mantenible por el usuario sin codigo
 - **Sanitizacion obligatoria** para proteger politicas internas
@@ -69,9 +80,9 @@ Contract Guardian es un sistema de revision automatizada de contratos que utiliz
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND (Lovable)                              │
+│                        FRONTEND (React + Vite + Vercel)                      │
 │   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│   │ NewAnalysis  │  │ContractReview│  │  Escalations │  │ KnowledgeGraph│   │
+│   │  Dashboard   │  │ NewAnalysis  │  │ContractReview│  │  Escalations │   │
 │   └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘   │
 └──────────┼─────────────────┼─────────────────┼─────────────────┼───────────┘
            │                 │                 │                 │
@@ -739,7 +750,7 @@ UNACCEPTABLE: 453 (33.1%) ████████████████
 | Workflow | Endpoint | Metodo |
 |----------|----------|--------|
 | W1 | `/webhook/file-upload` | POST |
-| W2 | `/webhook/clause-review` | POST |
+| W2 | `https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag` | POST |
 | W3 | `/webhook/contract-review` | POST |
 
 ### 6.5 Edge Functions Supabase
@@ -814,11 +825,11 @@ SELECT * FROM monitoring_rag_stats;
 
 ---
 
-## 7. Interfaz de Usuario (Lovable)
+## 7. Interfaz de Usuario (React + Vite + Vercel)
 
 ### 7.1 Arquitectura Frontend
 
-La interfaz de usuario esta construida con **Lovable** (plataforma de desarrollo visual) sobre React + TypeScript + shadcn/ui.
+La interfaz de usuario esta construida con **React 18 + Vite 7** desplegada en **Vercel**.
 
 ```
 +------------------------------------------------------------------+
@@ -826,33 +837,40 @@ La interfaz de usuario esta construida con **Lovable** (plataforma de desarrollo
 +------------------------------------------------------------------+
 |                                                                  |
 |  +-----------------+     +------------------+     +-------------+ |
-|  | React 18        |     | TanStack Query   |     | Supabase    | |
-|  | TypeScript      |     | (Data Fetching)  |     | Realtime    | |
-|  | React Router    |     | Cache + Sync     |     | Subscription| |
+|  | React 18        |     | Vite 7           |     | Supabase    | |
+|  | TypeScript      |     | (Build Tool)     |     | Realtime    | |
+|  | React Router    |     | HMR + Fast Build |     | Subscription| |
 |  +-----------------+     +------------------+     +-------------+ |
 |           |                      |                      |        |
 |           v                      v                      v        |
 |  +-------------------------------------------------------+       |
 |  |                    COMPONENTES UI                      |       |
 |  |  +-------------+  +-------------+  +---------------+   |       |
-|  |  | shadcn/ui   |  | Tailwind    |  | Lucide Icons  |   |       |
+|  |  | shadcn/ui   |  | Tailwind v4 |  | Lucide Icons  |   |       |
 |  |  | Components  |  | CSS         |  |               |   |       |
 |  |  +-------------+  +-------------+  +---------------+   |       |
 |  +-------------------------------------------------------+       |
 |                                                                  |
+|  Design System: Garrigues UX (Pantone 3308 C)                    |
+|  Hosting: Vercel                                                 |
 +------------------------------------------------------------------+
 ```
 
-### 7.2 Estructura de Rutas
+### 7.2 URLs de Produccion
+
+| Entorno | URL |
+|---------|-----|
+| **Produccion** | https://web-tan-mu-35.vercel.app |
+| **Local dev** | http://localhost:5173 |
+
+### 7.3 Estructura de Rutas
 
 | Ruta | Componente | Descripcion |
 |------|------------|-------------|
-| `/` | Dashboard | Pagina principal con documentos recientes |
-| `/dashboard` | Dashboard | Alias de pagina principal |
+| `/` | Dashboard | Vista principal con stats y documentos |
 | `/new` | NewAnalysis | Subir nuevo contrato para analisis |
-| `/review/:documentId` | ContractReview | Revision de clausulas de un contrato |
+| `/review/:id` | ContractReview | Revision de clausulas de un contrato |
 | `/escalations` | Escalations | Gestion de escalaciones pendientes |
-| `/auth` | Auth | Login/Registro |
 
 ### 7.3 Componentes Principales
 
@@ -1305,22 +1323,59 @@ export interface EscalationRequest {
 }
 ```
 
-### 7.8 Archivos del Frontend
+### 7.8 Estructura del Frontend
 
 ```
-lovable-files/
-├── App.tsx                    # Router principal
-├── AppSidebar.tsx             # Navegacion lateral
-├── ContractReview.tsx         # Pagina de revision (614 lineas)
-├── Escalations.tsx            # Pagina de escalaciones (551 lineas)
-├── contracts.ts               # Types y configuracion (336 lineas)
-├── useClauseReviews.ts        # Hooks de clausulas (447 lineas)
-├── useEscalations.ts          # Hooks de escalaciones
-└── review/
-    └── RedlineViewer.tsx      # Componente de redlines (352 lineas)
+web/
+├── 📁 src/
+│   ├── 📁 components/           # Componentes React
+│   │   ├── 📁 layout/           # AppSidebar, Layout
+│   │   └── 📁 ui/               # shadcn/ui (Button, Card, Badge...)
+│   ├── 📁 pages/                # Paginas principales
+│   │   ├── Dashboard.tsx        # Vista principal con stats
+│   │   ├── NewAnalysis.tsx      # Subir contratos
+│   │   ├── ContractReview.tsx   # Revisar clausulas
+│   │   └── Escalations.tsx      # Gestion escalaciones
+│   ├── 📁 lib/                  # Utilidades
+│   │   ├── supabase.ts          # Cliente Supabase
+│   │   └── utils.ts             # Helpers
+│   ├── 📁 hooks/                # Custom hooks
+│   │   ├── useAuth.tsx          # Autenticacion
+│   │   ├── useClauseReviews.ts  # Hooks de clausulas
+│   │   └── useEscalations.ts    # Hooks de escalaciones
+│   └── 📁 types/                # TypeScript types
+├── index.html
+├── vite.config.ts
+├── tailwind.config.js
+└── vercel.json                  # Config deploy Vercel
 ```
 
-### 7.9 Flujo de Interaccion Usuario
+### 7.9 Autenticacion
+
+El sistema soporta dos modos de autenticacion:
+
+| Modo | Variable | Descripcion |
+|------|----------|-------------|
+| **Dev Mode** | `USE_DEV_MODE = true` | Usuario de desarrollo automatico |
+| **Auth Mode** | `USE_DEV_MODE = false` | Autenticacion real Supabase |
+
+#### Superusuarios de Prueba
+
+| Email | Role | Permisos |
+|-------|------|----------|
+| admin@test.com | admin | `["all"]` - full access |
+| client@test.com | client | `["all"]` - full access |
+
+```typescript
+// src/hooks/useAuth.tsx
+const { user, isSuperuser } = useAuth();
+
+if (isSuperuser) {
+  // Acceso completo sin restricciones RLS
+}
+```
+
+### 7.10 Flujo de Interaccion Usuario
 
 ```
 1. LOGIN
@@ -1668,19 +1723,96 @@ lovable-files/
 
 ### 9.1 Stack Tecnologico
 
-| Capa | Tecnologia | Version |
-|------|------------|---------|
-| Frontend | React + TypeScript | 18.x |
-| UI Components | shadcn/ui | latest |
-| Styling | Tailwind CSS | 3.x |
-| Backend | Supabase (PostgreSQL) | latest |
-| Vector DB | pgvector | 0.5+ |
-| Orchestration | n8n | 1.x |
-| LLM | OpenAI API | gpt-4o, gpt-4o-mini |
-| Embeddings | OpenAI | text-embedding-3-small |
+#### Backend
+| Componente | Tecnologia | Version |
+|------------|------------|---------|
+| Base de Datos | PostgreSQL (Supabase) | 15+ |
+| Vector Search | pgvector | 0.5+ |
+| Edge Functions | Deno (Supabase) | 1.x |
+| Workflow Engine | n8n Cloud | 1.x |
+| LLM Provider | OpenAI | GPT-4o/GPT-4o-mini |
+| Embeddings | OpenAI text-embedding-3-small | 1536 dims |
+| Document Processing | Aspose.Words Cloud | 24.x |
 | Auth | Supabase Auth | built-in |
 
-### 9.2 Variables de Entorno
+#### Frontend
+| Componente | Tecnologia | Version |
+|------------|------------|---------|
+| Framework | React + TypeScript | 18.x |
+| Build Tool | Vite | 7.x |
+| UI Library | shadcn/ui | latest |
+| Styling | Tailwind CSS | v4 |
+| Design System | Garrigues UX | Pantone 3308 C |
+| Hosting | Vercel | latest |
+| State | React Context + Supabase Realtime | - |
+
+### 9.2 Estructura de Directorios del Proyecto
+
+```
+AMAZON REDLINER/
+├── 📁 web/                          # Frontend React + Vite
+│   ├── 📁 src/
+│   │   ├── 📁 components/           # Componentes React
+│   │   │   ├── 📁 layout/           # AppSidebar, Layout
+│   │   │   └── 📁 ui/               # shadcn/ui (Button, Card, Badge...)
+│   │   ├── 📁 pages/                # Paginas principales
+│   │   ├── 📁 lib/                  # Utilidades
+│   │   ├── 📁 hooks/                # Custom hooks
+│   │   └── 📁 types/                # TypeScript types
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── vercel.json
+│
+├── 📁 supabase/                     # Backend Supabase
+│   └── 📁 functions/                # Edge Functions (9)
+│       ├── 📁 start_review/
+│       ├── 📁 update_run_status/
+│       ├── 📁 generate_export/
+│       ├── 📁 monitoring/
+│       ├── 📁 request_review/
+│       ├── 📁 export_doc/
+│       └── 📁 n8n-proxy/
+│
+├── 📁 n8n/                          # Workflows n8n
+│   ├── W1_DriveIngest.json
+│   ├── W2_ClauseReview_RAG.json
+│   └── W3_ContractReview.json
+│
+├── 📁 extractors/                   # Procesadores de documentos
+│   ├── docx_clause_extractor.ts
+│   ├── pdf_clause_extractor.ts
+│   ├── aspose_redline_builder.ts
+│   └── embedding_generator.ts
+│
+├── 📁 validators/                   # Validadores
+│   ├── gating_matrix.ts
+│   ├── leakage_guard.ts
+│   └── validate_anchor_conf.ts
+│
+├── 📁 playbook/                     # Reglas de negocio
+│   ├── PolicySpec.ts
+│   ├── PolicySpecLoader.ts
+│   └── 📁 rules/
+│
+├── 📁 scripts/                      # Scripts utilidades
+│   ├── generate_redline.js
+│   ├── test_e2e_pipeline.js
+│   ├── generate_embeddings.js
+│   └── load_harvey_data.js
+│
+├── 📁 docs/                         # Documentacion
+│   ├── MONITORING.md
+│   └── N8N_UPDATE_RUN_STATUS.md
+│
+├── 📁 data/                         # Datasets
+│   └── policy_examples_harvey.jsonl
+│
+├── prd.json
+├── progress.txt
+└── .env
+```
+
+### 9.3 Variables de Entorno
 
 ```env
 # Supabase
@@ -1709,7 +1841,7 @@ TH_RAG_SIMILARITY=0.6
 N8N_WEBHOOK_BASE=https://n8n.example.com/webhook
 ```
 
-### 9.3 JSON Schemas
+### 9.4 JSON Schemas
 
 #### ClauseReviewOutput
 ```json
@@ -1754,7 +1886,7 @@ N8N_WEBHOOK_BASE=https://n8n.example.com/webhook
 }
 ```
 
-### 9.4 Indices de Base de Datos
+### 9.5 Indices de Base de Datos
 
 ```sql
 -- policy_examples (RAG)
@@ -1816,6 +1948,16 @@ WHERE escalation_recommended = true;
 
 ### 11.1 Completado (v2.1) ✅
 
+**Pipeline W2 - 100% Operativo (2026-01-27)**:
+- [x] Pipeline W2 estabilizado y en produccion
+- [x] Endpoint activo: `https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag`
+- [x] Tiempo de procesamiento: ~10 segundos por clausula
+- [x] Router con 24 familias Amazon (confidence 0.95)
+- [x] Credenciales Supabase hardcodeadas en RAG
+- [x] `alwaysOutputData` en RAG y Context Retriever
+- [x] Limpieza de 7 workflows obsoletos
+- [x] Commit: `604d1e4` → GitHub
+
 **Backend & RAG**:
 - [x] Arquitectura 3 capas implementada
 - [x] Dataset expandido: **1,367 policy_examples**
@@ -1843,12 +1985,16 @@ WHERE escalation_recommended = true;
 - [x] Auditoria con `audit_events`
 - [x] Leakage protection (Sanitizer blocklist)
 
-**Frontend**:
-- [x] Frontend Lovable funcional
+**Frontend (React + Vite + Vercel)**:
+- [x] Frontend React 18 + Vite 7 desplegado en Vercel
+- [x] URL Produccion: https://web-tan-mu-35.vercel.app
+- [x] Design System: Garrigues UX (Pantone 3308 C)
+- [x] Tailwind CSS v4 + shadcn/ui
+- [x] Dashboard - Vista principal con stats
 - [x] NewAnalysis - Subir contratos
 - [x] ContractReview - Revisar clausulas
 - [x] Escalations - Gestion escalaciones
-- [x] ConfigKnowledgeGraph - Visualizar taxonomia
+- [x] Supabase Realtime para actualizaciones en vivo
 
 ### 11.2 En Progreso (v2.2) 🔄
 
@@ -1900,6 +2046,16 @@ WHERE escalation_recommended = true;
 
 ---
 
+## 12. Licencia
+
+**Propiedad Exclusiva**
+
+© 2026 **g-digital**, Division de Negocio Digital de **J&A GARRIGUES, S.L.P.**
+
+Todos los derechos reservados. Este software es propiedad exclusiva de g-digital y esta protegido por las leyes de propiedad intelectual aplicables. Queda prohibida su reproduccion, distribucion, modificacion o uso no autorizado sin el consentimiento expreso por escrito de g-digital.
+
+---
+
 *Documento generado: Enero 2026*
-*Ultima actualizacion: 2026-01-27 | Contract Guardian v2.1*
+*Ultima actualizacion: 2026-01-28 | Contract Guardian v2.1*
 *RAG: 1,367 policy_examples | Edge Functions: 9 activas | Tests E2E: 9/9 pasados*

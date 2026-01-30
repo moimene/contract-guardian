@@ -1,0 +1,288 @@
+# ================================================================
+# PLAYBOOK SPEC: IndemnityProdCo
+# ProdCo Indemnification of Amazon
+# ================================================================
+
+family_id: IndemnityProdCo
+display_name: "ProdCo Indemnification Obligations"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon requires comprehensive indemnification from ProdCo covering 
+    all claims arising from the Program, Materials, production activities, 
+    and ProdCo's breach of the Agreement. Indemnification must be broad, 
+    unconditional, and extend to all Amazon Indemnitees.
+  
+  core_requirements:
+    - Broad coverage of all third-party claims
+    - Defense obligation (not just indemnification)
+    - Hold harmless language
+    - Coverage of all Amazon affiliates, successors, licensees
+    - No caps or limitations on indemnification
+    - No knowledge qualifiers
+    - No materiality thresholds
+    - Survival in perpetuity
+  
+  business_rationale: |
+    Content production creates significant third-party liability exposure 
+    including IP infringement, defamation, privacy violations, talent disputes, 
+    and production accidents. ProdCo controls production and is best positioned 
+    to manage these risks. Amazon's exploitation rights would be worthless if 
+    encumbered by unindemnified third-party claims.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Language that fully protects Amazon's interests"
+    
+    required_elements:
+      - element: "Indemnify, defend, and hold harmless"
+        note: "All three verbs required"
+      - element: "Amazon Indemnitees definition"
+        note: "Must include affiliates, successors, assigns, licensees, officers, directors, employees, agents"
+      - element: "From and against any and all claims"
+        note: "Broad claim coverage"
+      - element: "Arising out of or relating to"
+        note: "Broad causal nexus"
+    
+    acceptable_scope:
+      - "Breach of representations, warranties, or obligations"
+      - "IP infringement claims (copyright, trademark, patent, trade secret)"
+      - "Right of privacy/publicity violations"
+      - "Production activity claims (cast, crew, vendors)"
+      - "Acts or omissions of ProdCo and its personnel"
+      - "Defamatory, obscene, or unlawful content"
+      - "Third-party claims of any nature"
+    
+    acceptable_damages:
+      - "Claims, demands, actions, suits"
+      - "Damages, liabilities, losses"
+      - "Settlements, judgments"
+      - "Costs and expenses"
+      - "Reasonable attorneys' fees"
+    
+    example_acceptable:
+      - text: |
+          ProdCo shall indemnify, defend, and hold harmless Amazon and its 
+          parents, subsidiaries, affiliates, successors, assigns, licensees, 
+          officers, directors, employees, and agents (collectively, "Amazon 
+          Indemnitees") from and against any and all claims, demands, actions, 
+          suits, damages, liabilities, losses, settlements, judgments, costs, 
+          and expenses (including reasonable attorneys' fees and costs) arising 
+          out of or relating to: (a) any breach of ProdCo's representations, 
+          warranties, or obligations under this Agreement; (b) any claim that 
+          the Program or Materials infringe any right of any third party; 
+          (c) any claim arising from ProdCo's production activities; (d) any 
+          acts or omissions of ProdCo or its personnel; and (e) any claim that 
+          the Program contains defamatory or unlawful content.
+        rating: ACCEPTABLE
+        confidence: 0.98
+        notes: "Comprehensive coverage with all required elements"
+
+  passable:
+    description: "Language that provides adequate protection with minor gaps"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Proportionate fault allocation"
+        condition: "Only for claims caused solely by Amazon's breach"
+        example: |
+          ProdCo's indemnification shall not apply to claims to the extent 
+          caused by Amazon's sole negligence or willful misconduct, provided 
+          that ProdCo's indemnification shall apply in full to any claim 
+          involving any fault of ProdCo.
+        risk_level: MEDIUM
+        
+      - variation: "Knowledge qualifier for reps breach"
+        condition: "Only if ProdCo had no knowledge AND could not have discovered"
+        example: |
+          ProdCo's indemnification for breach of Section 5.1(b) shall not 
+          apply if ProdCo establishes it had no knowledge of the infringement 
+          and could not have discovered it through reasonable investigation.
+        risk_level: MEDIUM
+        notes: "Shifts burden of proof to ProdCo; acceptable if narrow"
+        
+      - variation: "Notice requirement"
+        condition: "Prompt notice required but late notice doesn't bar indemnity"
+        example: |
+          Amazon shall provide prompt written notice of any claim; provided 
+          that failure to provide prompt notice shall not relieve ProdCo of 
+          its indemnification obligations except to the extent ProdCo is 
+          actually and materially prejudiced by such delay.
+        risk_level: LOW
+        
+      - variation: "Insured claims carveout"
+        condition: "Only if ProdCo maintains required insurance"
+        example: |
+          For claims covered by ProdCo's required insurance, ProdCo shall 
+          first pursue recovery under such insurance; Amazon's rights against 
+          ProdCo for uninsured or underinsured amounts shall not be affected.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Language that fails to protect Amazon adequately"
+    action: "REJECT or escalate to Senior Legal"
+    
+    unacceptable_patterns:
+      - pattern: "Cap on indemnification"
+        example: "ProdCo's indemnification shall not exceed the Production Fee"
+        reason: "Claims can far exceed production budget; no cap acceptable"
+        risk_level: CRITICAL
+        
+      - pattern: "Gross negligence / willful misconduct limitation"
+        example: "ProdCo shall only indemnify for claims arising from gross negligence or willful misconduct"
+        reason: "Standard negligence and strict liability claims are unprotected"
+        risk_level: CRITICAL
+        
+      - pattern: "Mutual indemnification with same scope"
+        example: "Each party shall indemnify the other on the same terms"
+        reason: "Amazon's exposure is fundamentally different; asymmetric indemnity required"
+        risk_level: CRITICAL
+        
+      - pattern: "Knowledge qualifier without carveout"
+        example: "ProdCo indemnifies only for claims of which ProdCo had actual knowledge"
+        reason: "Defeats purpose of indemnification for unknown infringement"
+        risk_level: CRITICAL
+        
+      - pattern: "Materiality threshold"
+        example: "ProdCo indemnifies for material breaches only"
+        reason: "Non-material breaches can still create significant liability"
+        risk_level: HIGH
+        
+      - pattern: "Exclusion of consequential damages"
+        example: "Indemnification shall not include consequential or indirect damages"
+        reason: "Third-party claims often include consequential damages"
+        risk_level: CRITICAL
+        
+      - pattern: "Sunset provision"
+        example: "Indemnification obligations terminate 3 years after delivery"
+        reason: "Claims can arise decades after content creation"
+        risk_level: CRITICAL
+        
+      - pattern: "Sole remedy language"
+        example: "Indemnification is Amazon's sole and exclusive remedy"
+        reason: "Amazon may need injunctive relief or other remedies"
+        risk_level: HIGH
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Scope of coverage"
+      position: "No reduction in covered claim types"
+      fallback: "None - this is essential"
+      
+    - priority: 2
+      element: "Amazon Indemnitees"
+      position: "Full list including licensees"
+      fallback: "Can negotiate specific licensee categories if needed"
+      
+    - priority: 3
+      element: "No caps or limitations"
+      position: "Unlimited indemnification"
+      fallback: "Insurance-backed floor only in extreme cases"
+      
+    - priority: 4
+      element: "Survival"
+      position: "Perpetual survival"
+      fallback: "Minimum 10 years for most claims; perpetual for IP"
+  
+  common_counterparty_requests:
+    - request: "Cap indemnification at production budget"
+      response: "Unacceptable. Insurance should cover claims up to policy limits; ProdCo remains liable for excess."
+      alternative: "Ensure adequate insurance limits; no contractual cap"
+      
+    - request: "Carve out for claims caused by Amazon's edits"
+      response: "Partially acceptable if narrowly drafted"
+      alternative: |
+        Accept carveout for claims arising solely from Amazon's 
+        post-delivery modifications that materially deviate from 
+        delivered materials, provided such modifications were not 
+        approved by ProdCo and ProdCo objected in writing.
+      
+    - request: "Add 'to ProdCo's knowledge' qualifier"
+      response: "Generally unacceptable"
+      alternative: |
+        If required for deal, limit to specific rep (e.g., no pending 
+        litigation) and require ProdCo to represent it has conducted 
+        reasonable investigation.
+      
+    - request: "Exclude punitive damages"
+      response: "Unacceptable for third-party claims"
+      alternative: "None - punitive damages are common in defamation/privacy claims"
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Program content type"
+      high_risk: "True crime, documentary, biography, news"
+      medium_risk: "Drama based on real events, satire"
+      low_risk: "Original fiction, animation"
+      
+    - factor: "Production territory"
+      high_risk: "Jurisdictions with plaintiff-friendly defamation laws (UK, Australia)"
+      medium_risk: "EU territories"
+      low_risk: "US-only production"
+      
+    - factor: "Third-party IP usage"
+      high_risk: "Extensive use of licensed music, footage, literary works"
+      medium_risk: "Some licensed elements"
+      low_risk: "Fully original content"
+      
+    - factor: "ProdCo track record"
+      high_risk: "New company, prior claims history"
+      medium_risk: "Established but limited track record"
+      low_risk: "Established company, clean history, strong E&O"
+  
+  escalation_triggers:
+    - "Any cap or limitation on indemnification"
+    - "Mutual indemnification proposal"
+    - "Knowledge qualifiers"
+    - "Sunset provisions shorter than 10 years"
+    - "Carveouts for specific claim types"
+    - "ProdCo with prior claims or litigation history"
+
+# ================================================================
+# CLAUSE PATTERNS FOR DETECTION
+# ================================================================
+
+detection_patterns:
+  must_have:
+    - "indemnify"
+    - "defend"
+    - "hold harmless"
+    - "Amazon" OR "Indemnitees" OR "Studio"
+  
+  should_have:
+    - "from and against"
+    - "any and all claims"
+    - "arising out of"
+    - "relating to"
+    - "attorneys' fees"
+  
+  red_flags:
+    - "shall not exceed"
+    - "capped at"
+    - "limited to"
+    - "gross negligence"
+    - "willful misconduct only"
+    - "to ProdCo's knowledge"
+    - "material breach only"

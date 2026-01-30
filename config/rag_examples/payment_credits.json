@@ -1,0 +1,146 @@
+{
+    "family_id": "PaymentCredits",
+    "display_name": "Payment and Compensation Terms",
+    "version": "1.0",
+    "examples": [
+        {
+            "id": "PC-001",
+            "text": "In full consideration for all services rendered and rights granted hereunder, Amazon shall pay ProdCo the Production Fee in accordance with the payment schedule set forth in Exhibit D. The Production Fee shall constitute the entire compensation payable to ProdCo unless otherwise expressly provided.",
+            "article": "4.1",
+            "header": "COMPENSATION - Production Fee",
+            "triggers_found": [
+                "in full consideration",
+                "Amazon shall pay",
+                "Production Fee",
+                "payment schedule",
+                "compensation payable"
+            ],
+            "confidence": 0.95,
+            "notes": "Core production fee provision with full consideration language"
+        },
+        {
+            "id": "PC-002",
+            "text": "ProdCo may be entitled to contingent compensation based on Net Receipts as set forth in Exhibit C, subject to Amazon's standard accounting practices and definitions. Contingent compensation, if any, shall be calculated and paid semi-annually.",
+            "article": "4.2",
+            "header": "COMPENSATION - Contingent Compensation",
+            "triggers_found": [
+                "contingent compensation",
+                "Net Receipts",
+                "shall be calculated and paid",
+                "semi-annually"
+            ],
+            "confidence": 0.92,
+            "notes": "Backend/contingent compensation provision"
+        },
+        {
+            "id": "PC-003",
+            "text": "ProdCo shall be solely responsible for all taxes arising from payments received under this Agreement. ProdCo acknowledges that it is an independent contractor and not an employee of Amazon.",
+            "article": "4.3",
+            "header": "COMPENSATION - Taxes",
+            "triggers_found": [
+                "payments received"
+            ],
+            "confidence": 0.70,
+            "notes": "Tax responsibility - lower confidence, consider GeneralProvisions if isolated"
+        },
+        {
+            "id": "PC-004",
+            "text": "The Production Fee shall be payable in installments as follows: (a) Twenty percent (20%) upon execution of this Agreement; (b) Thirty percent (30%) upon commencement of principal photography; (c) Thirty percent (30%) upon completion of principal photography; (d) Twenty percent (20%) upon delivery and acceptance of the final cut.",
+            "article": "4.1(b)",
+            "header": "COMPENSATION - Payment Schedule",
+            "triggers_found": [
+                "Production Fee",
+                "payable",
+                "installments",
+                "upon execution",
+                "upon delivery"
+            ],
+            "confidence": 0.95,
+            "notes": "Payment schedule breakdown"
+        },
+        {
+            "id": "PC-005",
+            "text": "Amazon shall pay ProdCo a backend participation equal to five percent (5%) of Net Receipts after recoupment of the Production Fee and distribution expenses as defined in Exhibit C.",
+            "article": "4.3",
+            "header": "COMPENSATION - Backend",
+            "triggers_found": [
+                "Amazon shall pay",
+                "backend participation",
+                "Net Receipts",
+                "recoupment"
+            ],
+            "confidence": 0.93,
+            "notes": "Backend participation provision"
+        },
+        {
+            "id": "PC-006",
+            "text": "In addition to the Production Fee, Amazon shall reimburse ProdCo for pre-approved out-of-pocket production expenses in accordance with the approved budget attached as Exhibit F.",
+            "article": "4.4",
+            "header": "COMPENSATION - Expense Reimbursement",
+            "triggers_found": [
+                "Amazon shall reimburse",
+                "Production Fee",
+                "approved budget"
+            ],
+            "confidence": 0.88,
+            "notes": "Expense reimbursement provision"
+        },
+        {
+            "id": "PC-007",
+            "text": "All payments shall be made within thirty (30) days of ProdCo's submission of a proper invoice together with documentation required by Amazon. Late payments shall accrue interest at the rate of one percent (1%) per month.",
+            "article": "4.5",
+            "header": "COMPENSATION - Payment Terms",
+            "triggers_found": [
+                "payments",
+                "invoice",
+                "Late payments"
+            ],
+            "confidence": 0.85,
+            "notes": "Payment mechanics and late payment interest"
+        },
+        {
+            "id": "PC-008",
+            "text": "If the Program receives an Academy Award nomination in any category, Amazon shall pay ProdCo a bonus of One Hundred Thousand Dollars ($100,000). If the Program wins an Academy Award, Amazon shall pay an additional bonus of Two Hundred Fifty Thousand Dollars ($250,000).",
+            "article": "4.6",
+            "header": "COMPENSATION - Award Bonuses",
+            "triggers_found": [
+                "Amazon shall pay",
+                "bonus"
+            ],
+            "confidence": 0.90,
+            "notes": "Award bonus provision"
+        }
+    ],
+    "negative_examples": [
+        {
+            "id": "PC-NEG-001",
+            "text": "Upon termination for convenience, Amazon shall pay ProdCo for services rendered and costs properly incurred through the termination date.",
+            "actual_family": "TerminationConsequences",
+            "why_not_payment": "Payment occurs only in context of termination consequences, not ongoing compensation obligation",
+            "triggers_that_redirect": [
+                "upon termination",
+                "termination date"
+            ]
+        },
+        {
+            "id": "PC-NEG-002",
+            "text": "ProdCo shall indemnify Amazon for all costs, including attorneys' fees, arising from any breach.",
+            "actual_family": "IndemnityProdCo",
+            "why_not_payment": "Costs are indemnification-related, not Amazon's payment to ProdCo",
+            "triggers_that_redirect": [
+                "shall indemnify",
+                "arising from any breach"
+            ]
+        },
+        {
+            "id": "PC-NEG-003",
+            "text": "ProdCo shall obtain insurance with premiums paid by ProdCo as a production cost.",
+            "actual_family": "Insurance",
+            "why_not_payment": "Premium payment is part of insurance requirement, not compensation",
+            "triggers_that_redirect": [
+                "insurance",
+                "premiums"
+            ]
+        }
+    ]
+}

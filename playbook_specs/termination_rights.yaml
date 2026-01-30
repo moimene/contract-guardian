@@ -1,0 +1,221 @@
+# ================================================================
+# PLAYBOOK SPEC: TerminationRights
+# Termination Rights
+# ================================================================
+
+family_id: TerminationRights
+display_name: "Termination Rights"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon must have broad termination rights including for convenience, 
+    force majeure, and ProdCo default. ProdCo's termination rights should 
+    be limited to material breach by Amazon with cure period. All 
+    termination preserves Amazon's ownership of Materials created.
+  
+  core_requirements:
+    - Amazon termination for convenience
+    - Amazon termination for ProdCo default (material breach)
+    - Amazon termination for force majeure
+    - Amazon termination for key person default
+    - ProdCo termination only for material Amazon breach
+    - Reasonable cure periods
+    - Clear notice requirements
+    - Ownership of Materials preserved on termination
+  
+  business_rationale: |
+    Amazon must be able to exit troubled productions without being 
+    locked into failing projects. Business circumstances change; 
+    convenience termination enables strategic flexibility. ProdCo's 
+    termination rights should be limited because Amazon's obligation 
+    is primarily monetary and curable.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Broad Amazon termination rights with limited ProdCo rights"
+    
+    required_elements:
+      - element: "Amazon convenience termination"
+        language: |
+          Amazon may terminate this Agreement at any time for any reason 
+          or no reason upon written notice to ProdCo.
+        required: true
+        
+      - element: "Amazon default termination"
+        language: |
+          Amazon may terminate this Agreement immediately upon written 
+          notice if ProdCo commits a material breach that is not cured 
+          within thirty (30) days of notice.
+        required: true
+        
+      - element: "Amazon force majeure termination"
+        language: |
+          Amazon may terminate if a Force Majeure Event continues for 
+          more than thirty (30) consecutive days.
+        required: true
+        
+      - element: "ProdCo limited termination"
+        language: |
+          ProdCo may terminate only for Amazon's material breach of 
+          payment obligations that is not cured within thirty (30) days 
+          of written notice.
+        required: true
+        
+      - element: "Materials ownership"
+        language: |
+          Upon termination for any reason, Amazon shall own all Materials 
+          created through the date of termination.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Amazon may terminate this Agreement: (a) at any time for 
+          convenience upon written notice; (b) immediately if ProdCo 
+          commits a material breach that is not cured within thirty 
+          (30) days; (c) if a Force Majeure Event continues for more 
+          than thirty (30) days; (d) if a Key Person becomes unavailable. 
+          ProdCo may terminate only if Amazon materially breaches its 
+          payment obligations and fails to cure within thirty (30) days. 
+          Upon termination for any reason, Amazon shall own all Materials 
+          created through the date of termination.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Termination rights with reasonable modifications"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Extended convenience notice period"
+        condition: "Up to 30 days notice"
+        example: |
+          Amazon may terminate for convenience upon thirty (30) days' 
+          prior written notice.
+        risk_level: LOW
+        
+      - variation: "ProdCo termination for material non-payment breach"
+        condition: "Extended cure period for Amazon"
+        example: |
+          ProdCo may terminate if Amazon fails to pay undisputed amounts 
+          within sixty (60) days of the due date and fails to cure within 
+          thirty (30) days of written notice.
+        risk_level: LOW
+        
+      - variation: "Extended force majeure period"
+        condition: "Up to 60 days before termination right"
+        example: |
+          Either party may terminate if a Force Majeure Event continues 
+          for more than sixty (60) consecutive days.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Termination provisions that limit Amazon flexibility"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "No convenience termination"
+        example: |
+          Amazon may terminate only for ProdCo's material breach.
+        reason: "Amazon needs strategic flexibility to exit"
+        risk_level: CRITICAL
+        
+      - pattern: "ProdCo convenience termination"
+        example: |
+          Either party may terminate for convenience upon 30 days' notice.
+        reason: "ProdCo should not be able to walk away at will"
+        risk_level: CRITICAL
+        
+      - pattern: "Automatic termination on non-payment"
+        example: |
+          This Agreement shall automatically terminate if Amazon fails 
+          to make any payment when due.
+        reason: "Amazon needs cure opportunity for payment issues"
+        risk_level: CRITICAL
+        
+      - pattern: "Damages on convenience termination"
+        example: |
+          Upon termination for convenience, Amazon shall pay ProdCo 
+          damages for lost profits.
+        reason: "Convenience termination should be clean; no damages"
+        risk_level: HIGH
+        
+      - pattern: "Materials reversion on termination"
+        example: |
+          Upon termination for Amazon's breach, all Materials shall 
+          revert to ProdCo.
+        reason: "Amazon owns Materials regardless of termination reason"
+        risk_level: CRITICAL
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Convenience termination"
+      position: "Unrestricted convenience termination"
+      fallback: "Notice period up to 30 days"
+      
+    - priority: 2
+      element: "Materials ownership"
+      position: "Amazon owns all Materials on any termination"
+      fallback: "None - essential"
+      
+    - priority: 3
+      element: "ProdCo termination limited"
+      position: "Only for material payment breach with cure"
+      fallback: "Extended cure period (60 days)"
+  
+  common_counterparty_requests:
+    - request: "Mutual convenience termination"
+      response: "Unacceptable"
+      alternative: |
+        ProdCo's commitment to complete is part of the bargain; 
+        Amazon's convenience right is consideration for risk assumption.
+      
+    - request: "Kill fee on convenience termination"
+      response: "Negotiable"
+      alternative: |
+        Discuss reasonable kill fee tied to production stage 
+        (e.g., X% if terminated during pre-production, Y% during 
+        production). Address in termination consequences section.
+      
+    - request: "No convenience termination after production start"
+      response: "Unacceptable"
+      alternative: |
+        Can discuss enhanced kill fee for late termination but 
+        convenience right must be preserved.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Production stage at termination"
+      high_risk: "Termination during production (higher sunk costs)"
+      low_risk: "Termination during development"
+      
+    - factor: "Third-party commitments"
+      high_risk: "Significant cast/crew/facility commitments"
+      low_risk: "Minimal third-party exposure"
+  
+  escalation_triggers:
+    - "Any limitation on convenience termination"
+    - "ProdCo convenience termination rights"
+    - "Materials reversion on termination"
+    - "Automatic termination provisions"

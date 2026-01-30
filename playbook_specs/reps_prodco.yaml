@@ -1,0 +1,250 @@
+# ================================================================
+# PLAYBOOK SPEC: RepsProdCo
+# ProdCo Representations and Warranties
+# ================================================================
+
+family_id: RepsProdCo
+display_name: "ProdCo Representations and Warranties"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    ProdCo must make comprehensive representations and warranties covering 
+    authority, originality, non-infringement, content legality, chain of 
+    title, and compliance. Reps should be unqualified (no knowledge 
+    qualifiers) and survive in perpetuity.
+  
+  core_requirements:
+    - Full authority and capacity to contract
+    - Free and clear of liens/encumbrances
+    - Original content or properly licensed
+    - Non-infringement of all IP and personal rights
+    - No defamatory, libelous, or unlawful content
+    - No pending or threatened litigation
+    - Complete chain of title
+    - Compliance with applicable laws
+    - Accurate factual representations
+    - Perpetual survival
+  
+  business_rationale: |
+    Amazon relies on ProdCo's representations to make significant 
+    investments in production and exploitation. Breaches can result 
+    in content takedowns, lawsuits, reputational damage, and regulatory 
+    issues. Comprehensive reps provide contractual basis for indemnification 
+    claims and allocation of risk to the party best positioned to know.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Comprehensive reps without qualifications"
+    
+    required_reps:
+      - rep: "Authority"
+        language: |
+          ProdCo has the full right, power, and authority to enter into 
+          this Agreement and to grant all rights granted herein.
+        required: true
+        
+      - rep: "No encumbrances"
+        language: |
+          All rights are granted free and clear of any liens, claims, 
+          or encumbrances.
+        required: true
+        
+      - rep: "Originality"
+        language: |
+          The Program and Materials will be wholly original with ProdCo 
+          or properly licensed.
+        required: true
+        
+      - rep: "Non-infringement"
+        language: |
+          The Program will not infringe upon or violate any copyright, 
+          trademark, patent, trade secret, right of privacy, right of 
+          publicity, or any other right of any third party.
+        required: true
+        
+      - rep: "No unlawful content"
+        language: |
+          The Program will not contain any defamatory, libelous, or 
+          unlawful content.
+        required: true
+        
+      - rep: "No litigation"
+        language: |
+          There is no claim, litigation, or proceeding pending or 
+          threatened that would adversely affect ProdCo's ability to 
+          perform or Amazon's rights.
+        required: true
+        
+      - rep: "Chain of title"
+        language: |
+          All persons rendering services have executed agreements 
+          assigning all rights to ProdCo or Amazon.
+        required: true
+        
+      - rep: "Compliance"
+        language: |
+          ProdCo is in compliance with all applicable laws including 
+          anti-corruption, anti-bribery, sanctions, and export controls.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          ProdCo represents and warrants to Amazon that: (a) ProdCo has 
+          the full right, power, and authority to enter into this 
+          Agreement and to grant all rights granted herein, free and 
+          clear of any liens, claims, or encumbrances; (b) The Program 
+          and Materials will be wholly original with ProdCo or properly 
+          licensed, and will not infringe upon or violate any copyright, 
+          trademark, patent, trade secret, right of privacy, right of 
+          publicity, or any other right of any third party...
+        rating: ACCEPTABLE
+        confidence: 0.97
+
+  passable:
+    description: "Reps with limited qualifications"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Knowledge qualifier for litigation rep only"
+        condition: "Must include reasonable investigation duty"
+        example: |
+          To ProdCo's knowledge after reasonable investigation, there 
+          is no claim, litigation, or proceeding pending or threatened...
+        risk_level: MEDIUM
+        
+      - variation: "Qualified originality for underlying rights"
+        condition: "Only for properly licensed underlying materials"
+        example: |
+          The Program will be wholly original with ProdCo except for 
+          underlying literary material properly licensed pursuant to 
+          Section [X] and reflected in Exhibit [Y].
+        risk_level: LOW
+        
+      - variation: "Limited survival period for organizational reps"
+        condition: "Only for 'duly organized' type reps; not content reps"
+        example: |
+          Representations regarding ProdCo's corporate organization 
+          shall survive for three (3) years; all other representations 
+          shall survive in perpetuity.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Reps with material gaps or qualifications"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Knowledge qualifier on content reps"
+        example: |
+          To ProdCo's knowledge, the Program will not infringe any 
+          third-party rights.
+        reason: "Defeats purpose; ProdCo should warrant regardless of knowledge"
+        risk_level: CRITICAL
+        
+      - pattern: "Materiality qualifier"
+        example: |
+          The Program will not materially infringe any third-party rights.
+        reason: "Even non-material infringement creates liability"
+        risk_level: HIGH
+        
+      - pattern: "Missing non-infringement rep"
+        example: "[Any rep section that omits IP non-infringement]"
+        reason: "IP infringement is primary content risk"
+        risk_level: CRITICAL
+        
+      - pattern: "Missing chain of title rep"
+        example: "[Any rep section that omits chain of title]"
+        reason: "Unclear chain of title can invalidate entire rights grant"
+        risk_level: CRITICAL
+        
+      - pattern: "Limited survival"
+        example: |
+          Representations shall survive for two (2) years following 
+          delivery.
+        reason: "Claims can arise decades later; perpetual survival required"
+        risk_level: CRITICAL
+        
+      - pattern: "Best efforts qualifier"
+        example: |
+          ProdCo will use best efforts to ensure the Program does not 
+          infringe any third-party rights.
+        reason: "This is a covenant, not a warranty; provides no recourse"
+        risk_level: CRITICAL
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Non-infringement warranty"
+      position: "Unqualified warranty without knowledge qualifier"
+      fallback: "None - essential"
+      
+    - priority: 2
+      element: "Chain of title"
+      position: "Complete chain through all contributors"
+      fallback: "None - essential"
+      
+    - priority: 3
+      element: "Perpetual survival"
+      position: "Survival in perpetuity for content reps"
+      fallback: "Minimum 10 years; perpetual for IP reps"
+  
+  common_counterparty_requests:
+    - request: "Add 'to ProdCo's knowledge' qualifier"
+      response: "Unacceptable for content/IP reps"
+      alternative: |
+        Accept for no-litigation rep only with: "after reasonable 
+        investigation including review of copyright office records 
+        and consultation with clearance counsel."
+      
+    - request: "Limit to 'material' infringement"
+      response: "Unacceptable"
+      alternative: "None - any infringement creates liability"
+      
+    - request: "Carve out for underlying rights"
+      response: "Acceptable if properly documented"
+      alternative: |
+        Accept with: "except for underlying literary material licensed 
+        pursuant to the [Title] License Agreement attached as Exhibit [X], 
+        which license ProdCo represents is valid and in full force."
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Content type"
+      high_risk: "Based on real events, persons, or copyrighted works"
+      medium_risk: "Original fiction with real-world references"
+      low_risk: "Fully original animated or fantasy content"
+      
+    - factor: "Chain of title complexity"
+      high_risk: "Multiple writers, underlying rights, co-productions"
+      low_risk: "Single writer work-for-hire"
+      
+    - factor: "Territory of production"
+      high_risk: "Multiple jurisdictions with varying IP regimes"
+      low_risk: "Single US jurisdiction"
+  
+  escalation_triggers:
+    - "Any knowledge qualifier on content reps"
+    - "Any materiality qualifier"
+    - "Missing chain of title representation"
+    - "Survival period less than perpetual for IP reps"
+    - "Complex underlying rights situations"

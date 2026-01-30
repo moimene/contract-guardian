@@ -1,0 +1,57 @@
+# ================================================================
+# FAMILY: Injunctive Relief Waiver
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: InjunctiveReliefWaiver
+rule_name: "Injunctive Relief Waiver"
+psa_section: 8
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  ProdCo's remedies under this Agreement will be limited to the right, 
+  if any, to recover monetary damages (which ProdCo acknowledges is 
+  reasonable and sufficient) and ProdCo hereby irrevocably and 
+  perpetually waives any right to seek or obtain injunctive or other 
+  equitable relief or to otherwise enjoin or restrain the development, 
+  production, distribution, promotion, or other exploitation of the 
+  Program (or any part thereof or rights therein).
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS (No acceptable deviations)
+# ================================================================
+unacceptable_deviations:
+  - id: INJ-UNACC-001
+    description: "Remove injunctive relief waiver"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo asks to remove, modify or make this language mutual, 
+      Amazon cannot accommodate these requests. A waiver of injunctive 
+      relief is completely customary and necessary for Amazon in order 
+      to ensure Amazon's ability to exploit its rights (and should not 
+      be objectionable as Amazon is the financier of the Program as well).
+
+  - id: INJ-UNACC-002
+    description: "Make injunctive relief waiver mutual"
+    action: "REJECT"
+    amazon_position: |
+      For requests to make this language mutual, ProdCo has no equivalent 
+      rights to Amazon as the exhibitor and financier and is providing 
+      services as work made for hire.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "waives any right to seek or obtain injunctive"
+    - "limited to the right... to recover monetary damages"
+    - "enjoin or restrain"
+  secondary:
+    - "equitable relief"
+    - "irrevocably and perpetually waives"

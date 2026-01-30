@@ -1,0 +1,98 @@
+# ================================================================
+# FAMILY: Fees (PaymentCredits)
+# Source: PLAYBOOK_DSA_Amazon - Rule "Fees"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: PaymentCredits
+rule_name: "Fees"
+psa_section: 5
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (Verbatim from Playbook)
+# ================================================================
+standard_position: |
+  If ProdCo is not in breach of this Agreement, subject to any other 
+  applicable terms and conditions, ProdCo will receive the fees 
+  specified in Exhibit A.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: FEES-ACC-001
+    description: "Add 'uncured, material' qualifier before 'breach'"
+    text_pattern: "uncured, material breach"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: The acceptable deviations ("uncured, material breach") can 
+      be accepted directly, without Amazon's approval.
+    amazon_position: |
+      Generally OK to add these qualifiers before ProdCo's "breach" in 
+      Sections 5 and 6 (however do not add for ProdCo's indemnity in 
+      Section 7). Because a claim can arise out of any breach (whether 
+      or not material and/or cured by ProdCo) we do not add "material" 
+      or "uncured" before breach under ProdCo's indemnity as a matter 
+      of policy.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: FEES-UNACC-001
+    description: "Other qualifiers beyond 'uncured' or 'material'"
+    examples:
+      - "persistent breach"
+      - "confirmed by award or judgment"
+      - "demonstrated breach"
+      - "proven breach"
+    action: "REJECT"
+    guidance: |
+      If there are any qualifiers to the concept of breach, no other 
+      qualifiers beyond "uncured," "material" or "uncured and material" 
+      are acceptable.
+
+  - id: FEES-UNACC-002
+    description: "Removal of 'subject to any other applicable terms'"
+    text_pattern: null  # Absence of this language
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo asks to remove the language "subject to any other 
+      applicable terms and conditions" either here or in Section 6 
+      below, Amazon must maintain this language to be clear that these 
+      fees and entitlements are still subject to any conditions included 
+      in Exhibit A and/or applicable conditions pursuant to the standard 
+      terms (such as suspension/termination for force majeure, etc.).
+
+  - id: FEES-UNACC-003
+    description: "Pay-or-play language without BA approval"
+    text_pattern: "pay-or-play"
+    action: "ESCALATE_BA"
+    amazon_position: |
+      If ProdCo asks to include that the fees are on a "pay-or-play" 
+      basis: (i) if the closed deal terms (Exhibit A) does not include 
+      a lock or "pay-or-play" mechanisms for ProdCo's services, please 
+      raise this request with Amazon BA, (ii) if the closed deal terms 
+      do include that ProdCo's services are on a "pay-or-play" basis, 
+      inform ProdCo that nothing in the PSA conflicts with the mechanism 
+      included in Exhibit A.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "FEES:"
+    - "ProdCo will receive the fees"
+    - "fees specified in Exhibit"
+    - "production fee"
+  secondary:
+    - "in breach of this Agreement"
+    - "subject to any other applicable terms"
+    - "Exhibit A"
+  heading_patterns:
+    - "^5\\.\\s*FEES"
+    - "^FEES:"

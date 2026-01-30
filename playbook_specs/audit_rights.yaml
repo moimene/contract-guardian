@@ -1,0 +1,206 @@
+# ================================================================
+# PLAYBOOK SPEC: AuditRights
+# Audit Rights
+# ================================================================
+
+family_id: AuditRights
+display_name: "Audit Rights"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: MEDIUM
+requires_legal_review: false
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon must have robust audit rights over ProdCo's production costs, 
+    compliance with budget, and use of production funds. Audit rights 
+    should survive termination for reasonable period. ProdCo should 
+    maintain records for adequate period.
+  
+  core_requirements:
+    - Right to audit production costs
+    - Annual audit right with reasonable notice
+    - Access to books, records, and supporting documentation
+    - ProdCo cooperation required
+    - Record retention (minimum 3 years post-delivery)
+    - Discrepancy remediation
+    - Amazon pays audit cost unless material discrepancy found
+    - Survival of audit rights (3 years post-termination)
+  
+  business_rationale: |
+    Production budgets involve significant expenditure. Amazon must 
+    verify funds are used appropriately and actual costs align with 
+    budget representations. Audit rights are standard for production 
+    financing and deter misuse.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Robust audit rights with standard terms"
+    
+    required_elements:
+      - element: "Audit right"
+        language: |
+          Amazon shall have the right to audit ProdCo's books, records, 
+          and accounts relating to the production and all costs incurred.
+        required: true
+        
+      - element: "Notice and frequency"
+        language: |
+          Audits shall be conducted no more than once per year upon 
+          reasonable advance notice.
+        required: true
+        
+      - element: "Access"
+        language: |
+          ProdCo shall provide access to all books, records, contracts, 
+          invoices, and supporting documentation.
+        required: true
+        
+      - element: "Cooperation"
+        language: |
+          ProdCo shall cooperate fully with any audit and make 
+          personnel available.
+        required: true
+        
+      - element: "Record retention"
+        language: |
+          ProdCo shall maintain all records for at least three (3) years 
+          following delivery or termination.
+        required: true
+        
+      - element: "Discrepancy remediation"
+        language: |
+          Any overpayment discovered shall be promptly refunded to Amazon.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Amazon may audit ProdCo's books and records relating to 
+          production costs once per year upon 30 days' notice. ProdCo 
+          shall maintain records for 3 years and cooperate fully with 
+          audits. Any discrepancy exceeding 5% shall be promptly 
+          remediated, and ProdCo shall reimburse Amazon's audit costs.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Audit rights with reasonable limitations"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Business hours limitation"
+        condition: "Standard business hours"
+        example: |
+          Audits shall be conducted during normal business hours.
+        risk_level: LOW
+        
+      - variation: "Third-party auditor"
+        condition: "Professional firm acceptable"
+        example: |
+          Audits shall be conducted by an independent accounting firm.
+        risk_level: LOW
+        
+      - variation: "Confidentiality of audit results"
+        condition: "Standard confidentiality"
+        example: |
+          Audit results shall be treated as Confidential Information.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Audit provisions that limit Amazon's oversight"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "No audit right"
+        example: |
+          [No audit provision in agreement]
+        reason: "Amazon must verify proper use of production funds"
+        risk_level: CRITICAL
+        
+      - pattern: "ProdCo approval of audit"
+        example: |
+          Audits shall be conducted only with ProdCo's prior approval.
+        reason: "Amazon's audit right should not require consent"
+        risk_level: HIGH
+        
+      - pattern: "Short record retention"
+        example: |
+          Records shall be maintained for one (1) year.
+        reason: "Minimum 3 years required for adequate audit coverage"
+        risk_level: MEDIUM
+        
+      - pattern: "No discrepancy remediation"
+        example: |
+          Audit is for informational purposes only.
+        reason: "Discrepancies must be remediated"
+        risk_level: HIGH
+        
+      - pattern: "Amazon always pays audit costs"
+        example: |
+          Amazon shall pay all costs of any audit regardless of findings.
+        reason: "ProdCo should pay if material discrepancy found"
+        risk_level: MEDIUM
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Audit right"
+      position: "Unrestricted access to production records"
+      fallback: "None - essential"
+      
+    - priority: 2
+      element: "Discrepancy remediation"
+      position: "Prompt refund of overpayments"
+      fallback: "None - essential"
+      
+    - priority: 3
+      element: "Cost allocation"
+      position: "ProdCo pays if discrepancy > 5%"
+      fallback: "Each party bears own costs"
+  
+  common_counterparty_requests:
+    - request: "Limit to one audit per project"
+      response: "Unacceptable"
+      alternative: "Annual audit right is standard"
+      
+    - request: "Audit only of cost reports, not underlying records"
+      response: "Unacceptable"
+      alternative: "Full access to supporting documentation required"
+      
+    - request: "Materiality threshold for discrepancy"
+      response: "Acceptable"
+      alternative: |
+        Accept: "Material discrepancy" defined as overpayment 
+        exceeding 5% of audited amount.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Budget size"
+      high_risk: "Large budget (higher potential for discrepancies)"
+      low_risk: "Small budget"
+      
+    - factor: "ProdCo track record"
+      high_risk: "New company or prior issues"
+      low_risk: "Established company with clean history"
+  
+  escalation_triggers:
+    - "No audit right"
+    - "ProdCo approval required for audit"
+    - "No discrepancy remediation"

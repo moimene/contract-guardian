@@ -1,0 +1,129 @@
+# ================================================================
+# FAMILY: Power of Attorney / Further Documents
+# Source: PSA Section 8 "MISCELLANEOUS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: PowerOfAttorney
+rule_name: "Power of Attorney / Further Documents"
+psa_section: 8
+required: true
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  ProdCo will execute and deliver all additional documents and do any 
+  other acts as Amazon requests in order to establish or evidence 
+  Amazon's rights hereunder, including, registration and assignment 
+  of the Materials. If ProdCo fails to do so within 5 business days 
+  following Amazon's request, ProdCo hereby irrevocably authorizes 
+  Amazon to act on ProdCo's behalf, including by providing Amazon 
+  with a power of attorney (coupled with an interest) solely to 
+  execute, register and record such documents on ProdCo's behalf.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: POA-ACC-001
+    description: "Add 'consistent herewith' qualifier"
+    text_pattern: "execute and deliver all additional documents and do any other acts consistent herewith"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Can add "consistent herewith" to qualify the further 
+      documents obligation.
+
+  - id: POA-ACC-002
+    description: "Add 'reasonably' before 'requests'"
+    text_pattern: "as Amazon reasonably requests"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Can add "reasonably" to qualify Amazon's requests.
+
+  - id: POA-ACC-003
+    description: "Extend deadline to 7 business days (non-US ProdCo)"
+    text_pattern: "within 7 business days"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      Amazon Position: For ProdCos located outside of the U.S., 7 
+      business days is acceptable upon request.
+
+  - id: POA-ACC-004
+    description: "Extend deadline to 10 business days (maximum)"
+    text_pattern: "within 10 business days"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      Amazon Position: Regardless of the location of the other party, 
+      10 business days is the maximum time period we should agree to.
+
+  - id: POA-ACC-005
+    description: "Add review period for ProdCo"
+    text_pattern: "(during which period ProdCo may review and comment on such document)"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Can add review period for ProdCo.
+
+  - id: POA-ACC-006
+    description: "Limited power of attorney"
+    text_pattern: "limited power of attorney"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Can add "limited" before power of attorney.
+
+  - id: POA-ACC-007
+    description: "Amazon to provide copies of executed documents"
+    text_pattern: |
+      Amazon will provide ProdCo with copies of such documents so 
+      executed promptly thereafter, provided that inadvertent failure 
+      to do so will not be deemed a breach of this Agreement and any 
+      failure to do so will not affect the validity of such documents.
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Can add obligation for Amazon to provide copies.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: POA-UNACC-001
+    description: "Remove power of attorney entirely"
+    action: "REJECT"
+    amazon_position: |
+      Amazon must generally hold on its right to require further 
+      documents and sign on ProdCo's behalf in the event of 
+      non-compliance.
+
+  - id: POA-UNACC-002
+    description: "Deadline beyond 10 business days"
+    text_patterns:
+      - "within 15 business days"
+      - "within 20 business days"
+      - "within 30 days"
+    action: "REJECT"
+    amazon_position: |
+      10 business days is the maximum time period Amazon will agree to. 
+      Agreeing to a longer time period could have negative impacts on 
+      the development/production/distribution of the Program.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "power of attorney"
+    - "execute and deliver"
+    - "additional documents"
+    - "act on ProdCo's behalf"
+  secondary:
+    - "registration and assignment"
+    - "coupled with an interest"
+    - "business days"

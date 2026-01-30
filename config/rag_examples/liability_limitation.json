@@ -1,0 +1,109 @@
+{
+    "family_id": "LiabilityLimitation",
+    "display_name": "Limitation of Liability",
+    "version": "1.0",
+    "examples": [
+        {
+            "id": "LL-001",
+            "text": "IN NO EVENT SHALL AMAZON BE LIABLE TO PRODCO FOR ANY CONSEQUENTIAL, INDIRECT, INCIDENTAL, SPECIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING WITHOUT LIMITATION LOST PROFITS, LOSS OF BUSINESS, LOSS OF GOODWILL, OR LOSS OF DATA, ARISING OUT OF OR RELATING TO THIS AGREEMENT, REGARDLESS OF THE THEORY OF LIABILITY AND EVEN IF AMAZON HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.",
+            "article": "7.1",
+            "header": "LIMITATION OF LIABILITY - Exclusion of Consequential Damages",
+            "triggers_found": [
+                "IN NO EVENT SHALL",
+                "CONSEQUENTIAL",
+                "INDIRECT",
+                "INCIDENTAL",
+                "SPECIAL",
+                "PUNITIVE",
+                "lost profits",
+                "regardless of the theory of liability"
+            ],
+            "confidence": 0.98,
+            "notes": "Classic consequential damages exclusion in ALL CAPS"
+        },
+        {
+            "id": "LL-002",
+            "text": "AMAZON'S TOTAL AGGREGATE LIABILITY ARISING OUT OF OR RELATING TO THIS AGREEMENT SHALL NOT EXCEED THE TOTAL PRODUCTION FEES ACTUALLY PAID BY AMAZON TO PRODCO HEREUNDER.",
+            "article": "7.2",
+            "header": "LIMITATION OF LIABILITY - Liability Cap",
+            "triggers_found": [
+                "AGGREGATE LIABILITY",
+                "SHALL NOT EXCEED"
+            ],
+            "confidence": 0.96,
+            "notes": "Liability cap provision"
+        },
+        {
+            "id": "LL-003",
+            "text": "The limitations in Sections 7.1 and 7.2 shall not apply to: (a) Amazon's express payment obligations under Article 4; (b) claims arising from Amazon's fraud or willful misconduct; or (c) claims arising from Amazon's breach of confidentiality obligations.",
+            "article": "7.3",
+            "header": "LIMITATION OF LIABILITY - Exceptions",
+            "triggers_found": [
+                "limitations",
+                "shall not apply"
+            ],
+            "confidence": 0.88,
+            "notes": "Exceptions to liability limitations"
+        },
+        {
+            "id": "LL-004",
+            "text": "The limitations of liability set forth in this Article 7 apply to Amazon only. ProdCo's liability to Amazon and the Amazon Indemnitees is not limited by this Article.",
+            "article": "7.4",
+            "header": "LIMITATION OF LIABILITY - ProdCo Liability",
+            "triggers_found": [
+                "limitations of liability",
+                "not limited"
+            ],
+            "confidence": 0.90,
+            "notes": "Asymmetric liability limitation"
+        },
+        {
+            "id": "LL-005",
+            "text": "NOTWITHSTANDING ANY OTHER PROVISION OF THIS AGREEMENT, NEITHER PARTY SHALL BE LIABLE TO THE OTHER FOR ANY PUNITIVE, SPECIAL, OR EXEMPLARY DAMAGES.",
+            "article": "7.5",
+            "header": "LIMITATION OF LIABILITY",
+            "triggers_found": [
+                "SHALL BE LIABLE",
+                "PUNITIVE",
+                "SPECIAL",
+                "EXEMPLARY"
+            ],
+            "confidence": 0.94,
+            "notes": "Mutual punitive damages exclusion"
+        },
+        {
+            "id": "LL-006",
+            "text": "Amazon's maximum liability for any claim under this Agreement shall be limited to direct damages not exceeding One Million Dollars ($1,000,000).",
+            "article": "7.2",
+            "header": "LIMITATION OF LIABILITY",
+            "triggers_found": [
+                "maximum liability",
+                "limited to",
+                "not exceeding"
+            ],
+            "confidence": 0.93,
+            "notes": "Dollar-denominated liability cap"
+        }
+    ],
+    "negative_examples": [
+        {
+            "id": "LL-NEG-001",
+            "text": "ProdCo shall indemnify Amazon against all claims and damages.",
+            "actual_family": "IndemnityProdCo",
+            "why_not_liability_limit": "This is an indemnification obligation, not a limitation on liability",
+            "triggers_that_redirect": [
+                "shall indemnify"
+            ]
+        },
+        {
+            "id": "LL-NEG-002",
+            "text": "ProdCo shall obtain Errors and Omissions insurance with limits of $3,000,000.",
+            "actual_family": "Insurance",
+            "why_not_liability_limit": "This is about insurance coverage requirements, not contractual liability limits",
+            "triggers_that_redirect": [
+                "insurance",
+                "limits"
+            ]
+        }
+    ]
+}

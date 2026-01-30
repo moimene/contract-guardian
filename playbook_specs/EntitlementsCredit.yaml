@@ -1,0 +1,116 @@
+# ================================================================
+# FAMILY: Entitlements; Credit (ThirdPartyCredits)
+# Source: PLAYBOOK_DSA_Amazon - Rules "Entitlements; Credit" + 
+#         "Third-Party Credit Obligations"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: ThirdPartyCredits
+rule_name: "Entitlements; Credit"
+psa_section: 6
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (Verbatim from Playbook)
+# ================================================================
+standard_position: |
+  If ProdCo is not in breach of this Agreement, and completes ProdCo's 
+  services hereunder, subject to any other applicable terms and 
+  conditions (including any applicable guild/union requirements), 
+  ProdCo will receive the entitlements and credit specified in 
+  Exhibit A for the applicable episode(s).
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: CREDIT-ACC-001
+    description: "Add 'uncured, material' qualifier before 'breach'"
+    text_pattern: "uncured, material breach"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: If any unacceptable qualifiers to the concept of breach are 
+      proposed, please suggest "uncured, material" instead, as a fallback. 
+      This fallback can be applied directly without Amazon's approval.
+
+  - id: CREDIT-ACC-002
+    description: "Remove guild/union parenthetical if inapplicable"
+    text_pattern: null  # Removal of "(including any applicable guild/union requirements)"
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      The parenthetical "(including any applicable guild/union 
+      requirements)" may be inapplicable in certain countries; if there 
+      are no relevant guilds/unions and no guild talent engaged on the 
+      Program, consult Amazon Legal regarding removal.
+
+# ================================================================
+# THIRD-PARTY CREDIT OBLIGATIONS
+# ================================================================
+third_party_credit:
+  standard_position: |
+    Amazon shall use reasonable efforts to inform all third parties 
+    with whom Amazon is in contractual privity of the credit obligations 
+    set forth herein, but is not responsible or liable to ProdCo for any 
+    failure of any third parties to comply with such credit obligations.
+  
+  acceptable_fallback:
+    text: |
+      Amazon shall contractually bind all third parties with whom Amazon 
+      is in contractual privity of the credit obligations set forth 
+      herein, but shall have no obligation to police same, nor shall 
+      Company be responsible or liable to ProdCo for the failure of any 
+      third party to comply with the same.
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      NTD: Favor the following language as first fallback: "Amazon shall 
+      use reasonable efforts to inform all third parties...". If 
+      unacceptable deviations are proposed, please replace the proposed 
+      language with the first fallback. Such fallback can be applied 
+      without Amazon's approval.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: CREDIT-UNACC-001
+    description: "Qualifiers beyond 'uncured' or 'material'"
+    examples:
+      - "persistent"
+      - "confirmed by award or judgment"
+    action: "REJECT"
+
+  - id: CREDIT-UNACC-002
+    description: "Amazon responsibility for third-party failure"
+    text_patterns:
+      - "Amazon responsible for third-party failure"
+      - "Amazon liable for failure of third parties"
+      - "Amazon shall guarantee"
+      - "Amazon shall enforce credits"
+    action: "REJECT"
+    guidance: |
+      Do not impose responsibility on Amazon for third-party failure to 
+      comply with credit obligations, nor any obligation to guarantee or 
+      enforce credits against third parties. Do not expand this obligation 
+      beyond third parties with whom Amazon is in contractual privity.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "ENTITLEMENTS"
+    - "CREDIT:"
+    - "ProdCo will receive the entitlements"
+    - "credit specified in Exhibit"
+  secondary:
+    - "completes ProdCo's services"
+    - "guild/union requirements"
+    - "credit obligations"
+    - "third parties"
+  heading_patterns:
+    - "^6\\.\\s*ENTITLEMENTS"
+    - "^ENTITLEMENTS;\\s*CREDIT"

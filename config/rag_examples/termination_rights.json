@@ -1,0 +1,94 @@
+{
+    "family_id": "TerminationRights",
+    "display_name": "Termination Rights and Triggers",
+    "version": "1.0",
+    "examples": [
+        {
+            "id": "TR-001",
+            "text": "Amazon may terminate this Agreement at any time, for any reason or no reason, in Amazon's sole and absolute discretion, upon written notice to ProdCo.",
+            "article": "8.1",
+            "header": "TERMINATION - Termination for Convenience",
+            "triggers_found": [
+                "may terminate",
+                "at any time",
+                "sole and absolute discretion",
+                "upon written notice"
+            ],
+            "confidence": 0.97,
+            "notes": "Termination for convenience provision"
+        },
+        {
+            "id": "TR-002",
+            "text": "Amazon may terminate this Agreement immediately upon written notice if ProdCo: (a) materially breaches any provision of this Agreement; (b) breaches any representation or warranty; (c) becomes insolvent or files for bankruptcy; (d) is the subject of any governmental investigation relating to the Program; or (e) engages in conduct that brings Amazon into disrepute.",
+            "article": "8.2",
+            "header": "TERMINATION - Termination for Cause",
+            "triggers_found": [
+                "may terminate",
+                "immediately upon written notice",
+                "materially breaches",
+                "bankruptcy"
+            ],
+            "confidence": 0.96,
+            "notes": "Termination for cause with enumerated triggers"
+        },
+        {
+            "id": "TR-003",
+            "text": "ProdCo shall not have the right to terminate this Agreement for any reason. ProdCo's sole remedy for any breach by Amazon shall be an action for monetary damages subject to the limitations set forth herein.",
+            "article": "8.4",
+            "header": "TERMINATION - No ProdCo Termination",
+            "triggers_found": [
+                "right to terminate",
+                "sole remedy"
+            ],
+            "confidence": 0.92,
+            "notes": "Prohibition on ProdCo termination rights"
+        },
+        {
+            "id": "TR-004",
+            "text": "Either party may terminate this Agreement upon sixty (60) days' prior written notice if the other party materially breaches this Agreement and fails to cure such breach within thirty (30) days after receipt of written notice.",
+            "article": "8.3",
+            "header": "TERMINATION",
+            "triggers_found": [
+                "may terminate",
+                "prior written notice",
+                "materially breaches",
+                "fails to cure"
+            ],
+            "confidence": 0.95,
+            "notes": "Mutual termination for breach with cure period"
+        },
+        {
+            "id": "TR-005",
+            "text": "This Agreement shall terminate automatically upon delivery and acceptance of the final Deliverables, subject to survival of applicable provisions.",
+            "article": "8.5",
+            "header": "TERMINATION",
+            "triggers_found": [
+                "shall terminate",
+                "automatically"
+            ],
+            "confidence": 0.88,
+            "notes": "Automatic termination upon completion"
+        }
+    ],
+    "negative_examples": [
+        {
+            "id": "TR-NEG-001",
+            "text": "Upon termination for any reason, all rights granted herein shall remain vested in Amazon.",
+            "actual_family": "TerminationConsequences",
+            "why_not_termination_rights": "This describes what happens after termination, not when/how termination occurs",
+            "triggers_that_redirect": [
+                "Upon termination",
+                "shall remain vested"
+            ]
+        },
+        {
+            "id": "TR-NEG-002",
+            "text": "The following provisions shall survive termination: Articles 3, 5, 6, 7.",
+            "actual_family": "SurvivalRemedies",
+            "why_not_termination_rights": "This is a survival list, not termination rights",
+            "triggers_that_redirect": [
+                "shall survive termination"
+            ]
+        }
+    ]
+}

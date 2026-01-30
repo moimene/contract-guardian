@@ -1,0 +1,188 @@
+# ================================================================
+# PLAYBOOK SPEC: RightsReversion
+# Rights Reversion Terms
+# ================================================================
+
+family_id: RightsReversion
+display_name: "Rights Reversion Terms"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    There shall be NO reversion of rights to ProdCo under any circumstances, 
+    including termination, non-exploitation, passage of time, or any other 
+    event. All rights vest in Amazon upon creation and remain with Amazon 
+    in perpetuity.
+  
+  core_requirements:
+    - Express statement of no reversion
+    - Coverage of all reversion scenarios
+    - Applies regardless of termination reason
+    - Applies regardless of non-exploitation
+    - Applies regardless of time passage
+    - Rights vest upon creation
+    - Rights remain with Amazon perpetually
+  
+  business_rationale: |
+    Reversion rights create uncertainty and limit Amazon's ability to 
+    develop franchises, hold content in library, and make long-term 
+    platform decisions. Even unused content has library value and may 
+    be exploited in future.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Clear, unequivocal no-reversion language"
+    
+    required_elements:
+      - element: "No reversion statement"
+        language: |
+          There shall be no reversion of rights to ProdCo under any 
+          circumstances.
+        required: true
+        
+      - element: "Termination coverage"
+        language: "including termination for any reason"
+        required: true
+        
+      - element: "Non-exploitation coverage"
+        language: "non-exploitation"
+        required: true
+        
+      - element: "Time passage coverage"
+        language: "passage of time"
+        required: true
+        
+      - element: "Perpetual vesting"
+        language: |
+          All rights shall vest in Amazon upon creation and shall remain 
+          with Amazon in perpetuity.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          There shall be no reversion of rights to ProdCo under any 
+          circumstances, including termination for any reason, non-
+          exploitation, or passage of time. All rights shall vest in 
+          Amazon upon creation and shall remain with Amazon in perpetuity.
+        rating: ACCEPTABLE
+        confidence: 0.98
+
+  passable:
+    description: "No-reversion with minor clarifications"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Guild-required turnaround acknowledgment"
+        condition: "Only as required by WGA or other guild"
+        example: |
+          Subject only to turnaround rights that may be required under 
+          applicable guild agreements, there shall be no reversion of 
+          rights to ProdCo.
+        risk_level: MEDIUM
+        notes: "Verify specific guild requirements apply"
+
+  unacceptable:
+    description: "Any reversion provision"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Non-exploitation reversion"
+        example: |
+          If Amazon does not exploit the Program within five (5) years 
+          of delivery, all rights shall revert to ProdCo.
+        reason: "Library content has value; non-exploitation is Amazon's right"
+        risk_level: CRITICAL
+        
+      - pattern: "Termination reversion"
+        example: |
+          Upon termination for Amazon's breach, all rights shall revert 
+          to ProdCo.
+        reason: "Rights ownership should not depend on contract performance"
+        risk_level: CRITICAL
+        
+      - pattern: "Term-limited ownership"
+        example: |
+          After thirty (30) years, rights shall revert to ProdCo.
+        reason: "Perpetual ownership required; no sunset"
+        risk_level: CRITICAL
+        
+      - pattern: "Turnaround without guild requirement"
+        example: |
+          ProdCo shall have turnaround rights for any sequel that Amazon 
+          does not produce within three (3) years.
+        reason: "Turnaround acceptable only if guild-mandated"
+        risk_level: CRITICAL
+        
+      - pattern: "Partial reversion"
+        example: |
+          Theatrical distribution rights shall revert to ProdCo after 
+          ten (10) years.
+        reason: "No partial reversion; all rights remain with Amazon"
+        risk_level: CRITICAL
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "No reversion - general"
+      position: "No reversion under any circumstances"
+      fallback: "None - essential"
+      
+    - priority: 2
+      element: "No reversion - non-exploitation"
+      position: "Non-exploitation is Amazon's right, not trigger for reversion"
+      fallback: "None - essential"
+  
+  common_counterparty_requests:
+    - request: "Reversion if not exploited in X years"
+      response: "Unacceptable"
+      alternative: |
+        None. Explain that library content has perpetual value and 
+        Amazon's exploitation decisions are strategic.
+      
+    - request: "Turnaround for sequel/remake"
+      response: "Unacceptable unless guild-required"
+      alternative: |
+        If guild-required: Accept with clear guild citation. 
+        Otherwise: Reject.
+      
+    - request: "Reversion upon material breach by Amazon"
+      response: "Unacceptable"
+      alternative: |
+        ProdCo's remedy for breach is monetary damages, not reversion. 
+        Ownership is not conditional on performance.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Guild involvement"
+      high_risk: "WGA-covered writers with separated rights history"
+      low_risk: "Non-guild production"
+      
+    - factor: "Prior development"
+      high_risk: "Material developed before Amazon involvement"
+      low_risk: "Material created under this Agreement"
+  
+  escalation_triggers:
+    - "Any reversion language whatsoever"
+    - "Any turnaround provisions (verify guild requirement)"
+    - "Any term-limited ownership"
+    - "Any partial rights retention"

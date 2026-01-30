@@ -1,0 +1,206 @@
+# ================================================================
+# PLAYBOOK SPEC: DisputeResolution
+# Dispute Resolution and Governing Law
+# ================================================================
+
+family_id: DisputeResolution
+display_name: "Dispute Resolution"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: HIGH
+requires_legal_review: false
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Disputes should be resolved through binding arbitration under AAA 
+    rules in Seattle, Washington, with Delaware law governing. 
+    Confidential proceedings. Injunctive relief preserved for IP and 
+    confidentiality matters.
+  
+  core_requirements:
+    - Binding arbitration (AAA Commercial Rules)
+    - Seattle, Washington venue
+    - Delaware governing law (no choice of law)
+    - Confidential proceedings
+    - Injunctive relief carveout
+    - Written decision required
+    - Limited discovery
+    - Fee allocation standard (prevailing party)
+    - Waiver of jury trial
+    - Class action waiver
+  
+  business_rationale: |
+    Arbitration provides predictable, confidential, and efficient 
+    dispute resolution. Seattle venue is Amazon's home jurisdiction. 
+    Delaware law is well-developed for corporate/commercial matters. 
+    Injunctive relief must be immediately available for IP/confidentiality.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Standard arbitration with Amazon-favorable terms"
+    
+    required_elements:
+      - element: "Binding arbitration"
+        language: |
+          Any dispute arising out of or relating to this Agreement shall 
+          be resolved by binding arbitration administered by the American 
+          Arbitration Association under its Commercial Arbitration Rules.
+        required: true
+        
+      - element: "Venue"
+        language: |
+          Arbitration shall be conducted in Seattle, Washington.
+        required: true
+        
+      - element: "Governing law"
+        language: |
+          This Agreement shall be governed by the laws of the State of 
+          Delaware, without regard to conflict of law principles.
+        required: true
+        
+      - element: "Confidentiality"
+        language: |
+          The arbitration proceedings and award shall be confidential.
+        required: true
+        
+      - element: "Injunctive relief carveout"
+        language: |
+          Notwithstanding the foregoing, either party may seek injunctive 
+          relief in any court of competent jurisdiction for IP or 
+          confidentiality matters.
+        required: true
+        
+      - element: "Waiver of jury trial"
+        language: |
+          Each party waives any right to a jury trial.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Disputes shall be resolved by binding arbitration under AAA 
+          Commercial Rules in Seattle, Washington. This Agreement is 
+          governed by Delaware law. Either party may seek injunctive 
+          relief in court for IP or confidentiality matters. Each party 
+          waives jury trial and class action rights.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Dispute resolution with negotiated terms"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Alternative venue"
+        condition: "Major US city with Amazon presence"
+        example: |
+          Arbitration shall be conducted in Los Angeles, California.
+        risk_level: MEDIUM
+        notes: "LA acceptable for entertainment matters"
+        
+      - variation: "New York law"
+        condition: "For entertainment-specific matters"
+        example: |
+          This Agreement shall be governed by the laws of New York.
+        risk_level: LOW
+        notes: "NY law well-developed for entertainment"
+        
+      - variation: "JAMS arbitration"
+        condition: "Reputable alternative to AAA"
+        example: |
+          Disputes shall be resolved by JAMS arbitration.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Dispute resolution that disadvantages Amazon"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Foreign venue"
+        example: |
+          Disputes shall be resolved in London, England.
+        reason: "US venue required for Amazon matters"
+        risk_level: CRITICAL
+        
+      - pattern: "Foreign governing law"
+        example: |
+          This Agreement is governed by English law.
+        reason: "US law required (Delaware or NY)"
+        risk_level: CRITICAL
+        
+      - pattern: "No injunctive relief carveout"
+        example: |
+          All disputes must be arbitrated; no party may seek court relief.
+        reason: "Injunctive relief must be available for IP/confidentiality"
+        risk_level: CRITICAL
+        
+      - pattern: "Litigation instead of arbitration"
+        example: |
+          Disputes shall be resolved in state court.
+        reason: "Arbitration preferred for confidentiality and efficiency"
+        risk_level: MEDIUM
+        
+      - pattern: "ProdCo's venue"
+        example: |
+          Disputes shall be resolved in [ProdCo's home jurisdiction].
+        reason: "Amazon or neutral venue required"
+        risk_level: HIGH
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Injunctive relief carveout"
+      position: "Court injunctive relief for IP/confidentiality"
+      fallback: "None - essential"
+      
+    - priority: 2
+      element: "US venue and law"
+      position: "Seattle/Delaware preferred"
+      fallback: "LA/NY acceptable for entertainment"
+      
+    - priority: 3
+      element: "Confidential arbitration"
+      position: "Binding arbitration with confidentiality"
+      fallback: "None - essential"
+  
+  common_counterparty_requests:
+    - request: "LA venue for entertainment matters"
+      response: "Acceptable"
+      alternative: "Accept LA venue with Delaware or CA law"
+      
+    - request: "Litigation instead of arbitration"
+      response: "Resist; arbitration preferred"
+      alternative: |
+        If litigation required, federal court with confidentiality 
+        provisions and protective order.
+      
+    - request: "Split the difference on costs"
+      response: "Acceptable"
+      alternative: "Each party bears own costs; prevailing party recovers fees"
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Counterparty jurisdiction"
+      high_risk: "Foreign counterparty seeking foreign venue"
+      low_risk: "US counterparty with flexible venue"
+  
+  escalation_triggers:
+    - "Foreign venue or governing law"
+    - "No injunctive relief carveout"
+    - "Unusual arbitration rules"

@@ -1,0 +1,95 @@
+# ================================================================
+# FAMILY: Indemnification Procedures
+# Source: PLAYBOOK_DSA_Amazon - Rules "Representations/Warranties, 
+#         Indemnity 1/2/3"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: IndemnityProcedures
+rule_name: "Representations/Warranties, Indemnity (Procedures)"
+psa_section: 7
+required: false  # Only include if requested
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (Only add if ProdCo requests)
+# ================================================================
+standard_position: |
+  [GIVE - Only include if ProdCo requests regulation of claims defense]
+  
+  If either Amazon or ProdCo is entitled to defense or indemnification 
+  hereunder, the indemnitee will give the indemnifying party prompt 
+  written notice of the applicable claim (but any delay in notification 
+  will not relieve the indemnifying party of its indemnification 
+  obligations under this Agreement except to the extent that such delay 
+  materially impairs the indemnifying party's ability to defend such 
+  claim). Amazon will have the option to control the defense and 
+  settlement of any claim and ProdCo will cooperate reasonably with 
+  Amazon and provide all information and assistance as Amazon may 
+  reasonably require in connection with the defense and settlement 
+  of such claim.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: PROC-ACC-001
+    description: "Add settlement approval requirement for ProdCo"
+    text_pattern: |
+      but Amazon may not, without the prior written approval of ProdCo 
+      (which may not be unreasonably withheld), enter into or acquiesce 
+      to any settlement that contains any admission of or stipulation 
+      to any guilt, fault, liability or wrongdoing on the part of ProdCo 
+      or that imposes any restrictions, obligations, or liabilities on 
+      ProdCo
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Include the fallback only if additions or comments are made 
+      requesting regulation of the claims defense process. If no specific 
+      language is added, include the fallback, or replace any other 
+      proposed language with the fallback.
+
+  - id: PROC-ACC-002
+    description: "Add ProdCo right to participate in defense"
+    text_pattern: |
+      In addition, ProdCo will have the right to participate, at its 
+      own expense and with counsel of its own choosing, in the defense 
+      of any claim.
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: Include the fallback only when additions or comments that 
+      request ProdCo to be able to participate in the defense are made. 
+      If no specific language is added, please include directly the 
+      fallback, or replace any proposed language with the fallback.
+    amazon_position: |
+      Amazon must be able to control its own defense. That said, ProdCo 
+      may have its own counsel present so long as it does not interfere. 
+      In order to grant this right, we must include additional language 
+      clarifying the control of such defense.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: PROC-UNACC-001
+    description: "Restrictions on Amazon's right to control defense"
+    action: "REJECT"
+    guidance: |
+      Any language governing defense of a claim that is different than 
+      the fallback. In particular, any language that imposes any 
+      restrictions on Amazon's right to control its own defense.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "entitled to defense or indemnification"
+    - "prompt written notice of the applicable claim"
+    - "control the defense and settlement"
+  secondary:
+    - "delay in notification"
+    - "cooperate reasonably"
+    - "participate, at its own expense"

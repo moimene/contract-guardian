@@ -1,0 +1,51 @@
+# ================================================================
+# FAMILY: Insurance
+# Source: PSA Section 8 "MISCELLANEOUS" - Standard Terms
+# Version: 2026-01-30
+# ================================================================
+
+family_id: Insurance
+rule_name: "Insurance"
+psa_section: 8
+required: true
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  This Agreement includes and incorporates industry custom standard 
+  terms and conditions for agreements of this type, such as insurance 
+  and additional representations/warranties, indemnification and 
+  remedies.
+
+# ================================================================
+# NOTES
+# ================================================================
+notes: |
+  Insurance requirements are typically addressed in the Standard Terms 
+  and Conditions (STCs) that are negotiated separately. The PSA 
+  incorporates these by reference. Key insurance requirements typically 
+  include:
+  - Errors & Omissions (E&O) insurance
+  - General Liability insurance
+  - Workers' Compensation insurance
+  - Cast insurance (if applicable)
+  
+  Amazon recognizes a line item in the budget for E&O insurance funded 
+  by Amazon that covers claims regardless of ProdCo's level of negligence 
+  or intent, provided there is no fraud.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "insurance"
+    - "E&O"
+    - "errors and omissions"
+  secondary:
+    - "general liability"
+    - "workers' compensation"
+    - "cast insurance"
+    - "standard terms and conditions"

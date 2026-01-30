@@ -1,0 +1,20 @@
+=== RALPH MODE: Contract Guardian ===
+Started: 2026-01-27T19:15
+
+## Tareas Pendientes
+1. [x] Corregir contraste sidebar (estilos inline)
+2. [x] Verificar build pasa
+3. [x] Verificar que UI funciona sin errores
+4. [ ] Deploy a Vercel (requiere `vercel login`)
+5. [ ] Verificar deploy funciona
+
+## Iteraciones
+
+### Iteración 1 (19:15)
+- Corregido contraste sidebar: estilos inline #ffffff sobre #004438
+- Build: ✅ 489KB JS + 26KB CSS
+- UI verificada: navegación funcional, contraste OK
+
+### Iteración 2 (19:18)
+- vercel.json creado con rewrites SPA
+- Deploy: ❌ Token expirado - requiere `vercel login`

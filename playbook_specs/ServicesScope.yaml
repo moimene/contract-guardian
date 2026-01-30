@@ -1,0 +1,73 @@
+# ================================================================
+# FAMILY: Services Scope
+# Source: PSA Section 3 "SERVICES"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: ServicesScope
+rule_name: "Services"
+psa_section: 3
+required: true
+priority: SUPPORT
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  ProdCo will render services as set forth in this agreement, including 
+  any exhibits and schedules attached hereto (which are incorporated 
+  by reference), which constitute the entire agreement between the 
+  parties (collectively, the "Agreement"), for the original scripted 
+  television series audio-visual program currently known as "PROGRAM" 
+  (together with all elements thereof, the "Program").
+
+# ================================================================
+# CORE REQUIREMENTS
+# ================================================================
+core_requirements:
+  - id: SVC-CORE-001
+    name: "ProdCo Service Obligation"
+    text_pattern: "ProdCo will render services"
+    required: true
+    
+  - id: SVC-CORE-002
+    name: "Incorporation of Exhibits"
+    text_pattern: "including any exhibits and schedules"
+    required: true
+    
+  - id: SVC-CORE-003
+    name: "Entire Agreement"
+    text_pattern: "constitute the entire agreement"
+    required: true
+    
+  - id: SVC-CORE-004
+    name: "Program Definition"
+    text_pattern: "together with all elements thereof"
+    required: true
+
+# ================================================================
+# NOTES
+# ================================================================
+notes: |
+  This is a straightforward section that defines the scope of services. 
+  The key elements are: (1) ProdCo's obligation to render services, 
+  (2) incorporation of exhibits and schedules by reference, and 
+  (3) definition of the Program. Changes to this section are generally 
+  not expected, as the specific scope is defined in the exhibits.
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "SERVICES:"
+    - "ProdCo will render services"
+    - "as set forth in this agreement"
+  secondary:
+    - "exhibits and schedules"
+    - "incorporated by reference"
+    - "entire agreement"
+    - "audio-visual program"
+  heading_patterns:
+    - "^3\\.\\s*SERVICES"
+    - "^SERVICES:"

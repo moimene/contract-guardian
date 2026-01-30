@@ -144,7 +144,7 @@
         {
             "parameters": {
                 "method": "POST",
-                "url": "https://mmenendeza.app.n8n.cloud/webhook/clause-review",
+                "url": "https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag",
                 "sendBody": true,
                 "specifyBody": "json",
                 "jsonBody": "={{ JSON.stringify($json) }}",
@@ -311,6 +311,40 @@
         },
         {
             "parameters": {
+                "method": "POST",
+                "url": "https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/update_run_status",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "={{ $env.SUPABASE_PUBLISHABLE_KEY }}"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ run_id: $json.run_id, status: 'COMPLETED', decision: ($json.contractDecision?.contract_decision === 'READY_FOR_EXPORT' ? 'APPROVED' : ($json.contractDecision?.contract_decision === 'BLOCKED' ? 'REJECTED' : 'NEEDS_REVIEW')), total_clauses: $json.total_clauses, processed_clauses: $json.total_clauses }) }}",
+                "options": {
+                    "timeout": 10000
+                }
+            },
+            "id": "update_run_status",
+            "name": "Update Run Status",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                3250,
+                200
+            ],
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
                 "respondWith": "json",
                 "responseBody": "={{ { success: true, run_id: $json.run_id, document_id: $json.document_id, contract_decision: $json.contractDecision.contract_decision, changeset_id: $json.changeset?.changeset_id, total_clauses: $json.total_clauses } }}",
                 "options": {}
@@ -320,7 +354,7 @@
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1.1,
             "position": [
-                3250,
+                3450,
                 300
             ]
         }
@@ -506,6 +540,17 @@
             ]
         },
         "Audit Complete": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Run Status": {
             "main": [
                 [
                     {

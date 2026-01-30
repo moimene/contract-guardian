@@ -1,0 +1,180 @@
+# ================================================================
+# PLAYBOOK SPEC: IndemnityAmazon
+# Amazon Indemnification of ProdCo
+# ================================================================
+
+family_id: IndemnityAmazon
+display_name: "Amazon Indemnification Obligations"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Amazon's indemnification of ProdCo should be narrow and limited to 
+    claims arising solely from Amazon's unauthorized exploitation that 
+    materially deviates from approved deliverables. Amazon should not 
+    indemnify for claims that could be attributed to ProdCo's content, 
+    production, or breach.
+  
+  core_requirements:
+    - Narrow scope limited to Amazon's sole fault
+    - Carveout for claims covered by ProdCo's indemnity
+    - No indemnification for approved content/exploitation
+    - Subject to standard liability limitations
+    - Mutual notice and cooperation requirements
+  
+  business_rationale: |
+    ProdCo controls content creation and production; Amazon only exploits 
+    the delivered Program. Most claims arise from content issues, not 
+    exploitation. Where claims arise from Amazon's exploitation, such 
+    claims typically involve Amazon's additions or modifications, which 
+    should be narrowly covered.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Narrow Amazon indemnity that protects against unintended exposure"
+    
+    required_elements:
+      - element: "Arising solely from"
+        note: "Sole causation standard required"
+      - element: "Material deviation from approved deliverables"
+        note: "Limits to Amazon's unauthorized changes"
+      - element: "Not authorized or approved by ProdCo"
+        note: "Excludes approved exploitation"
+      - element: "Carveout for ProdCo indemnity claims"
+        note: "No double coverage"
+    
+    example_acceptable:
+      - text: |
+          Amazon shall indemnify ProdCo from claims arising solely from 
+          Amazon's exploitation of the Program in a manner that materially 
+          deviates from the approved final deliverables and was not 
+          authorized or approved by ProdCo, provided that such 
+          indemnification shall not apply to any claim for which ProdCo 
+          has an indemnification obligation under Section 6.1.
+        rating: ACCEPTABLE
+        confidence: 0.95
+        notes: "Narrow scope with appropriate carveouts"
+
+  passable:
+    description: "Slightly broader but still acceptable with conditions"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Include Amazon-added materials"
+        condition: "Only for materials created entirely by Amazon"
+        example: |
+          Amazon shall indemnify ProdCo for claims arising from materials 
+          created entirely by Amazon and added to the Program without 
+          ProdCo's involvement or approval.
+        risk_level: MEDIUM
+        
+      - variation: "Include Amazon platform issues"
+        condition: "Limited to technical platform defects"
+        example: |
+          Amazon shall indemnify ProdCo for claims arising solely from 
+          defects in Amazon's streaming platform that cause the Program 
+          to be displayed in a manner that creates liability.
+        risk_level: LOW
+
+  unacceptable:
+    description: "Broad Amazon indemnity that creates excessive exposure"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Mutual indemnification with same scope"
+        example: |
+          Each party shall indemnify the other against claims arising 
+          from such party's breach of this Agreement.
+        reason: "Amazon's exposure is fundamentally different from ProdCo's"
+        risk_level: CRITICAL
+        
+      - pattern: "Amazon indemnity for all exploitation"
+        example: |
+          Amazon shall indemnify ProdCo for any claim arising from 
+          Amazon's distribution or exploitation of the Program.
+        reason: "Too broad; exploitation is the purpose of the Agreement"
+        risk_level: CRITICAL
+        
+      - pattern: "Indemnity for ProdCo-caused claims"
+        example: |
+          Amazon shall indemnify ProdCo for claims arising from the 
+          Program regardless of whether such claims relate to content 
+          created by ProdCo.
+        reason: "ProdCo must bear risk for its own content"
+        risk_level: CRITICAL
+        
+      - pattern: "No carveout for ProdCo indemnity"
+        example: |
+          Amazon shall indemnify ProdCo from all third-party claims 
+          relating to the Program.
+        reason: "Overlaps with and could supersede ProdCo's obligations"
+        risk_level: CRITICAL
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Sole causation standard"
+      position: "'Arising solely from' language required"
+      fallback: "None - essential protection"
+      
+    - priority: 2
+      element: "ProdCo indemnity carveout"
+      position: "Express carveout for Section 6.1 claims"
+      fallback: "None - essential to avoid conflict"
+      
+    - priority: 3
+      element: "Deviation from deliverables"
+      position: "Material deviation standard"
+      fallback: "Can define 'material' if needed"
+  
+  common_counterparty_requests:
+    - request: "Broaden to all Amazon exploitation"
+      response: "Unacceptable. ProdCo delivers content; Amazon only exploits as delivered."
+      alternative: "Maintain narrow scope; ensure E&O covers exploitation claims"
+      
+    - request: "Remove 'solely' qualifier"
+      response: "Unacceptable. Would make Amazon liable for joint causation claims."
+      alternative: "Consider proportionate fault only in extreme cases"
+      
+    - request: "Add promotional materials indemnity"
+      response: "Partially acceptable"
+      alternative: |
+        Amazon shall indemnify for claims arising from promotional 
+        materials created by Amazon that do not incorporate any 
+        ProdCo-delivered content.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Amazon post-delivery modifications"
+      high_risk: "Extensive re-editing, dubbing, or format changes"
+      low_risk: "Standard encoding and platform formatting only"
+      
+    - factor: "Amazon promotional activities"
+      high_risk: "Amazon creates original promotional content"
+      low_risk: "Promotional use of ProdCo-delivered materials only"
+  
+  escalation_triggers:
+    - "Any request to broaden Amazon indemnity scope"
+    - "Removal of 'solely' or 'arising solely from' language"
+    - "Removal of ProdCo indemnity carveout"
+    - "Mutual indemnification proposals"

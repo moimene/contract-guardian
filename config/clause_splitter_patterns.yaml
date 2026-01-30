@@ -1,0 +1,199 @@
+# ================================================================
+# CLAUSE SPLITTER PATTERNS
+# Configuración para separar cláusulas multi-familia
+# Version: 1.0
+# ================================================================
+
+version: "1.0"
+
+# ================================================================
+# SECTION 7: REPRESENTATIONS/WARRANTIES; INDEMNITY
+# ================================================================
+section_7:
+  heading_patterns:
+    - "REPRESENTATIONS/WARRANTIES; INDEMNITY"
+    - "REPRESENTATIONS AND WARRANTIES"
+    - "INDEMNIFICATION"
+  
+  sub_sections:
+    - name: "ProdCo Representations"
+      family: RepsProdCo
+      markers:
+        start:
+          - "ProdCo represents, warrants and agrees"
+          - "ProdCo represents and warrants"
+        end:
+          - "ProdCo will indemnify"
+          - "ProdCo shall indemnify"
+      typical_content:
+        - "will not infringe"
+        - "will not violate"
+        - "applicable laws, rules and regulations"
+        - "full right to enter into"
+    
+    - name: "ProdCo Indemnity"
+      family: IndemnityProdCo
+      markers:
+        start:
+          - "ProdCo will indemnify"
+          - "ProdCo shall indemnify"
+        end:
+          - "Amazon will indemnify"
+          - "Amazon shall indemnify"
+      typical_content:
+        - "indemnify, defend"
+        - "hold harmless Amazon"
+        - "arising out of any third-party claim"
+        - "breach or alleged breach"
+    
+    - name: "Amazon Indemnity"
+      family: IndemnityAmazon
+      markers:
+        start:
+          - "Amazon will indemnify"
+          - "Amazon shall indemnify"
+        end:
+          - "If either Amazon or ProdCo is entitled"
+          - "indemnitee will give"
+      typical_content:
+        - "indemnify, defend, and hold harmless ProdCo"
+        - "distribution and exploitation"
+        - "other than with respect to any Losses"
+    
+    - name: "Indemnity Procedures"
+      family: IndemnityProcedures
+      markers:
+        start:
+          - "If either Amazon or ProdCo is entitled"
+          - "indemnitee will give"
+        end: null  # End of section
+      typical_content:
+        - "prompt written notice"
+        - "control the defense and settlement"
+        - "cooperate reasonably"
+      note: "Only include if present in contract"
+
+# ================================================================
+# SECTION 8: MISCELLANEOUS
+# ================================================================
+section_8:
+  heading_patterns:
+    - "MISCELLANEOUS"
+    - "GENERAL PROVISIONS"
+    - "OTHER TERMS"
+  
+  sub_sections:
+    - name: "Conditions Precedent"
+      family: ConditionsPrecedent
+      keywords:
+        - "conditions precedent"
+        - "subject to any conditions"
+      typical_content:
+        - "Amazon's obligations hereunder are subject to"
+    
+    - name: "Amazon Control"
+      family: AmazonControl
+      keywords:
+        - "sole and final control"
+      typical_content:
+        - "As between ProdCo and Amazon, Amazon has sole"
+    
+    - name: "Confidentiality/NPI"
+      family: Confidentiality
+      keywords:
+        - "keep confidential"
+        - "non-public information"
+        - "NPI"
+        - "artificial intelligence"
+      typical_content:
+        - "will not release or authorize any publicity"
+        - "AI service or tool"
+    
+    - name: "Damages Waiver"
+      family: LiabilityLimitation
+      keywords:
+        - "WAIVES ALL CLAIMS"
+        - "CONSEQUENTIAL DAMAGES"
+        - "INDIRECT, INCIDENTAL, PUNITIVE"
+      typical_content:
+        - "EXCEPT FOR THE INDEMNIFICATION OBLIGATIONS"
+    
+    - name: "Injunctive Relief Waiver"
+      family: InjunctiveReliefWaiver
+      keywords:
+        - "waives any right to seek or obtain injunctive"
+        - "limited to the right... to recover monetary damages"
+      typical_content:
+        - "enjoin or restrain the development, production"
+    
+    - name: "Assignment"
+      family: Assignment
+      keywords:
+        - "may not assign"
+        - "may be freely assigned"
+      typical_content:
+        - "ProdCo may not assign this Agreement"
+        - "may be freely assigned by Amazon"
+    
+    - name: "Power of Attorney"
+      family: PowerOfAttorney
+      keywords:
+        - "power of attorney"
+        - "execute and deliver all additional documents"
+      typical_content:
+        - "irrevocably authorizes Amazon to act"
+    
+    - name: "Suspension/Force Majeure"
+      family: ForceMajeure
+      keywords:
+        - "force majeure"
+        - "suspend any services"
+        - "earthquake"
+        - "pandemic"
+      typical_content:
+        - "Amazon may elect to suspend"
+        - "unavailability, disability or death"
+    
+    - name: "Standard Terms"
+      family: StandardTerms
+      keywords:
+        - "standard terms and conditions"
+        - "industry custom"
+      typical_content:
+        - "ProdCo has or will obtain signed agreements"
+        - "good faith negotiation"
+
+# ================================================================
+# SECTION 10: TAX; GOVERNING LAW; JURISDICTION
+# ================================================================
+section_10:
+  heading_patterns:
+    - "TAX; GOVERNING LAW; JURISDICTION"
+    - "GOVERNING LAW"
+    - "TAX"
+  
+  sub_sections:
+    - name: "Tax Provisions"
+      family: TaxProvisions
+      markers:
+        start:
+          - "Each party will be responsible for identifying"
+        end:
+          - "THIS AGREEMENT WILL BE CONSTRUED"
+          - "governed by the law"
+      typical_content:
+        - "taxes and other governmental fees"
+        - "deduct or withhold"
+    
+    - name: "Governing Law & Dispute Resolution"
+      family: DisputeResolution
+      markers:
+        start:
+          - "THIS AGREEMENT WILL BE CONSTRUED"
+          - "governed by the law"
+        end: null
+      typical_content:
+        - "State of California"
+        - "binding arbitration"
+        - "JAMS"
+        - "jury trial"

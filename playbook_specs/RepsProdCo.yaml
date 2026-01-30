@@ -1,0 +1,148 @@
+# ================================================================
+# FAMILY: Representations/Warranties by ProdCo
+# Source: PLAYBOOK_DSA_Amazon - Rules "Representations/Warranties 
+#         by ProdCo 1/2/3" + PSA Section 7
+# Version: 2026-01-30
+# ================================================================
+
+family_id: RepsProdCo
+rule_name: "Representations/Warranties by ProdCo"
+psa_section: 7
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (Verbatim from Playbook)
+# ================================================================
+standard_position: |
+  ProdCo represents, warrants and agrees that: 
+  (i) the Program (including all materials previously created for the 
+      Program) and Materials are original and qualify for full copyright 
+      protection (other than materials supplied to ProdCo by Amazon or 
+      any elements in the public domain of which ProdCo notifies Amazon), 
+      will not infringe or violate any intellectual property rights 
+      (including any copyright) of, and will not defame, infringe or 
+      violate the rights of privacy or any other rights of any person 
+      or entity, and are not subject to any claim, encumbrance or 
+      third-party interest; 
+  (ii) ProdCo will comply with all (A) applicable laws, rules and 
+       regulations (including import/re-import, sanctions, anti-boycott, 
+       export/re-export control laws, and tax evasion and tax evasion 
+       facilitation laws), and (B) Amazon's policies, requirements and 
+       guidelines/manuals of which ProdCo is made aware in advance; and 
+  (iii) ProdCo is capable of and has the full right to enter into and 
+        perform under this Agreement.
+
+# ================================================================
+# ACCEPTABLE DEVIATIONS
+# ================================================================
+acceptable_deviations:
+  - id: REPS-ACC-001
+    description: "Add materials supplied at Amazon's request/direction"
+    text_pattern: "and/or materials supplied by ProdCo at Amazon's explicit request and/or direction"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: The acceptable deviation (or any substantially equivalent 
+      language) may be accepted directly, without Amazon's approval.
+
+  - id: REPS-ACC-002
+    description: "Remove 'of which ProdCo notifies Amazon' for public domain"
+    text_pattern: null  # Deletion of "of which ProdCo notifies Amazon"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: The acceptable fallback (or any substantially equivalent 
+      language) may be accepted directly, without Amazon's approval.
+
+  - id: REPS-ACC-003
+    description: "Add Development Kickoff Packet reference"
+    text_pattern: "(including Amazon's Development Kickoff Packet)"
+    approval_required: false
+    approval_level: "NTD"
+    guidance: |
+      NTD: This addition may be applied directly, without Amazon's approval.
+
+  - id: REPS-ACC-004
+    description: "Delete specific law categories with Amazon Legal approval"
+    text_pattern: null  # Deletion of specific laws
+    approval_required: true
+    approval_level: "AMAZON_LEGAL"
+    guidance: |
+      NTD: Please accept only the acceptable deletions that have been 
+      specifically requested. This change is acceptable only with Amazon 
+      Legal's approval. If ProdCo objects to inclusion of specific 
+      categories of laws (i.e. one or more of "import, re-import, 
+      sanctions, anti-boycott, export, and re-export control laws"), 
+      with Amazon Legal approval, we are willing to delete specific 
+      laws and regulations that ProdCo objects to, provided that they 
+      do not apply to the contract at hand.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: REPS-UNACC-001
+    description: "Knowledge qualifier on infringement"
+    text_patterns:
+      - "to the best of ProdCo's knowledge"
+      - "to ProdCo's knowledge"
+    context: "infringement or violation representation"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo wishes to add "to the best of ProdCo's knowledge" as a 
+      qualifier to representation and warranty that Program and Material 
+      will not infringe or violate the rights of any person or entity, 
+      we're unable to accommodate ProdCo's request. Amazon recognizes a 
+      line item in the budget for E&O insurance funded by Amazon that 
+      covers these types of claims regardless of ProdCo's level of 
+      negligence or intent, provided there is no fraud, so it is more 
+      appropriate for insurance to cover the claim than to transfer 
+      this obligation to Amazon.
+
+  - id: REPS-UNACC-002
+    description: "Knowledge qualifier on encumbrances"
+    text_patterns:
+      - "to the best of ProdCo's knowledge"
+      - "to ProdCo's knowledge"
+    context: "claim, encumbrance or third-party interest"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo wishes to add "to the best of ProdCo's knowledge" as a 
+      qualifier to representation and warranty that Program and Material 
+      "are not subject to any claim, encumbrance or third-party interest", 
+      Amazon does not allow a knowledge qualifier on these items as ProdCo 
+      is the party in best position to know of any of these issues or 
+      encumbrances (and should be responsible to Amazon for any issues 
+      that arise therefrom).
+
+  - id: REPS-UNACC-003
+    description: "Removal of compliance with laws entirely"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo requests to remove this language entirely, do not remove 
+      as Amazon needs ProdCo to adhere to these laws and regulations (as 
+      a matter of both law and corporate policy) and this language is 
+      already qualified to what is applicable (so any items that are not 
+      applicable would not apply).
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "ProdCo represents, warrants and agrees"
+    - "ProdCo represents and warrants"
+    - "REPRESENTATIONS/WARRANTIES"
+    - "will not infringe"
+  secondary:
+    - "original and qualify for full copyright"
+    - "defame, infringe or violate"
+    - "claim, encumbrance or third-party interest"
+    - "applicable laws, rules and regulations"
+  negative:
+    - "Amazon represents"
+    - "Amazon warrants"
+  heading_patterns:
+    - "^7\\.\\s*REPRESENTATIONS"
+    - "REPRESENTATIONS.*WARRANTIES.*INDEMNITY"

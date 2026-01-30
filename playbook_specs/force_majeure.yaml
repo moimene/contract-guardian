@@ -1,0 +1,210 @@
+# ================================================================
+# PLAYBOOK SPEC: ForceM
+# Force Majeure
+# ================================================================
+
+family_id: ForceM
+display_name: "Force Majeure"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: HIGH
+requires_legal_review: false
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Force Majeure should excuse performance during the event but 
+    provide Amazon with termination right if the event extends beyond 
+    30 days. Definition should include standard events but not economic 
+    hardship or ordinary business disruptions. Amazon retains ownership 
+    of Materials created.
+  
+  core_requirements:
+    - Clear definition of Force Majeure Events
+    - Excuse of performance during event
+    - Notice requirement
+    - Mitigation duty
+    - Amazon termination right after 30 days
+    - Materials ownership preserved on termination
+    - No extension of rights or payments
+    - Carveouts for payment obligations
+  
+  business_rationale: |
+    Productions can be disrupted by events outside party control 
+    (pandemic, natural disaster, strike). Amazon needs flexibility to 
+    exit stalled productions while retaining work product. Economic 
+    hardship should not excuse performance.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Standard FM with Amazon termination right"
+    
+    required_elements:
+      - element: "Definition"
+        language: |
+          "Force Majeure Event" means any event beyond the reasonable 
+          control of a party, including acts of God, war, terrorism, 
+          pandemic, epidemic, government action, labor dispute not 
+          involving the affected party's employees, or natural disaster.
+        required: true
+        
+      - element: "Excuse of performance"
+        language: |
+          A party shall be excused from performance to the extent 
+          prevented by a Force Majeure Event.
+        required: true
+        
+      - element: "Notice"
+        language: |
+          The affected party shall provide prompt notice of the Force 
+          Majeure Event and its expected duration.
+        required: true
+        
+      - element: "Mitigation"
+        language: |
+          The affected party shall use reasonable efforts to mitigate 
+          the impact of the Force Majeure Event.
+        required: true
+        
+      - element: "Termination right"
+        language: |
+          If a Force Majeure Event continues for more than thirty (30) 
+          consecutive days, either party may terminate upon written notice.
+        required: true
+        
+      - element: "Materials ownership"
+        language: |
+          Upon termination due to Force Majeure, Amazon shall own all 
+          Materials created through the date of termination.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Neither party shall be liable for failure to perform due to 
+          a Force Majeure Event (acts of God, war, pandemic, government 
+          action, natural disaster). The affected party shall provide 
+          prompt notice and mitigate impact. If the event continues for 
+          more than 30 days, either party may terminate. Upon termination, 
+          Amazon owns all Materials created.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "FM with minor variations"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Extended termination period"
+        condition: "Up to 60 days"
+        example: |
+          Either party may terminate if Force Majeure continues for 
+          more than sixty (60) consecutive days.
+        risk_level: LOW
+        
+      - variation: "Industry-specific events"
+        condition: "Relevant to production"
+        example: |
+          Force Majeure Events include guild strikes and studio closures.
+        risk_level: LOW
+
+  unacceptable:
+    description: "FM provisions that trap Amazon"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "No termination right"
+        example: |
+          Both parties shall remain bound regardless of duration of 
+          Force Majeure Event.
+        reason: "Amazon needs exit if production stalled indefinitely"
+        risk_level: CRITICAL
+        
+      - pattern: "Economic hardship included"
+        example: |
+          Force Majeure includes economic downturn, inability to obtain 
+          financing, or market conditions.
+        reason: "Economic issues are not FM; ProdCo bears financial risk"
+        risk_level: CRITICAL
+        
+      - pattern: "Extended suspension with continued payment"
+        example: |
+          During Force Majeure, Amazon shall continue to pay overhead.
+        reason: "Payment should suspend with production"
+        risk_level: HIGH
+        
+      - pattern: "Materials reversion on FM termination"
+        example: |
+          If terminated due to Force Majeure, Materials revert to ProdCo.
+        reason: "Amazon retains Materials regardless of termination cause"
+        risk_level: CRITICAL
+        
+      - pattern: "ProdCo-only excuse"
+        example: |
+          Only ProdCo is excused for Force Majeure Events.
+        reason: "Both parties should have FM excuse"
+        risk_level: MEDIUM
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Termination right"
+      position: "Either party may terminate after 30 days"
+      fallback: "Up to 60 days"
+      
+    - priority: 2
+      element: "Materials ownership"
+      position: "Amazon retains Materials on FM termination"
+      fallback: "None - essential"
+      
+    - priority: 3
+      element: "No economic hardship"
+      position: "FM excludes economic difficulties"
+      fallback: "None - essential"
+  
+  common_counterparty_requests:
+    - request: "Include financing difficulties as FM"
+      response: "Unacceptable"
+      alternative: |
+        Financing is ProdCo's responsibility; separate provisions 
+        may address budget issues.
+      
+    - request: "Continued overhead payment during FM"
+      response: "Unacceptable"
+      alternative: |
+        Negotiate shutdown/restart costs separately from ongoing 
+        overhead.
+      
+    - request: "Longer FM period before termination"
+      response: "Negotiable up to 60 days"
+      alternative: "45-60 days acceptable"
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Production stage"
+      high_risk: "FM during active production (high sunk costs)"
+      low_risk: "FM during development"
+      
+    - factor: "Location"
+      high_risk: "Disaster-prone or politically unstable locations"
+      low_risk: "Stable production environments"
+  
+  escalation_triggers:
+    - "No termination right"
+    - "Economic hardship included in FM definition"
+    - "Materials reversion on FM termination"

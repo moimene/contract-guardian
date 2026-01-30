@@ -1,0 +1,410 @@
+# ================================================================
+# RAG EXAMPLES EXPANSION PACK
+# Basado en cláusulas reales del PSA Principal Terms Fallback Guide
+# Objetivo: Cubrir familias sin RAG examples (0% accuracy)
+# ================================================================
+
+examples:
+
+# ================================================================
+# RightsGrant - CRÍTICO (Antes: 0 examples → 0% accuracy)
+# ================================================================
+- example_id: RG-001
+  family: RightsGrant
+  article: "3.1"
+  clause_text: |
+    RIGHTS: All rights in the Program, including all materials 
+    commissioned (including the results and proceeds of services 
+    of all personnel rendering services), are being specially 
+    ordered and commissioned by Amazon as a work made for hire 
+    for Amazon. Amazon shall be the author and exclusive owner 
+    for copyright purposes and otherwise. To the extent that any 
+    of the foregoing may not be considered a work made for hire, 
+    ProdCo hereby irrevocably assigns to Amazon all right, title, 
+    and interest in and to the Program and all such materials, 
+    including all copyrights.
+  rating: ACCEPTABLE
+  confidence: 0.95
+  key_triggers:
+    - "All rights in the Program"
+    - "work made for hire"
+    - "exclusive owner"
+    - "irrevocably assigns"
+    - "all right, title, and interest"
+    - "including all copyrights"
+
+- example_id: RG-002
+  family: RightsGrant
+  article: "3.2"
+  clause_text: |
+    Amazon shall own exclusively and in perpetuity, throughout 
+    the universe, in all languages, and in all media now known 
+    or hereafter developed, all right, title, and interest in 
+    and to the Program.
+  rating: ACCEPTABLE
+  confidence: 0.98
+  key_triggers:
+    - "Amazon shall own exclusively"
+    - "in perpetuity"
+    - "throughout the universe"
+    - "in all media"
+    - "now known or hereafter developed"
+
+- example_id: RG-003
+  family: RightsGrant
+  article: "3.3"
+  clause_text: |
+    ProdCo agrees that the results and proceeds of its services 
+    under this Agreement, including all creative contributions, 
+    shall be deemed works made for hire for Amazon, and Amazon 
+    shall be the sole author and owner of all intellectual property 
+    rights therein.
+  rating: ACCEPTABLE
+  confidence: 0.93
+  key_triggers:
+    - "results and proceeds"
+    - "works made for hire"
+    - "sole author and owner"
+    - "intellectual property rights"
+
+# ================================================================
+# ServicesScope - NUEVO (Antes: 0 examples)
+# ================================================================
+- example_id: SS-001
+  family: ServicesScope
+  article: "2.1"
+  clause_text: |
+    SERVICES: ProdCo will render services as set forth in this 
+    agreement, including any exhibits and schedules hereto, to 
+    produce the Program.
+  rating: ACCEPTABLE
+  confidence: 0.90
+  key_triggers:
+    - "ProdCo will render services"
+    - "to produce the Program"
+    - "including any exhibits"
+
+- example_id: SS-002
+  family: ServicesScope
+  article: "2.2"
+  clause_text: |
+    ProdCo shall render all production services necessary to 
+    complete the Program, including pre-production, principal 
+    photography, post-production, and delivery of final masters 
+    in accordance with first-class production standards.
+  rating: ACCEPTABLE
+  confidence: 0.93
+  key_triggers:
+    - "render all production services"
+    - "pre-production, principal photography, post-production"
+    - "delivery of final masters"
+    - "first-class production standards"
+
+- example_id: SS-003
+  family: ServicesScope
+  article: "2.3"
+  clause_text: |
+    ProdCo agrees to deliver the Program suitable for worldwide 
+    distribution across all platforms, meeting all technical 
+    specifications provided by Amazon.
+  rating: ACCEPTABLE
+  confidence: 0.88
+  key_triggers:
+    - "deliver the Program"
+    - "worldwide distribution"
+    - "technical specifications"
+
+# ================================================================
+# Confidentiality - NUEVO (para DATA PROTECTION)
+# ================================================================
+- example_id: CF-001
+  family: Confidentiality
+  article: "9.1"
+  clause_text: |
+    DATA PROTECTION: When processing personal data in connection 
+    with this Agreement, Amazon or ProdCo shall comply with all 
+    applicable data protection laws and regulations, including 
+    but not limited to GDPR and CCPA.
+  rating: ACCEPTABLE
+  confidence: 0.85
+  key_triggers:
+    - "DATA PROTECTION"
+    - "personal data"
+    - "data protection laws"
+    - "processing"
+    - "GDPR"
+
+- example_id: CF-002
+  family: Confidentiality
+  article: "9.2"
+  clause_text: |
+    ProdCo shall maintain in strict confidence and shall not 
+    disclose to any third party any Confidential Information of 
+    Amazon, including the terms of this Agreement, NPI, and any 
+    non-public information regarding Amazon's business.
+  rating: ACCEPTABLE
+  confidence: 0.92
+  key_triggers:
+    - "maintain in strict confidence"
+    - "Confidential Information"
+    - "NPI"
+    - "shall not disclose"
+    - "non-public information"
+
+- example_id: CF-003
+  family: Confidentiality
+  article: "9.3"
+  clause_text: |
+    Each party agrees to implement appropriate technical and 
+    organizational measures to protect personal data against 
+    unauthorized access, alteration, or destruction.
+  rating: ACCEPTABLE
+  confidence: 0.87
+  key_triggers:
+    - "protect personal data"
+    - "unauthorized access"
+    - "technical and organizational measures"
+
+# ================================================================
+# Parties / Definitions - NUEVO
+# ================================================================
+- example_id: PT-001
+  family: Parties
+  article: "PREAMBLE"
+  clause_text: |
+    PARTIES: Amazon Content Services LLC ("Amazon"), a Delaware 
+    limited liability company with offices at 2021 Seventh Avenue, 
+    Seattle, Washington 98121, and [PRODCO NAME] ("ProdCo").
+  rating: ACCEPTABLE
+  confidence: 0.95
+  key_triggers:
+    - "PARTIES:"
+    - "Amazon Content Services LLC"
+    - "ProdCo"
+
+- example_id: PT-002
+  family: Parties
+  article: "1.1"
+  clause_text: |
+    EFFECTIVE DATE: This Program Services Agreement is entered 
+    into as of [DATE] by and between Amazon Content Services LLC 
+    and the production company identified above.
+  rating: ACCEPTABLE
+  confidence: 0.92
+  key_triggers:
+    - "EFFECTIVE DATE"
+    - "entered into as of"
+    - "by and between"
+
+# ================================================================
+# GeneralProvisions / Miscellaneous - NUEVO
+# ================================================================
+- example_id: GP-001
+  family: GeneralProvisions
+  article: "12.1"
+  clause_text: |
+    MISCELLANEOUS (CONDITIONS PRECEDENT, DAMAGES, INJUNCTIVE RELIEF, 
+    ASSIGNMENT, ETC.): This Agreement, together with all exhibits 
+    and schedules, constitutes the entire agreement between the 
+    parties with respect to the subject matter hereof.
+  rating: ACCEPTABLE
+  confidence: 0.80
+  key_triggers:
+    - "MISCELLANEOUS"
+    - "CONDITIONS PRECEDENT"
+    - "ASSIGNMENT"
+    - "entire agreement"
+  multi_family_hint: true
+
+- example_id: GP-002
+  family: GeneralProvisions
+  article: "12.2"
+  clause_text: |
+    If any provision of this Agreement is held to be invalid or 
+    unenforceable, the remaining provisions shall continue in 
+    full force and effect. This Agreement may be executed in 
+    counterparts.
+  rating: ACCEPTABLE
+  confidence: 0.85
+  key_triggers:
+    - "invalid or unenforceable"
+    - "remaining provisions"
+    - "counterparts"
+    - severability
+
+# ================================================================
+# LiabilityLimitation - EXPANDIDO
+# ================================================================
+- example_id: LL-001
+  family: LiabilityLimitation
+  article: "7.1"
+  clause_text: |
+    IN NO EVENT SHALL AMAZON BE LIABLE FOR ANY CONSEQUENTIAL, 
+    INDIRECT, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES ARISING 
+    OUT OF OR RELATED TO THIS AGREEMENT, REGARDLESS OF WHETHER 
+    SUCH DAMAGES WERE FORESEEABLE.
+  rating: ACCEPTABLE
+  confidence: 0.96
+  key_triggers:
+    - "IN NO EVENT SHALL"
+    - "CONSEQUENTIAL"
+    - "INDIRECT"
+    - "PUNITIVE DAMAGES"
+
+- example_id: LL-002
+  family: LiabilityLimitation
+  article: "7.2"
+  clause_text: |
+    AMAZON'S TOTAL AGGREGATE LIABILITY UNDER THIS AGREEMENT SHALL 
+    NOT EXCEED THE AMOUNTS ACTUALLY PAID BY AMAZON TO PRODCO UNDER 
+    THIS AGREEMENT DURING THE TWELVE (12) MONTHS PRECEDING THE CLAIM.
+  rating: ACCEPTABLE
+  confidence: 0.94
+  key_triggers:
+    - "TOTAL AGGREGATE LIABILITY"
+    - "SHALL NOT EXCEED"
+    - "AMOUNTS ACTUALLY PAID"
+
+# ================================================================
+# Assignment - NUEVO
+# ================================================================
+- example_id: AS-001
+  family: Assignment
+  article: "11.1"
+  clause_text: |
+    ProdCo may not assign this Agreement or any rights hereunder 
+    without Amazon's prior written consent. Amazon may freely 
+    assign this Agreement to any affiliate or successor.
+  rating: ACCEPTABLE
+  confidence: 0.92
+  key_triggers:
+    - "may not assign"
+    - "without Amazon's prior written consent"
+    - "may freely assign"
+    - "affiliate or successor"
+
+- example_id: AS-002
+  family: Assignment
+  article: "11.2"
+  clause_text: |
+    This Agreement shall be binding upon and inure to the benefit 
+    of the parties and their respective successors and permitted 
+    assigns.
+  rating: ACCEPTABLE
+  confidence: 0.88
+  key_triggers:
+    - "binding upon"
+    - "inure to the benefit"
+    - "successors"
+    - "permitted assigns"
+
+# ================================================================
+# RepsProdCo - EXPANDIDO (Cláusula combinada)
+# ================================================================
+- example_id: RP-003
+  family: RepsProdCo
+  article: "5.1"
+  clause_text: |
+    REPRESENTATIONS/WARRANTIES: ProdCo represents, warrants and 
+    agrees that: (i) the Program and all materials will not 
+    infringe any third party rights; (ii) ProdCo has obtained 
+    all necessary rights and clearances; (iii) the Program will 
+    not violate any law or regulation.
+  rating: ACCEPTABLE
+  confidence: 0.94
+  key_triggers:
+    - "ProdCo represents, warrants and agrees"
+    - "will not infringe"
+    - "all necessary rights"
+    - "will not violate"
+
+- example_id: RP-004
+  family: RepsProdCo
+  article: "5.2"
+  clause_text: |
+    ProdCo represents and warrants that it has the full right, 
+    power, and authority to enter into this Agreement and to 
+    perform all of its obligations hereunder without violating 
+    any agreement to which it is a party.
+  rating: ACCEPTABLE
+  confidence: 0.95
+  key_triggers:
+    - "full right, power, and authority"
+    - "enter into this Agreement"
+    - "perform all of its obligations"
+
+# ================================================================
+# DisputeResolution - EXPANDIDO
+# ================================================================
+- example_id: DR-001
+  family: DisputeResolution
+  article: "10.1"
+  clause_text: |
+    TAX; GOVERNING LAW; JURISDICTION: Each party will be 
+    responsible for identifying and paying any taxes arising 
+    from its activities under this Agreement. This Agreement 
+    shall be governed by the laws of the State of California 
+    without regard to conflict of law principles.
+  rating: ACCEPTABLE
+  confidence: 0.91
+  key_triggers:
+    - "TAX"
+    - "GOVERNING LAW"
+    - "JURISDICTION"
+    - "governed by the laws of"
+    - "State of California"
+
+- example_id: DR-002
+  family: DisputeResolution
+  article: "10.2"
+  clause_text: |
+    The parties agree to submit to the exclusive jurisdiction 
+    of the courts located in Los Angeles County, California 
+    for the resolution of any disputes arising under this Agreement.
+  rating: ACCEPTABLE
+  confidence: 0.93
+  key_triggers:
+    - "exclusive jurisdiction"
+    - "courts located in"
+    - "Los Angeles County"
+    - "disputes"
+
+# ================================================================
+# NEGATIVE EXAMPLES (para mejorar precision del routing)
+# ================================================================
+- example_id: NEG-001
+  family: IndemnityAmazon
+  negative_for: IndemnityProdCo
+  clause_text: |
+    Amazon shall indemnify ProdCo from claims arising solely from 
+    Amazon's unauthorized exploitation beyond the scope of rights 
+    granted herein.
+  rating: REDIRECT
+  redirect_to: IndemnityAmazon
+  key_triggers:
+    - "Amazon shall indemnify"
+
+- example_id: NEG-002
+  family: RightsGrant
+  negative_for: RightsGrant
+  clause_text: |
+    Amazon grants ProdCo a limited, non-exclusive license to use 
+    Amazon's trademarks solely in connection with the marketing 
+    of the Program.
+  rating: UNACCEPTABLE
+  reason: "License, not ownership transfer"
+  key_triggers:
+    - "grants ProdCo a limited"
+    - "non-exclusive license"
+
+- example_id: NEG-003
+  family: RepsProdCo
+  negative_for: RepsAmazon
+  clause_text: |
+    Amazon represents and warrants that it has the authority to 
+    enter into this Agreement and to exploit the Program as 
+    contemplated herein.
+  rating: REDIRECT
+  redirect_to: RepsAmazon
+  key_triggers:
+    - "Amazon represents and warrants"

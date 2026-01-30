@@ -1,0 +1,46 @@
+{
+  "timestamp": "20260129_125508",
+  "document": "contratos de test/PSA Principal Terms Fallback Guide (20 October 2025) - Prueba 1.docx",
+  "total_clauses": 1,
+  "family_distribution": {
+    "ERROR": 1
+  },
+  "decision_distribution": {
+    "ERROR": 1
+  },
+  "results": [
+    {
+      "idx": 1,
+      "heading": "",
+      "text_preview": "\u201cPROGRAM\u201d SERVICES AGREEMENT PRINCIPAL TERMS EFFECTIVE DATE: XXXX PARTIES:\tAmazon Content Services L...",
+      "family": "ERROR",
+      "decision": "ERROR",
+      "has_playbook_spec": false,
+      "full_response": {
+        "output_id": "5f2d3b32-7fce-4fd8-8b1d-b4817d252232",
+        "run_id": "2bb34738-8687-4cb2-9606-9f2be47104c0",
+        "document_id": null,
+        "clause_instance_id": null,
+        "clause_heading": null,
+        "original_text": "",
+        "proposed_text": null,
+        "client_comment": null,
+        "change_type": null,
+        "status": "pending",
+        "sequence_number": null,
+        "created_at": "2026-01-29T11:55:18.238924+00:00",
+        "updated_at": "2026-01-29T11:55:18.238924+00:00",
+        "client_state": null,
+        "safety_pass": true,
+        "leak_score": 0,
+        "clause_review_id": null,
+        "client_summary_line": null,
+        "proposed_changes_client": [],
+        "blocked_terms_detected": [],
+        "policy_leak_flags": [],
+        "redactions": [],
+        "locale": "es-ES"
+      }
+    }
+  ]
+}

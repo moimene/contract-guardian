@@ -1,0 +1,115 @@
+{
+    "family_id": "IndemnityProdCo",
+    "display_name": "ProdCo Indemnification Obligations",
+    "version": "1.0",
+    "examples": [
+        {
+            "id": "IP-001",
+            "text": "ProdCo shall indemnify, defend, and hold harmless Amazon and its parents, subsidiaries, affiliates, successors, assigns, licensees, officers, directors, employees, and agents (collectively, 'Amazon Indemnitees') from and against any and all claims, demands, actions, suits, damages, liabilities, losses, settlements, judgments, costs, and expenses (including reasonable attorneys' fees and costs) arising out of or relating to any breach of ProdCo's representations, warranties, or obligations under this Agreement.",
+            "article": "6.1",
+            "header": "INDEMNIFICATION - ProdCo Indemnification",
+            "triggers_found": [
+                "ProdCo shall indemnify",
+                "indemnify, defend, and hold harmless",
+                "Amazon Indemnitees",
+                "from and against any and all claims",
+                "arising out of or relating to"
+            ],
+            "confidence": 0.98,
+            "notes": "Core ProdCo indemnification with full language"
+        },
+        {
+            "id": "IP-002",
+            "text": "ProdCo agrees to indemnify Amazon against any claim that the Program or Materials infringe, misappropriate, or violate any intellectual property right, right of privacy, right of publicity, or other right of any third party.",
+            "article": "6.1(b)",
+            "header": "INDEMNIFICATION",
+            "triggers_found": [
+                "ProdCo agrees to indemnify",
+                "any claim",
+                "infringe, misappropriate, or violate"
+            ],
+            "confidence": 0.95,
+            "notes": "IP infringement indemnification"
+        },
+        {
+            "id": "IP-003",
+            "text": "ProdCo shall indemnify and hold harmless Amazon from any claim arising from ProdCo's production activities, including claims by cast, crew, vendors, or other third parties.",
+            "article": "6.1(c)",
+            "header": "INDEMNIFICATION",
+            "triggers_found": [
+                "ProdCo shall indemnify",
+                "hold harmless Amazon",
+                "any claim arising from"
+            ],
+            "confidence": 0.94,
+            "notes": "Production activity indemnification"
+        },
+        {
+            "id": "IP-004",
+            "text": "ProdCo's indemnification obligations shall extend to any claim arising from the acts or omissions of ProdCo, its employees, agents, contractors, or representatives.",
+            "article": "6.1(d)",
+            "header": "INDEMNIFICATION",
+            "triggers_found": [
+                "ProdCo's indemnification obligations",
+                "any claim arising from"
+            ],
+            "confidence": 0.92,
+            "notes": "Acts/omissions indemnification"
+        },
+        {
+            "id": "IP-005",
+            "text": "ProdCo shall defend, indemnify, and hold harmless Amazon Indemnitees from any claim that materials provided by ProdCo or included in the Program are defamatory, obscene, or otherwise unlawful.",
+            "article": "6.1(e)",
+            "header": "INDEMNIFICATION",
+            "triggers_found": [
+                "ProdCo shall defend, indemnify, and hold harmless",
+                "Amazon Indemnitees",
+                "any claim"
+            ],
+            "confidence": 0.95,
+            "notes": "Content-based indemnification"
+        },
+        {
+            "id": "IP-006",
+            "text": "ProdCo hereby agrees to indemnify Amazon against all losses, damages, costs, and expenses (including legal fees) resulting from any breach by ProdCo of any term of this Agreement.",
+            "article": "6.1",
+            "header": "INDEMNIFICATION",
+            "triggers_found": [
+                "ProdCo hereby agrees to indemnify",
+                "all losses, damages, costs"
+            ],
+            "confidence": 0.93,
+            "notes": "General breach indemnification"
+        }
+    ],
+    "negative_examples": [
+        {
+            "id": "IP-NEG-001",
+            "text": "Amazon shall indemnify ProdCo from claims arising solely from Amazon's exploitation.",
+            "actual_family": "IndemnityAmazon",
+            "why_not_prodco_indemnity": "Amazon is the indemnifying party, not ProdCo",
+            "triggers_that_redirect": [
+                "Amazon shall indemnify"
+            ]
+        },
+        {
+            "id": "IP-NEG-002",
+            "text": "Amazon shall promptly notify ProdCo of any claim for which indemnification is sought. ProdCo shall assume the defense of such claim.",
+            "actual_family": "IndemnityProcedures",
+            "why_not_prodco_indemnity": "This is procedural language about how indemnification works, not the indemnification obligation itself",
+            "triggers_that_redirect": [
+                "promptly notify",
+                "assume the defense"
+            ]
+        },
+        {
+            "id": "IP-NEG-003",
+            "text": "ProdCo's indemnification obligations shall survive termination.",
+            "actual_family": "SurvivalRemedies",
+            "why_not_prodco_indemnity": "This is about survival of indemnification, not the indemnification obligation itself",
+            "triggers_that_redirect": [
+                "shall survive termination"
+            ]
+        }
+    ]
+}

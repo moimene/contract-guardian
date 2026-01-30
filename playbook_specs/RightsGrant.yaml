@@ -1,0 +1,121 @@
+# ================================================================
+# FAMILY: Rights Grant
+# Source: PSA Section 4 "RIGHTS"
+# Version: 2026-01-30
+# ================================================================
+
+family_id: RightsGrant
+rule_name: "Rights"
+psa_section: 4
+required: true
+priority: CRITICAL
+
+# ================================================================
+# STANDARD POSITION (From PSA Fallback Guide)
+# ================================================================
+standard_position: |
+  All rights in the Program, including all materials commissioned 
+  (including the results and proceeds of services of all personnel 
+  rendering services) ("Materials"), are being specially ordered and 
+  commissioned by Amazon as a work made for hire for Amazon. Amazon 
+  shall be the author and exclusive owner for copyright purposes and 
+  otherwise. To the extent that any of the foregoing may not be 
+  considered a work made for hire for any reason, ProdCo hereby 
+  irrevocably grants, transfers and assigns to Amazon all right, 
+  title and interest in and to the Program and all Materials, 
+  including all copyrights and other intellectual property rights 
+  therein. Amazon shall own exclusively and in perpetuity (or, if 
+  shorter, the maximum legal term of protection), throughout the 
+  universe, in all languages, and in all media now known or hereafter 
+  developed, all right, title and interest in and to the Program.
+
+# ================================================================
+# CORE REQUIREMENTS (Non-negotiable)
+# ================================================================
+core_requirements:
+  - id: RIGHTS-CORE-001
+    name: "Work Made for Hire"
+    text_pattern: "work made for hire"
+    required: true
+    
+  - id: RIGHTS-CORE-002
+    name: "Exclusive Ownership"
+    text_pattern: "Amazon shall be the author and exclusive owner"
+    required: true
+    
+  - id: RIGHTS-CORE-003
+    name: "In Perpetuity"
+    text_pattern: "in perpetuity"
+    required: true
+    
+  - id: RIGHTS-CORE-004
+    name: "Throughout Universe"
+    text_pattern: "throughout the universe"
+    required: true
+    
+  - id: RIGHTS-CORE-005
+    name: "Backup Assignment"
+    text_pattern: "irrevocably grants, transfers and assigns"
+    required: true
+
+  - id: RIGHTS-CORE-006
+    name: "Moral Rights Waiver"
+    text_pattern: "waives... moral rights"
+    required: true
+    guidance: |
+      ProdCo hereby irrevocably waives (and will cause all individuals 
+      ProdCo engages for the Program to waive) all so-called "moral 
+      rights" or "droit moral" and any similar or analogous rights.
+
+# ================================================================
+# UNACCEPTABLE DEVIATIONS
+# ================================================================
+unacceptable_deviations:
+  - id: RIGHTS-UNACC-001
+    description: "Carve out pre-existing materials"
+    action: "REJECT"
+    amazon_position: |
+      If ProdCo asks to carve out pre-existing agreements or materials 
+      from this rights grant, Amazon does not modify this language. If 
+      there are underlying rights agreements, Amazon will take assignment 
+      of (and possibly amend) these agreements pursuant to separate 
+      paperwork between the parties, but must generally be clear that 
+      all results and proceeds in connection with the Materials are work 
+      made for hire and the rights to the Program, itself, will be owned 
+      100% by Amazon.
+
+  - id: RIGHTS-UNACC-002
+    description: "Limited term instead of perpetuity"
+    text_patterns:
+      - "for a period of"
+      - "term of [X] years"
+      - "limited term"
+    action: "REJECT"
+    
+  - id: RIGHTS-UNACC-003
+    description: "ProdCo retains any rights"
+    text_patterns:
+      - "ProdCo retains"
+      - "reserved to ProdCo"
+      - "license to Amazon"  # License instead of ownership
+    action: "REJECT"
+
+# ================================================================
+# DETECTION TRIGGERS
+# ================================================================
+triggers:
+  primary:
+    - "RIGHTS:"
+    - "All rights in the Program"
+    - "work made for hire"
+    - "Amazon shall be the author"
+    - "exclusively own"
+  secondary:
+    - "irrevocably grants, transfers and assigns"
+    - "throughout the universe"
+    - "in perpetuity"
+    - "all right, title and interest"
+    - "moral rights"
+  heading_patterns:
+    - "^4\\.\\s*RIGHTS"
+    - "^RIGHTS:"

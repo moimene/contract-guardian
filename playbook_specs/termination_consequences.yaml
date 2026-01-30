@@ -1,0 +1,228 @@
+# ================================================================
+# PLAYBOOK SPEC: TerminationConsequences
+# Termination Consequences and Effects
+# ================================================================
+
+family_id: TerminationConsequences
+display_name: "Termination Consequences"
+version: "2.0"
+last_updated: "2025-01-29"
+priority: CRITICAL
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+
+amazon_position:
+  summary: |
+    Upon termination, Amazon must retain ownership of all Materials 
+    created, ProdCo must deliver all work product, payment obligations 
+    are adjusted based on termination type, and survival provisions 
+    continue. No reversion of rights regardless of termination cause.
+  
+  core_requirements:
+    - Amazon retains ownership of all Materials
+    - ProdCo delivers all work product
+    - Payment adjustment based on termination type
+    - Kill fee structure (if applicable)
+    - No reversion of rights
+    - Survival of key provisions
+    - Transition assistance
+    - Confidentiality continues
+  
+  business_rationale: |
+    Amazon's investment in Materials should be protected regardless of 
+    termination cause. Clear payment adjustment rules prevent disputes. 
+    ProdCo should be fairly compensated for work performed but not 
+    unjustly enriched by termination.
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+
+acceptability:
+  
+  acceptable:
+    description: "Clear consequences preserving Amazon's interests"
+    
+    required_elements:
+      - element: "Materials ownership"
+        language: |
+          Upon termination for any reason, Amazon shall own all Materials 
+          created through the date of termination.
+        required: true
+        
+      - element: "Delivery of work product"
+        language: |
+          ProdCo shall promptly deliver to Amazon all work product, 
+          Materials, and documentation created under this Agreement.
+        required: true
+        
+      - element: "Payment for termination for convenience"
+        language: |
+          Upon termination for convenience, Amazon shall pay ProdCo for 
+          services rendered and costs properly incurred through the 
+          effective date of termination.
+        required: true
+        
+      - element: "Payment for termination for cause"
+        language: |
+          Upon termination for ProdCo's breach, Amazon's payment 
+          obligations shall cease and Amazon may offset amounts due 
+          against damages.
+        required: true
+        
+      - element: "No reversion"
+        language: |
+          No termination shall cause any reversion of rights to ProdCo.
+        required: true
+        
+      - element: "Survival"
+        language: |
+          Sections [X], [Y], and [Z] shall survive termination.
+        required: true
+    
+    example_acceptable:
+      - text: |
+          Upon termination for any reason: (a) Amazon shall own all 
+          Materials created through the date of termination; (b) ProdCo 
+          shall promptly deliver all work product to Amazon; (c) if 
+          terminated for convenience, Amazon shall pay for services 
+          rendered through the termination date; (d) if terminated for 
+          ProdCo's breach, Amazon's payment obligations shall cease; 
+          (e) no termination shall cause any reversion of rights to 
+          ProdCo; (f) Sections 5 (Reps), 6 (Indemnity), 7 (Liability), 
+          and 9 (Confidentiality) shall survive.
+        rating: ACCEPTABLE
+        confidence: 0.95
+
+  passable:
+    description: "Consequences with reasonable modifications"
+    requires_approval: "AMAZON_LEGAL"
+    
+    passable_variations:
+      - variation: "Kill fee for convenience termination"
+        condition: "Reasonable amount tied to production stage"
+        example: |
+          Upon termination for convenience: (i) during development, 
+          Amazon shall pay 10% of Production Fee as kill fee; (ii) 
+          during pre-production, 25%; (iii) during production, 50%; 
+          (iv) post-delivery, services rendered only.
+        risk_level: MEDIUM
+        notes: "Percentages are illustrative; negotiate based on deal"
+        
+      - variation: "Transition assistance period"
+        condition: "Reasonable period for orderly transition"
+        example: |
+          Upon request, ProdCo shall continue to provide transition 
+          assistance for up to thirty (30) days following termination 
+          at Amazon's expense.
+        risk_level: LOW
+        
+      - variation: "Third-party payment obligations"
+        condition: "Amazon responsible for commitments it approved"
+        example: |
+          Amazon shall remain responsible for third-party commitments 
+          made with Amazon's prior written approval that cannot be 
+          cancelled.
+        risk_level: MEDIUM
+
+  unacceptable:
+    description: "Consequences that prejudice Amazon"
+    action: "REJECT"
+    
+    unacceptable_patterns:
+      - pattern: "Reversion on termination"
+        example: |
+          Upon termination for Amazon's convenience, all rights shall 
+          revert to ProdCo.
+        reason: "No reversion regardless of termination cause"
+        risk_level: CRITICAL
+        
+      - pattern: "Lost profits on convenience termination"
+        example: |
+          Upon termination for convenience, Amazon shall pay ProdCo 
+          its lost anticipated profits.
+        reason: "Kill fee replaces lost profits; no consequential damages"
+        risk_level: CRITICAL
+        
+      - pattern: "Full payment on termination"
+        example: |
+          Upon termination for any reason, Amazon shall pay the full 
+          Production Fee.
+        reason: "Payment should reflect services rendered"
+        risk_level: CRITICAL
+        
+      - pattern: "ProdCo retains Materials"
+        example: |
+          Upon termination, ProdCo may retain copies of all Materials 
+          for future use.
+        reason: "Amazon exclusively owns Materials"
+        risk_level: HIGH
+        
+      - pattern: "No survival provisions"
+        example: |
+          Upon termination, all obligations shall cease.
+        reason: "Key provisions must survive"
+        risk_level: HIGH
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+
+negotiation:
+  priorities:
+    - priority: 1
+      element: "Materials ownership"
+      position: "Amazon owns all Materials regardless of termination cause"
+      fallback: "None - essential"
+      
+    - priority: 2
+      element: "No reversion"
+      position: "Clear statement of no reversion"
+      fallback: "None - essential"
+      
+    - priority: 3
+      element: "Payment adjustment"
+      position: "Payment for services rendered only"
+      fallback: "Reasonable kill fee structure"
+  
+  common_counterparty_requests:
+    - request: "Full fee on convenience termination"
+      response: "Unacceptable"
+      alternative: |
+        Negotiate reasonable kill fee tied to production stage and 
+        services rendered.
+      
+    - request: "Right to retain Materials copies"
+      response: "Unacceptable"
+      alternative: |
+        ProdCo may retain copies of agreements and financial records 
+        for legal/tax purposes only.
+      
+    - request: "Reversion if terminated for Amazon breach"
+      response: "Unacceptable"
+      alternative: |
+        ProdCo's remedies for breach include monetary damages; 
+        ownership is not conditioned on performance.
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+
+risk_assessment:
+  factors:
+    - factor: "Production stage"
+      high_risk: "Termination during production (complex wind-down)"
+      low_risk: "Termination during development"
+      
+    - factor: "Third-party commitments"
+      high_risk: "Significant commitments that can't be cancelled"
+      low_risk: "Minimal third-party exposure"
+  
+  escalation_triggers:
+    - "Any reversion language on termination"
+    - "Lost profits or full fee on convenience termination"
+    - "ProdCo right to retain Materials"
+    - "Missing survival provisions"

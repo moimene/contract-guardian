@@ -1,0 +1,210 @@
+/* ============================================
+   Contract Guardian - Design System Garrigues
+   ============================================ */
+
+/* Google Fonts - Montserrat */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* ============================================
+   Tokens de Diseño Garrigues (--g-*)
+   ============================================ */
+
+:root {
+  /* === Colores de Marca (Pantone 3308 C) === */
+  --g-brand-3308: #004438;
+  --g-brand-bright: #009a77;
+  --g-sec-700: #007362;
+  --g-sec-500: #009980;
+  --g-sec-300: #6dc1b0;
+  --g-sec-100: #d8ece7;
+
+  /* === Texto === */
+  --g-text-primary: #4a4a49;
+  --g-text-secondary: #50564f;
+  --g-text-muted: #6b7280;
+  --g-text-inverse: #ffffff;
+  --g-link: #004438;
+  --g-link-hover: #007362;
+
+  /* === Superficies === */
+  --g-surface-page: #f8fafb;
+  --g-surface-card: #ffffff;
+  --g-surface-subtle: #f3f4f6;
+  --g-surface-muted: #e5e7eb;
+
+  /* === Bordes === */
+  --g-border-default: #d1d5db;
+  --g-border-subtle: #e5e7eb;
+  --g-border-focus: #004438;
+
+  /* === Estados Semánticos === */
+  --g-success: #10b981;
+  --g-success-bg: #d1fae5;
+  --g-warning: #f59e0b;
+  --g-warning-bg: #fef3c7;
+  --g-error: #ef4444;
+  --g-error-bg: #fee2e2;
+  --g-info: #3b82f6;
+  --g-info-bg: #dbeafe;
+
+  /* === Espaciado (Grid Base 4px) === */
+  --g-space-1: 4px;
+  --g-space-2: 8px;
+  --g-space-3: 12px;
+  --g-space-4: 16px;
+  --g-space-5: 20px;
+  --g-space-6: 24px;
+  --g-space-8: 32px;
+  --g-space-10: 40px;
+  --g-space-12: 48px;
+
+  /* === Border Radius === */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* === Sombras === */
+  --g-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --g-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --g-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* === Transiciones === */
+  --g-transition-fast: 150ms ease;
+  --g-transition-normal: 200ms ease;
+  --g-transition-slow: 300ms ease;
+
+  /* === Mapping a tokens shadcn === */
+  --background: var(--g-surface-page);
+  --foreground: var(--g-text-primary);
+  --card: var(--g-surface-card);
+  --card-foreground: var(--g-text-primary);
+  --popover: var(--g-surface-card);
+  --popover-foreground: var(--g-text-primary);
+  --primary: var(--g-brand-3308);
+  --primary-foreground: var(--g-text-inverse);
+  --secondary: var(--g-sec-100);
+  --secondary-foreground: var(--g-text-primary);
+  --muted: var(--g-surface-subtle);
+  --muted-foreground: var(--g-text-muted);
+  --accent: var(--g-sec-100);
+  --accent-foreground: var(--g-brand-3308);
+  --destructive: var(--g-error);
+  --destructive-foreground: var(--g-text-inverse);
+  --border: var(--g-border-subtle);
+  --input: var(--g-border-default);
+  --ring: var(--g-brand-3308);
+  --radius: var(--radius-md);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  border-color: var(--g-border-subtle);
+}
+
+body {
+  background-color: var(--g-surface-page);
+  color: var(--g-text-primary);
+  font-family: "Montserrat", Arial, system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Links === */
+a {
+  color: var(--g-link);
+  transition: color var(--g-transition-fast);
+}
+
+a:hover {
+  color: var(--g-link-hover);
+}
+
+/* === Focus States (WCAG AA) === */
+:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--g-surface-card),
+    0 0 0 4px var(--g-brand-3308);
+}
+
+/* ============================================
+   Scrollbar Personalizado
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--g-surface-subtle);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--g-border-default);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--g-text-muted);
+}
+
+/* ============================================
+   Utility Classes para Garrigues
+   ============================================ */
+
+/* Texto con tokens */
+.g-text-primary {
+  color: var(--g-text-primary);
+}
+
+.g-text-secondary {
+  color: var(--g-text-secondary);
+}
+
+.g-text-muted {
+  color: var(--g-text-muted);
+}
+
+.g-text-inverse {
+  color: var(--g-text-inverse);
+}
+
+.g-text-link {
+  color: var(--g-link);
+}
+
+/* Fondos con tokens */
+.g-bg-brand {
+  background-color: var(--g-brand-3308);
+}
+
+.g-bg-brand-bright {
+  background-color: var(--g-brand-bright);
+}
+
+.g-bg-surface {
+  background-color: var(--g-surface-card);
+}
+
+.g-bg-subtle {
+  background-color: var(--g-surface-subtle);
+}
+
+/* Bordes con tokens */
+.g-border {
+  border-color: var(--g-border-default);
+}
+
+.g-border-subtle {
+  border-color: var(--g-border-subtle);
+}

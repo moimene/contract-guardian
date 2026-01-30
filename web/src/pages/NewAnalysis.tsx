@@ -149,6 +149,24 @@ export function NewAnalysis() {
 
             console.log('[Upload] Document created:', doc)
 
+            // Trigger analysis via Edge Function start_review
+            // This creates contract_run and calls n8n webhook
+            console.log('[Upload] Triggering start_review Edge Function...')
+            const { data: reviewData, error: reviewError } = await supabase.functions.invoke('start_review', {
+                body: {
+                    document_id: doc.document_id,
+                    contract_type_id: selectedType
+                }
+            })
+
+            if (reviewError) {
+                console.error('[Upload] start_review error:', reviewError)
+                // Don't throw - document was created, just log the error
+                // Analysis can be retriggered later
+            } else {
+                console.log('[Upload] start_review success:', reviewData)
+            }
+
             // Navigate to review page
             navigate(`/review/${doc.document_id}`)
         } catch (err) {

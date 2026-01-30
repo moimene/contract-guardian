@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useTypologies } from '@/hooks/useTypologies'
-import { useAuth } from '@/hooks/useAuth'
+import { type AppError, classifySupabaseError, createAppError } from '@/lib/errors'
+import { ErrorAlert } from '@/components/ui/error-alert'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -29,6 +30,10 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
     truck: Truck,
 }
 
+// Max file size: 50MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const ALLOWED_EXTENSIONS = ['.docx', '.doc', '.pdf'];
+
 export function NewAnalysis() {
     const navigate = useNavigate()
     const { typologies, loading } = useTypologies()
@@ -36,6 +41,42 @@ export function NewAnalysis() {
     const [file, setFile] = useState<File | null>(null)
     const [uploading, setUploading] = useState(false)
     const [dragActive, setDragActive] = useState(false)
+    const [error, setError] = useState<AppError | null>(null)
+
+    // Clear error when user makes changes
+    const clearError = useCallback(() => setError(null), [])
+
+    // Validate file before setting
+    const validateAndSetFile = useCallback((selectedFile: File) => {
+        clearError();
+
+        // Validate extension
+        const extension = '.' + selectedFile.name.split('.').pop()?.toLowerCase();
+        if (!ALLOWED_EXTENSIONS.includes(extension)) {
+            setError(createAppError(
+                'VALIDATION_ERROR',
+                'INVALID_EXTENSION',
+                `Extension not allowed: ${extension}`,
+                `Formato no soportado. Usa: ${ALLOWED_EXTENSIONS.join(', ')}`,
+                false
+            ));
+            return;
+        }
+
+        // Validate size
+        if (selectedFile.size > MAX_FILE_SIZE) {
+            setError(createAppError(
+                'VALIDATION_ERROR',
+                'FILE_TOO_LARGE',
+                `File size: ${selectedFile.size} bytes`,
+                `El archivo es demasiado grande. Máximo: 50MB`,
+                false
+            ));
+            return;
+        }
+
+        setFile(selectedFile);
+    }, [clearError]);
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault()
@@ -53,20 +94,22 @@ export function NewAnalysis() {
         setDragActive(false)
 
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            setFile(e.dataTransfer.files[0])
+            validateAndSetFile(e.dataTransfer.files[0])
         }
     }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setFile(e.target.files[0])
+            validateAndSetFile(e.target.files[0])
         }
     }
 
-    const handleUpload = async () => {
+    const handleUpload = useCallback(async () => {
         if (!file || !selectedType) return
 
         setUploading(true)
+        setError(null)
+
         try {
             // Upload file to Supabase Storage
             const filePath = `contracts/${Date.now()}_${file.name}`
@@ -110,17 +153,27 @@ export function NewAnalysis() {
             navigate(`/review/${doc.document_id}`)
         } catch (err) {
             console.error('[Upload] Error:', err)
-            const errorMessage = err instanceof Error ? err.message : 'Error desconocido'
-            alert(`Error: ${errorMessage}\n\nPor favor, revisa la consola para más detalles.`)
+            // Classify error using error-handling-patterns skill
+            const classifiedError = classifySupabaseError(err)
+            setError(classifiedError)
         } finally {
             setUploading(false)
         }
-    }
+    }, [file, selectedType, navigate])
 
     const canUpload = file && selectedType
 
     return (
         <div className="p-6 max-w-4xl mx-auto">
+            {/* Error Alert */}
+            {error && (
+                <ErrorAlert
+                    error={error}
+                    onDismiss={clearError}
+                    onRetry={error.retryable ? handleUpload : undefined}
+                />
+            )}
+
             {/* Header */}
             <div className="flex items-center gap-4 mb-8">
                 <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>

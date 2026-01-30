@@ -51,7 +51,7 @@ export async function uploadContractToN8n(payload: FileUploadPayload): Promise<F
         throw new Error(`n8n proxy error: ${response.status}`);
     }
 
-    return response.json();
+    return response.json() as Promise<FileUploadResponse>;
 }
 
 export async function startContractReview(payload: ContractReviewPayload): Promise<ContractReviewResponse> {
@@ -70,7 +70,7 @@ export async function startContractReview(payload: ContractReviewPayload): Promi
         throw new Error(`n8n proxy error: ${response.status}`);
     }
 
-    return response.json();
+    return response.json() as Promise<ContractReviewResponse>;
 }
 
 // NUEVO: Obtener configuración del resolver 3-layer
@@ -79,12 +79,24 @@ export async function getReviewConfig(contractTypeId: string): Promise<ReviewCon
         .from('contract_type_review_defaults')
         .select('blueprint_version_id, contract_model_version_id, knowledge_graph_id')
         .eq('contract_type_id', contractTypeId)
-        .single();
+        .eq('is_active', true)
+        .maybeSingle();
 
     if (error || !data) {
-        console.warn('No 3-layer config found for', contractTypeId, '- using legacy playbook');
+        console.warn(`No 3-layer config for ${contractTypeId}, using legacy playbook`);
         return null;
     }
 
-    return data;
+    return data as ReviewConfig;
+}
+
+// Legacy: Mapeo estático para playbooks (fallback)
+export function getPlaybookId(contractTypeId: string): string {
+    const legacyMap: Record<string, string> = {
+        'amazon-psa': 'amazon_psa_v1',
+        'amazon-dsa': 'amazon_dsa_v1',
+        'dsa_streaming_v1': 'dsa_streaming_v1',
+        'nueva-planta-epc': 'nueva_planta_epc_v1',
+    };
+    return legacyMap[contractTypeId] || 'default_playbook';
 }

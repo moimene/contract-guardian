@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import type { EscalationRequest, EscalationUrgency, EscalationStatus } from '@/types/contracts'
@@ -31,11 +31,7 @@ export function Escalations() {
     const [filterUrgency, setFilterUrgency] = useState<EscalationUrgency | 'ALL'>('ALL')
     const [selectedEscalation, setSelectedEscalation] = useState<EscalationRequest | null>(null)
 
-    useEffect(() => {
-        fetchEscalations()
-    }, [])
-
-    const fetchEscalations = async () => {
+    const fetchEscalations = useCallback(async () => {
         try {
             const { data, error } = await supabase
                 .from('escalation_requests')
@@ -44,15 +40,19 @@ export function Escalations() {
 
             if (error) throw error
             setEscalations(data || [])
-            if (data && data.length > 0 && !selectedEscalation) {
-                setSelectedEscalation(data[0])
+            if (data && data.length > 0) {
+                setSelectedEscalation(prev => prev || data[0])
             }
         } catch (err) {
             console.error('Error fetching escalations:', err)
         } finally {
             setLoading(false)
         }
-    }
+    }, [])
+
+    useEffect(() => {
+        fetchEscalations()
+    }, [fetchEscalations])
 
     const filteredEscalations = escalations.filter(esc => {
         const matchesSearch = esc.reason.toLowerCase().includes(searchTerm.toLowerCase())
@@ -144,6 +144,7 @@ export function Escalations() {
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value as EscalationStatus | 'ALL')}
                                 className="text-sm border rounded px-2 py-1 flex-1"
+                                aria-label="Filtrar por estado"
                             >
                                 <option value="ALL">Todos los estados</option>
                                 <option value="pending">Pendiente</option>
@@ -155,6 +156,7 @@ export function Escalations() {
                                 value={filterUrgency}
                                 onChange={(e) => setFilterUrgency(e.target.value as EscalationUrgency | 'ALL')}
                                 className="text-sm border rounded px-2 py-1 flex-1"
+                                aria-label="Filtrar por urgencia"
                             >
                                 <option value="ALL">Todas</option>
                                 <option value="high">Alta</option>

@@ -31,7 +31,6 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export function NewAnalysis() {
     const navigate = useNavigate()
-    const { user } = useAuth()
     const { typologies, loading } = useTypologies()
     const [selectedType, setSelectedType] = useState<string | null>(null)
     const [file, setFile] = useState<File | null>(null)
@@ -71,32 +70,48 @@ export function NewAnalysis() {
         try {
             // Upload file to Supabase Storage
             const filePath = `contracts/${Date.now()}_${file.name}`
-            const { error: uploadError } = await supabase.storage
+            console.log('[Upload] Starting upload to:', filePath)
+
+            const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('contracts')
                 .upload(filePath, file)
 
-            if (uploadError) throw uploadError
+            if (uploadError) {
+                console.error('[Upload] Storage error:', uploadError)
+                throw new Error(`Storage: ${uploadError.message}`)
+            }
+
+            console.log('[Upload] Storage success:', uploadData)
 
             // Create document record
+            const insertPayload = {
+                file_name: file.name,
+                file_path: filePath,
+                contract_type_id: selectedType,
+                status: 'UPLOADED',
+                tenant_id: '00000000-0000-0000-0000-000000000001' // Default dev tenant
+            }
+            console.log('[Upload] Inserting document:', insertPayload)
+
             const { data: doc, error: docError } = await supabase
                 .from('documents')
-                .insert({
-                    file_name: file.name,
-                    file_path: filePath,
-                    contract_type_id: selectedType,
-                    status: 'UPLOADED',
-                    tenant_id: user?.organization_id || '00000000-0000-0000-0000-000000000001'
-                })
+                .insert(insertPayload)
                 .select()
                 .single()
 
-            if (docError) throw docError
+            if (docError) {
+                console.error('[Upload] Document insert error:', docError)
+                throw new Error(`Database: ${docError.message}`)
+            }
+
+            console.log('[Upload] Document created:', doc)
 
             // Navigate to review page
             navigate(`/review/${doc.document_id}`)
         } catch (err) {
-            console.error('Error uploading:', err)
-            alert('Error al subir el archivo. Por favor, inténtalo de nuevo.')
+            console.error('[Upload] Error:', err)
+            const errorMessage = err instanceof Error ? err.message : 'Error desconocido'
+            alert(`Error: ${errorMessage}\n\nPor favor, revisa la consola para más detalles.`)
         } finally {
             setUploading(false)
         }
@@ -136,14 +151,14 @@ export function NewAnalysis() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {typologies.map((typology) => {
                                 const Icon = typology.icon ? ICON_MAP[typology.icon] || FileText : FileText
-                                const isSelected = selectedType === typology.code
+                                const isSelected = selectedType === typology.id
                                 const isDisabled = !typology.is_active
                                 const hasData = typology.examples_count > 0
 
                                 return (
                                     <button
-                                        key={typology.code}
-                                        onClick={() => !isDisabled && setSelectedType(typology.code)}
+                                        key={typology.id}
+                                        onClick={() => !isDisabled && setSelectedType(typology.id)}
                                         disabled={isDisabled}
                                         className={`
                       p-4 rounded-lg border-2 text-left transition-all

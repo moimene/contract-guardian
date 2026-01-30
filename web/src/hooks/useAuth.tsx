@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
@@ -56,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(USE_DEV_MODE ? DEV_USER : null);
     const [rawUser, setRawUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(!USE_DEV_MODE);
-    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // Skip all auth logic in dev mode
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         initializeAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (!mounted) return;
 
             if (session?.user) {
@@ -145,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isLoading,
             isSuperuser: user?.is_superuser || false,
             isDevMode: USE_DEV_MODE,
-            error,
+            error: null,
             signOut
         }}>
             {children}

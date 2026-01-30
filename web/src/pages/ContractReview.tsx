@@ -31,6 +31,18 @@ const STATUS_ICONS: Record<ClauseStatus, React.ComponentType<{ className?: strin
     BLOCKED: Ban,
 }
 
+// Helper to map ClauseStatus to badge variant (avoids 'as any')
+const statusToBadgeVariant = (status: ClauseStatus): 'ok' | 'recommended' | 'required' | 'needsReview' | 'blocked' => {
+    const map: Record<ClauseStatus, 'ok' | 'recommended' | 'required' | 'needsReview' | 'blocked'> = {
+        OK: 'ok',
+        RECOMMENDED: 'recommended',
+        REQUIRED: 'required',
+        NEEDS_REVIEW: 'needsReview',
+        BLOCKED: 'blocked',
+    }
+    return map[status]
+}
+
 export function ContractReview() {
     const { documentId } = useParams<{ documentId: string }>()
     const navigate = useNavigate()
@@ -78,27 +90,25 @@ export function ContractReview() {
     useEffect(() => {
         if (documentId) {
             fetchInitialData()
-            return setupRealtimeSubscription()
+
+            // Setup realtime subscription inline to avoid dependency warning
+            const channel = supabase
+                .channel(`clause-reviews-${documentId}`)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'clause_reviews',
+                    filter: `document_id=eq.${documentId}`,
+                }, () => {
+                    fetchInitialData()
+                })
+                .subscribe()
+
+            return () => {
+                supabase.removeChannel(channel)
+            }
         }
     }, [documentId, fetchInitialData])
-
-    const setupRealtimeSubscription = () => {
-        const channel = supabase
-            .channel(`clause-reviews-${documentId}`)
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'clause_reviews',
-                filter: `document_id=eq.${documentId}`,
-            }, () => {
-                fetchInitialData()
-            })
-            .subscribe()
-
-        return () => {
-            supabase.removeChannel(channel)
-        }
-    }
 
     // [rerender-derived-state] Usamos useMemo para evitar recálculos innecesarios
     // [js-combine-iterations] Stats calculados en un solo loop
@@ -292,7 +302,7 @@ export function ContractReview() {
                                     )}
                                 >
                                     <div className="flex items-start gap-2">
-                                        <Badge variant={clause.client_state.toLowerCase().replace('_', '') as any} className="mt-0.5">
+                                        <Badge variant={statusToBadgeVariant(clause.client_state)} className="mt-0.5">
                                             <Icon className="h-3 w-3" />
                                         </Badge>
                                         <div className="flex-1 min-w-0">
@@ -324,7 +334,7 @@ export function ContractReview() {
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between">
                                         <Badge
-                                            variant={selectedClause.client_state.toLowerCase().replace('_', '') as any}
+                                            variant={statusToBadgeVariant(selectedClause.client_state)}
                                             className="mb-2"
                                         >
                                             {CLAUSE_STATUS_CONFIG[selectedClause.client_state].label}

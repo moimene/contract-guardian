@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
-// Auth User with superuser support
+// Auth User with minimal required fields
 export interface AuthUser {
     id: string;
     email: string;
@@ -13,23 +14,9 @@ export interface AuthUser {
     permissions: string[];
 }
 
-// Fallback dev user for testing matches the one in root, but won't be used by default
-const DEV_USER: AuthUser = {
-    id: 'dev-user-00000000-0000-0000-0000-000000000000',
-    email: 'dev@test.local',
-    full_name: 'Usuario Desarrollo',
-    role: 'admin',
-    organization_id: '00000000-0000-0000-0000-000000000001',
-    organization_name: 'Amazon Studios Dev',
-    is_superuser: true,
-    permissions: ['all'],
-};
-
-// Set to false to require real auth for production/vercel
-const USE_DEV_MODE = false;
-
 interface AuthContextType {
     user: AuthUser | null;
+    rawUser: User | null;
     isLoading: boolean;
     isSuperuser: boolean;
     signOut: () => Promise<void>;
@@ -37,46 +24,62 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
-    isLoading: false,
+    rawUser: null,
+    isLoading: true,
     isSuperuser: false,
     signOut: async () => { },
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<AuthUser | null>(USE_DEV_MODE ? DEV_USER : null);
-    const [isLoading, setIsLoading] = useState(!USE_DEV_MODE);
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [rawUser, setRawUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const buildAuthUser = async (supabaseUser: User): Promise<AuthUser> => {
+        // Try to get profile, but don't fail if it doesn't exist or has different schema
+        let fullName = supabaseUser.email || 'User';
+
+        try {
+            // Only query columns we know exist: id, full_name
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('id', supabaseUser.id)
+                .maybeSingle();
+
+            if (profile?.full_name) {
+                fullName = profile.full_name;
+            }
+        } catch (e) {
+            // Ignore profile errors - use email as fallback
+            console.warn('Could not fetch profile:', e);
+        }
+
+        return {
+            id: supabaseUser.id,
+            email: supabaseUser.email || '',
+            full_name: fullName,
+            role: 'user', // Default role
+            organization_id: '',
+            organization_name: 'Contract Guardian',
+            is_superuser: false,
+            permissions: ['all'], // Grant all permissions for now
+        };
+    };
 
     useEffect(() => {
-        if (USE_DEV_MODE) return;
-
-        // Real auth flow
+        // Check initial session
         const checkSession = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
 
                 if (session?.user) {
-                    // Get profile with superuser info
-                    // Note: We might need to ensure 'profiles' table exists and has these fields.
-                    // If not, we fallback to session info.
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('full_name, role, is_superuser, permissions, organization_id')
-                        .eq('id', session.user.id)
-                        .maybeSingle(); // Changed to maybeSingle to handle missing profiles gracefully
-
-                    setUser({
-                        id: session.user.id,
-                        email: session.user.email || '',
-                        full_name: profile?.full_name || session.user.email || 'Usuario',
-                        role: profile?.role || 'user',
-                        organization_id: profile?.organization_id || '',
-                        organization_name: 'Amazon Studios',
-                        is_superuser: profile?.is_superuser || false,
-                        permissions: profile?.permissions || [],
-                    });
+                    setRawUser(session.user);
+                    const authUser = await buildAuthUser(session.user);
+                    setUser(authUser);
                 }
             } catch (error) {
-                console.error('Auth error:', error);
+                console.error('Auth session check error:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -84,12 +87,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         checkSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state changed:', event);
+
             if (session?.user) {
-                checkSession();
+                setRawUser(session.user);
+                const authUser = await buildAuthUser(session.user);
+                setUser(authUser);
             } else {
                 setUser(null);
+                setRawUser(null);
             }
+            setIsLoading(false);
         });
 
         return () => subscription.unsubscribe();
@@ -98,11 +108,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const signOut = async () => {
         await supabase.auth.signOut();
         setUser(null);
+        setRawUser(null);
     };
 
     return (
         <AuthContext.Provider value={{
             user,
+            rawUser,
             isLoading,
             isSuperuser: user?.is_superuser || false,
             signOut

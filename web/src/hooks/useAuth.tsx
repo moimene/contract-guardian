@@ -2,6 +2,11 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { supabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
+// ===========================================
+// DEV MODE - Set to TRUE to bypass Supabase Auth
+// ===========================================
+const USE_DEV_MODE = true;
+
 // Auth User with minimal required fields
 export interface AuthUser {
     id: string;
@@ -14,87 +19,100 @@ export interface AuthUser {
     permissions: string[];
 }
 
+// Dev user for testing when USE_DEV_MODE is true
+const DEV_USER: AuthUser = {
+    id: 'dev-00000000-0000-0000-0000-000000000001',
+    email: 'dev@contractguardian.local',
+    full_name: 'Developer (Dev Mode)',
+    role: 'admin',
+    organization_id: '11111111-1111-1111-1111-111111111111',
+    organization_name: 'Contract Guardian Dev',
+    is_superuser: true,
+    permissions: ['all'],
+};
+
 interface AuthContextType {
     user: AuthUser | null;
     rawUser: User | null;
     isLoading: boolean;
     isSuperuser: boolean;
+    isDevMode: boolean;
+    error: string | null;
     signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
     rawUser: null,
-    isLoading: true,
+    isLoading: false,
     isSuperuser: false,
+    isDevMode: USE_DEV_MODE,
+    error: null,
     signOut: async () => { },
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<AuthUser | null>(null);
+    // In DEV MODE, immediately set the dev user
+    const [user, setUser] = useState<AuthUser | null>(USE_DEV_MODE ? DEV_USER : null);
     const [rawUser, setRawUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const buildAuthUser = async (supabaseUser: User): Promise<AuthUser> => {
-        // Try to get profile, but don't fail if it doesn't exist or has different schema
-        let fullName = supabaseUser.email || 'User';
-
-        try {
-            // Only query columns we know exist: id, full_name
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('full_name')
-                .eq('id', supabaseUser.id)
-                .maybeSingle();
-
-            if (profile?.full_name) {
-                fullName = profile.full_name;
-            }
-        } catch (e) {
-            // Ignore profile errors - use email as fallback
-            console.warn('Could not fetch profile:', e);
-        }
-
-        return {
-            id: supabaseUser.id,
-            email: supabaseUser.email || '',
-            full_name: fullName,
-            role: 'user', // Default role
-            organization_id: '',
-            organization_name: 'Contract Guardian',
-            is_superuser: false,
-            permissions: ['all'], // Grant all permissions for now
-        };
-    };
+    const [isLoading, setIsLoading] = useState(!USE_DEV_MODE);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Check initial session
-        const checkSession = async () => {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
+        // Skip all auth logic in dev mode
+        if (USE_DEV_MODE) {
+            console.log('🔓 DEV MODE: Authentication bypassed');
+            return;
+        }
 
-                if (session?.user) {
-                    setRawUser(session.user);
-                    const authUser = await buildAuthUser(session.user);
-                    setUser(authUser);
+        // Real auth flow (only runs when USE_DEV_MODE is false)
+        let mounted = true;
+
+        const initializeAuth = async () => {
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+                if (sessionError) {
+                    console.warn('Session error:', sessionError);
                 }
-            } catch (error) {
-                console.error('Auth session check error:', error);
+
+                if (session?.user && mounted) {
+                    setRawUser(session.user);
+                    setUser({
+                        id: session.user.id,
+                        email: session.user.email || '',
+                        full_name: session.user.user_metadata?.full_name || session.user.email || 'User',
+                        role: 'user',
+                        organization_id: '',
+                        organization_name: 'Contract Guardian',
+                        is_superuser: false,
+                        permissions: ['all'],
+                    });
+                }
+            } catch (e) {
+                console.error('Auth error:', e);
             } finally {
-                setIsLoading(false);
+                if (mounted) setIsLoading(false);
             }
         };
 
-        checkSession();
+        initializeAuth();
 
-        // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log('Auth state changed:', event);
+            if (!mounted) return;
 
             if (session?.user) {
                 setRawUser(session.user);
-                const authUser = await buildAuthUser(session.user);
-                setUser(authUser);
+                setUser({
+                    id: session.user.id,
+                    email: session.user.email || '',
+                    full_name: session.user.user_metadata?.full_name || session.user.email || 'User',
+                    role: 'user',
+                    organization_id: '',
+                    organization_name: 'Contract Guardian',
+                    is_superuser: false,
+                    permissions: ['all'],
+                });
             } else {
                 setUser(null);
                 setRawUser(null);
@@ -102,13 +120,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signOut = async () => {
-        await supabase.auth.signOut();
-        setUser(null);
-        setRawUser(null);
+        if (!USE_DEV_MODE) {
+            try {
+                await supabase.auth.signOut();
+            } catch (e) {
+                console.error('Sign out error:', e);
+            }
+        }
+        // In dev mode, just log
+        console.log('🔓 DEV MODE: Sign out (no-op)');
     };
 
     return (
@@ -117,6 +144,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             rawUser,
             isLoading,
             isSuperuser: user?.is_superuser || false,
+            isDevMode: USE_DEV_MODE,
+            error,
             signOut
         }}>
             {children}

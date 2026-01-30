@@ -28,8 +28,9 @@ export function useTypologies(): UseTypologiesResult {
             if (fetchError) throw fetchError
 
             // Mapear resultado a Typology
+            // IMPORTANTE: Usamos contract_type_id (FK a contract_types) para documents.contract_type_id
             const mapped: Typology[] = (data || []).map((t: Record<string, unknown>) => ({
-                id: t.id as string,
+                id: (t.contract_type_id as string) || (t.id as string), // Preferir contract_type_id para FK compatibility
                 code: t.code as string,
                 name: t.name as string,
                 description: t.description as string | undefined,

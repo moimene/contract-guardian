@@ -61,7 +61,7 @@ export function useContractReviews(
                     .eq('document_id', documentId)
                     .single(),
                 supabase
-                    .from('clause_reviews')
+                    .from('clause_reviews_view')
                     .select('*')
                     .eq('document_id', documentId)
                     .order('sequence_number', { ascending: true })
@@ -92,7 +92,7 @@ export function useContractReviews(
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'clause_reviews',
+                table: 'clause_instances', // Subscribe to source table for realtime
                 filter: `document_id=eq.${documentId}`,
             }, () => {
                 fetchData()

@@ -1,0 +1,217 @@
+{
+    "nodes": [
+        {
+            "parameters": {
+                "jsCode": "/**\n * Discovery Mode Check Node\n * Position: After \"IF LLM Required\" outputs merge\n * Purpose: Determine if Discovery Mode should activate for unknown/low-confidence clauses\n */\n\nconst clauseData = $json;\nconst routingConfidence = clauseData._keyword_confidence || 0;\nconst detectedFamily = clauseData.detected_family;\nconst needsLLM = clauseData.needs_llm_fallback;\n\n// Determine if Discovery Mode should activate\nconst activateDiscovery =\n    detectedFamily === 'OtherUnknown' ||\n    routingConfidence < 0.50 ||\n    (needsLLM && routingConfidence < 0.40);\n\n// Known families with playbook specs\nconst KNOWN_FAMILIES = [\n    // CRITICAL\n    'IndemnityProdCo', 'IndemnityAmazon', 'IndemnityProcedures',\n    'RepsProdCo', 'RightsGrant', 'RightsReversion',\n    'LiabilityLimitation', 'InjunctiveReliefWaiver',\n    'TerminationRights', 'TerminationConsequences',\n    'PaymentCredits', 'ThirdPartyCredits',\n    'SurvivalRemedies', 'AmazonControl', 'Assignment',\n    'MoralRights', 'AIPolicy',\n\n    // HIGH\n    'DisputeResolution', 'Confidentiality', 'Insurance', 'ForceMajeure',\n    'CreativeControl', 'KeyPersons', 'DeliveryAcceptance', 'BudgetOverages',\n\n    // MEDIUM\n    'DataProtection', 'ServicesScope', 'AuditRights', 'TaxProvisions',\n    'Publicity', 'PowerOfAttorney', 'ConditionsPrecedent', 'StandardTerms'\n];\n\nconst hasPlaybookSpec = KNOWN_FAMILIES.includes(detectedFamily);\nconst useDiscoveryMode = activateDiscovery || !hasPlaybookSpec;\n\n// Determine discovery reason\nlet discoveryReason = null;\nif (useDiscoveryMode) {\n    if (!hasPlaybookSpec) {\n        discoveryReason = 'NO_PLAYBOOK_SPEC';\n    } else if (detectedFamily === 'OtherUnknown') {\n        discoveryReason = 'UNKNOWN_FAMILY';\n    } else {\n        discoveryReason = 'LOW_CONFIDENCE';\n    }\n}\n\nreturn [{\n    json: {\n        ...clauseData,\n        _use_discovery_mode: useDiscoveryMode,\n        _discovery_reason: discoveryReason,\n        _routing_confidence: routingConfidence,\n        _has_playbook_spec: hasPlaybookSpec\n    }\n}];"
+            },
+            "id": "discovery-check-001",
+            "name": "Check Discovery Mode",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -5840,
+                1016
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json._use_discovery_mode }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "id": "discovery-if-001",
+            "name": "IF Discovery Mode",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                -5616,
+                1016
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "model": "gpt-4o",
+                "options": {
+                    "temperature": 0.2,
+                    "maxTokens": 2000
+                },
+                "messages": {
+                    "values": [
+                        {
+                            "content": "=# DISCOVERY AGENT - Novel Clause Analysis\nVersion: 1.0 | Mode: DISCOVERY\n\n## YOUR MISSION\nYou analyze contract clauses that do not match any known playbook family. Your job is to:\n1. Propose a provisional family classification\n2. Identify potential risks using GENERAL Amazon contracting principles\n3. Recommend treatment approach\n4. Flag for human review to create a new playbook spec\n\n## AMAZON'S GENERAL CONTRACTING PRINCIPLES\n\n### PRINCIPLE 1: Asymmetric Protection\n- Amazon should receive MORE protection than it gives\n- Mutual/symmetric provisions are generally disfavored\n- ProdCo should bear more risk than Amazon\n\n### PRINCIPLE 2: Unlimited ProdCo Obligations\n- ProdCo's indemnification, liability, and obligations should NOT be capped\n- Any cap, limitation, or threshold on ProdCo obligations is a RED FLAG\n\n### PRINCIPLE 3: Amazon Control\n- Amazon should retain sole and final control over the Program\n- Any provision giving ProdCo approval rights, veto power, or control is suspect\n\n### PRINCIPLE 4: Broad Rights to Amazon\n- Rights should flow TO Amazon, not FROM Amazon\n- Perpetual, worldwide, exclusive rights are standard\n\n### PRINCIPLE 5: Amazon-Favorable Procedures\n- Time periods should favor Amazon\n- Dispute resolution should be California law, binding arbitration\n\n### PRINCIPLE 6: No Knowledge/Materiality Qualifiers\n- \"To ProdCo's knowledge\", \"material breach\" water down obligations\n\n## UNIVERSAL RED FLAGS\n- \"shall not exceed\", \"capped at\", \"limited to\"\n- \"to [Party]'s knowledge\", \"material\", \"reasonable efforts\"\n- \"ProdCo may\", \"ProdCo's sole discretion\", \"mutual consent\"\n- \"revert\", \"turnaround\", \"recapture\", \"non-exclusive\"\n- \"each party\", \"mutual\", \"reciprocal\"\n\n## CLAUSE TO ANALYZE\nFamily Detection: {{ $json.detected_family }}\nConfidence: {{ $json._routing_confidence }}\nDiscovery Reason: {{ $json._discovery_reason }}\n\nClause Text:\n{{ $json.clause_text }}\n\n## OUTPUT SCHEMA (JSON ONLY)\n```json\n{\n  \"discovery_analysis\": {\n    \"clause_characterization\": {\n      \"primary_function\": \"protection|rights|procedural|financial|operational|administrative\",\n      \"legal_concepts\": [],\n      \"subject_matter\": \"description\"\n    },\n    \"directional_analysis\": {\n      \"benefits\": \"Amazon|ProdCo|Mutual|Neutral\",\n      \"obligates\": \"Amazon|ProdCo|Mutual|Neither\",\n      \"assessment\": \"Amazon-favorable|ProdCo-favorable|Neutral|Mixed\"\n    },\n    \"risk_identification\": {\n      \"universal_red_flags_found\": [],\n      \"missing_protections\": [],\n      \"risk_level\": \"HIGH|MEDIUM|LOW\"\n    },\n    \"family_proposal\": {\n      \"suggested_family\": \"ExistingFamily or NEW:ProposedName\",\n      \"confidence\": 0.0,\n      \"rationale\": \"explanation\",\n      \"similar_to\": []\n    },\n    \"treatment_recommendation\": {\n      \"action\": \"ESCALATE_CRITICAL|ESCALATE_REVIEW|PROVISIONAL_PASS\",\n      \"reason\": \"explanation\",\n      \"requires_new_spec\": false\n    }\n  },\n  \"provisional_observations\": [],\n  \"human_review_notes\": \"notes for legal team\"\n}\n```\n\nRespond ONLY with valid JSON, no explanation."
+                        }
+                    ]
+                }
+            },
+            "id": "discovery-agent-001",
+            "name": "Discovery Agent",
+            "type": "@n8n/n8n-nodes-langchain.openAi",
+            "typeVersion": 1.8,
+            "position": [
+                -5392,
+                800
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "SIqSVUfX83ooZaUa",
+                    "name": "amazon redliner"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "/**\n * Parse Discovery Agent Response\n * Extracts structured discovery analysis and prepares for persistence\n */\n\nconst inputData = $json;\nlet discoveryOutput = null;\n\n// Default structure\nconst defaultDiscovery = {\n  discovery_analysis: {\n    clause_characterization: { primary_function: 'unknown', legal_concepts: [], subject_matter: 'unclassified' },\n    directional_analysis: { benefits: 'Unknown', obligates: 'Unknown', assessment: 'Unknown' },\n    risk_identification: { universal_red_flags_found: [], missing_protections: [], risk_level: 'MEDIUM' },\n    family_proposal: { suggested_family: 'OtherUnknown', confidence: 0, rationale: 'Parsing failed', similar_to: [] },\n    treatment_recommendation: { action: 'ESCALATE_REVIEW', reason: 'Parsing failed', requires_new_spec: true }\n  },\n  provisional_observations: [],\n  human_review_notes: 'Requires manual review'\n};\n\ntry {\n  // Get LLM response\n  const responseText = inputData.message?.content || inputData.text || inputData.choices?.[0]?.message?.content || JSON.stringify(inputData);\n  \n  // Extract JSON from response\n  const jsonMatch = responseText.match(/```json\\n?([\\s\\S]*?)\\n?```/) || responseText.match(/\\{[\\s\\S]*\\}/);\n  const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : responseText;\n  \n  discoveryOutput = JSON.parse(jsonStr);\n} catch (e) {\n  console.log('Discovery parse error:', e.message);\n  discoveryOutput = defaultDiscovery;\n}\n\n// Get previous clause data\nconst prevData = $('Check Discovery Mode').first().json;\n\n// Determine final decision based on discovery\nconst action = discoveryOutput.discovery_analysis?.treatment_recommendation?.action || 'ESCALATE_REVIEW';\nlet decision = 'ESCALATE_HUMAN';\nlet clientState = 'NEEDS_REVIEW';\n\nif (action === 'ESCALATE_CRITICAL') {\n  decision = 'BLOCK_EXPORT';\n  clientState = 'REJECTED';\n} else if (action === 'PROVISIONAL_PASS') {\n  decision = 'APPROVE_WITH_NOTES';\n  clientState = 'APPROVED_WITH_NOTES';\n}\n\nreturn [{\n  json: {\n    ...prevData,\n    _discovery_output: discoveryOutput,\n    _discovery_decision: decision,\n    _discovery_client_state: clientState,\n    _suggested_family: discoveryOutput.discovery_analysis?.family_proposal?.suggested_family || 'OtherUnknown',\n    _requires_new_spec: discoveryOutput.discovery_analysis?.treatment_recommendation?.requires_new_spec || true,\n    _discovery_risk_level: discoveryOutput.discovery_analysis?.risk_identification?.risk_level || 'MEDIUM',\n    _discovery_observations: discoveryOutput.provisional_observations || [],\n    _human_review_notes: discoveryOutput.human_review_notes || 'Requires review'\n  }\n}];"
+            },
+            "id": "discovery-parse-001",
+            "name": "Parse Discovery",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -5168,
+                800
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "/**\n * Build Discovery Result\n * Constructs final output for discovered clause types\n */\n\nconst data = $json;\nconst discovery = data._discovery_output || {};\nconst analysis = discovery.discovery_analysis || {};\n\n// Build internal record for clause_reviews_internal\nconst internalResult = {\n  clause_instance_id: data.clause_instance_id,\n  clause_id: data.clause_id,\n  document_id: data.document_id,\n  run_id: data.run_id,\n  detected_family: data.detected_family,\n  routing_method: 'DISCOVERY_MODE',\n  routing_confidence: data._routing_confidence || 0,\n  discovery_mode: true,\n  discovery_reason: data._discovery_reason,\n  suggested_family: data._suggested_family,\n  risk_level: data._discovery_risk_level,\n  decision: data._discovery_decision,\n  observations: data._discovery_observations,\n  human_review_notes: data._human_review_notes,\n  requires_new_spec: data._requires_new_spec,\n  completed_at: new Date().toISOString()\n};\n\n// Build discovered_clause_types record\nconst discoveredTypeRecord = {\n  clause_instance_id: data.clause_instance_id,\n  document_id: data.document_id,\n  run_id: data.run_id,\n  original_text: data.clause_text,\n  detected_family: data.detected_family,\n  suggested_family: data._suggested_family,\n  discovery_reason: data._discovery_reason,\n  routing_confidence: data._routing_confidence,\n  risk_level: data._discovery_risk_level,\n  characterization: analysis.clause_characterization || {},\n  directional_analysis: analysis.directional_analysis || {},\n  risk_identification: analysis.risk_identification || {},\n  family_proposal: analysis.family_proposal || {},\n  treatment_recommendation: analysis.treatment_recommendation || {},\n  observations: data._discovery_observations,\n  human_review_notes: data._human_review_notes,\n  status: 'PENDING_REVIEW',\n  created_at: new Date().toISOString()\n};\n\n// Build client-facing response\nconst clientResponse = {\n  clause_instance_id: data.clause_instance_id,\n  detected_family: data.detected_family,\n  decision: data._discovery_decision,\n  client_state: data._discovery_client_state,\n  client_comment: `This clause type requires legal team review. Suggested classification: ${data._suggested_family}. Risk level: ${data._discovery_risk_level}.`,\n  safety_pass: data._discovery_decision !== 'BLOCK_EXPORT',\n  discovery_mode: true\n};\n\nreturn [{\n  json: {\n    ...data,\n    _internal: internalResult,\n    _discovered_type: discoveredTypeRecord,\n    _client_response: clientResponse\n  }\n}];"
+            },
+            "id": "discovery-build-001",
+            "name": "Build Discovery Result",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -4944,
+                800
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "insert",
+                "tableId": "discovered_clause_types",
+                "dataMode": "autoMapInputData",
+                "options": {}
+            },
+            "id": "discovery-save-001",
+            "name": "Save Discovered Clause Type",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1.2,
+            "position": [
+                -4720,
+                800
+            ],
+            "credentials": {
+                "supabaseApi": {
+                    "id": "9SZmGHb4kHp3H92H",
+                    "name": "contract-guardian"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ $json._client_response }}"
+            },
+            "id": "discovery-respond-001",
+            "name": "Respond Discovery",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                -4496,
+                800
+            ]
+        }
+    ],
+    "connections_to_add": {
+        "Check Discovery Mode": {
+            "main": [
+                [
+                    {
+                        "node": "IF Discovery Mode",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF Discovery Mode": {
+            "main": [
+                [
+                    {
+                        "node": "Discovery Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Generate Clause Embedding",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Discovery Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Discovery",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Discovery": {
+            "main": [
+                [
+                    {
+                        "node": "Build Discovery Result",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Discovery Result": {
+            "main": [
+                [
+                    {
+                        "node": "Save Discovered Clause Type",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save Discovered Clause Type": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Discovery",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "connections_to_modify": {
+        "IF LLM Required_false": {
+            "from": "IF LLM Required",
+            "old_target": "Generate Clause Embedding",
+            "new_target": "Check Discovery Mode"
+        },
+        "Parse LLM Result": {
+            "from": "Parse LLM Result",
+            "old_target": "Generate Clause Embedding",
+            "new_target": "Check Discovery Mode"
+        }
+    }
+}

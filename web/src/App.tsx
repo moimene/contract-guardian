@@ -6,6 +6,7 @@ import { NewAnalysis } from '@/pages/NewAnalysis'
 import { ContractReview } from '@/pages/ContractReview'
 import { Escalations } from '@/pages/Escalations'
 import { Playbook } from '@/pages/Playbook'
+import { Observability } from '@/pages/Observability'
 import { AuthProvider, useAuth } from '@/hooks/useAuth'
 import { Login } from '@/pages/Login'
 import type { ReactNode } from 'react'
@@ -51,6 +52,7 @@ function AppContent() {
         <Route path="/new" element={<NewAnalysis />} />
         <Route path="/escalations" element={<Escalations />} />
         <Route path="/playbook" element={<Playbook />} />
+        <Route path="/observability" element={<Observability />} />
       </Route>
 
       {/* Contract Review - assuming it should also be protected */}

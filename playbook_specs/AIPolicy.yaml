@@ -1,0 +1,32 @@
+# ================================================================
+# PLAYBOOK SPEC: AIPolicy
+# AI/ML Restrictions
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: AIPolicy
+display_name: "AI/ML Restrictions"
+priority: CRITICAL
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "may input into AI"
+    - "ProdCo may use AI tools"
+    - "generative AI permitted"
+    - "AI-generated content acceptable"
+    - "machine learning without restriction"
+    - "no AI restrictions"
+    - "AI usage at ProdCo's discretion"
+    - "third-party AI services"
+  must_have:
+    - "artificial intelligence"
+    - "not input"
+  strong_indicators:
+    - "artificial intelligence service"
+    - "AI tool"
+    - "machine learning"
+    - "generative AI"
+    - "NPI into AI"
+    - "Amazon policy"
+    - "compliant with Amazon policy"

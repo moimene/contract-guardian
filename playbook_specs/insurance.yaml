@@ -8,7 +8,7 @@ family_id: Insurance
 rule_name: "Insurance"
 psa_section: 8
 required: true
-priority: SUPPORT
+priority: HIGH
 
 # ================================================================
 # STANDARD POSITION (From PSA Fallback Guide)
@@ -49,3 +49,42 @@ triggers:
     - "workers' compensation"
     - "cast insurance"
     - "standard terms and conditions"
+
+# ================================================================
+# DETECTION PATTERNS (CG-012 Guardrail)
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+detection_patterns:
+  red_flags:
+    - "reasonable efforts to obtain"
+    - "proceed without such coverage"
+    - "E&O insurance shall be optional"
+    - "ProdCo's discretion"
+    - "Amazon may not specify"
+    - "limits determined by ProdCo"
+    - "$500,000"
+    - "excess over Amazon's own insurance"
+    - "secondary"
+    - "no additional insured"
+    - "waive subrogation"
+    - "sole negligence"
+    - "not commercially available"
+    - "Amazon shall obtain and pay for E&O"
+    - "Amazon bears all costs"
+    - "intellectual property exclusion"
+  must_have:
+    - "additional insured"
+    - "primary and non-contributory"
+    - "certificate"
+    - "errors and omissions"
+  strong_indicators:
+    - "insurance"
+    - "Commercial General Liability"
+    - "Workers' Compensation"
+    - "Umbrella"
+    - "ACORD"
+    - "cancellation notice"
+    - "additional insured"
+    - "waiver of subrogation"
+    - "per occurrence"
+    - "aggregate"

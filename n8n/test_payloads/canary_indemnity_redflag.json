@@ -1,0 +1,33 @@
+{
+    "clause_instance_id": "canary-test-003-redflag",
+    "clause_id": "indemnity-capped-clause",
+    "document_id": "test-document-001",
+    "run_id": "00000000-0000-0000-0000-000000000003",
+    "clause_text": "ProdCo shall indemnify, defend and hold harmless Amazon, its affiliates, and their respective officers, directors, employees, agents and representatives from and against any and all claims, damages, losses, costs, and expenses (including reasonable attorneys' fees) arising out of or relating to any breach of ProdCo's representations, warranties, or obligations under this Agreement. Notwithstanding the foregoing, ProdCo's aggregate liability under this indemnification shall not exceed the total fees paid to ProdCo under this Agreement, and in no event shall ProdCo be liable for any indirect, consequential, or punitive damages. To ProdCo's knowledge, nothing in this Agreement would trigger the foregoing indemnification obligations.",
+    "expected_result": {
+        "observations_count_min": 3,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation",
+        "expected_observations": [
+            {
+                "pattern_matched": "shall not exceed",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high",
+                "reason": "Red flag: cap on indemnification liability"
+            },
+            {
+                "pattern_matched": "to ProdCo's knowledge",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high",
+                "reason": "Red flag: knowledge qualifier dilutes indemnification"
+            },
+            {
+                "pattern_matched": "consequential",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high",
+                "reason": "Red flag: exclusion of consequential damages from indemnification"
+            }
+        ],
+        "notes": "This clause contains multiple red flags: 'shall not exceed' (cap), 'to ProdCo's knowledge' (knowledge qualifier), and 'consequential' (damage exclusion). The guardrail MUST detect all of these."
+    }
+}

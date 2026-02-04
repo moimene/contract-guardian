@@ -1,0 +1,30 @@
+# ================================================================
+# PLAYBOOK SPEC: TaxProvisions
+# Tax Provisions
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: TaxProvisions
+display_name: "Tax Provisions"
+priority: MEDIUM
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "Amazon shall be responsible for all taxes"
+    - "Amazon shall gross up"
+    - "no withholding"
+    - "ProdCo not responsible for withholding"
+    - "Amazon indemnifies for tax"
+    - "tax equalization by Amazon"
+    - "Amazon bears transaction taxes"
+  must_have:
+    - "tax"
+    - "responsible"
+  strong_indicators:
+    - "taxes and other governmental fees"
+    - "deduct or withhold"
+    - "withholding tax"
+    - "transaction taxes"
+    - "VAT"
+    - "GST"

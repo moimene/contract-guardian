@@ -1,0 +1,739 @@
+{
+  "timestamp": "2026-02-01T11:34:44.012Z",
+  "dataset_size": 120,
+  "overall_accuracy": 45,
+  "other_unknown_rate": 42.5,
+  "go_no_go": "NO-GO",
+  "family_metrics": [
+    {
+      "family": "AmazonControl",
+      "precision": 100,
+      "recall": 67,
+      "total": 3
+    },
+    {
+      "family": "Assignment",
+      "precision": 100,
+      "recall": 57,
+      "total": 7
+    },
+    {
+      "family": "ConditionsPrecedent",
+      "precision": 100,
+      "recall": 67,
+      "total": 3
+    },
+    {
+      "family": "DataProtection",
+      "precision": 100,
+      "recall": 40,
+      "total": 5
+    },
+    {
+      "family": "Confidentiality",
+      "precision": 60,
+      "recall": 75,
+      "total": 4
+    },
+    {
+      "family": "DisputeResolution",
+      "precision": 100,
+      "recall": 60,
+      "total": 5
+    },
+    {
+      "family": "ThirdPartyCredits",
+      "precision": 75,
+      "recall": 60,
+      "total": 5
+    },
+    {
+      "family": "PaymentCredits",
+      "precision": 100,
+      "recall": 14,
+      "total": 7
+    },
+    {
+      "family": "ForceMajeure",
+      "precision": 63,
+      "recall": 63,
+      "total": 8
+    },
+    {
+      "family": "IndemnityAmazon",
+      "precision": 100,
+      "recall": 42,
+      "total": 12
+    },
+    {
+      "family": "IndemnityProcedures",
+      "precision": 100,
+      "recall": 25,
+      "total": 8
+    },
+    {
+      "family": "IndemnityProdCo",
+      "precision": 100,
+      "recall": 50,
+      "total": 8
+    },
+    {
+      "family": "InjunctiveReliefWaiver",
+      "precision": 100,
+      "recall": 40,
+      "total": 5
+    },
+    {
+      "family": "RightsGrant",
+      "precision": 67,
+      "recall": 50,
+      "total": 4
+    },
+    {
+      "family": "LiabilityLimitation",
+      "precision": 100,
+      "recall": 29,
+      "total": 7
+    },
+    {
+      "family": "GeneralProvisions",
+      "precision": 100,
+      "recall": 31,
+      "total": 13
+    },
+    {
+      "family": "RepsProdCo",
+      "precision": 67,
+      "recall": 40,
+      "total": 10
+    },
+    {
+      "family": "ServicesScope",
+      "precision": 100,
+      "recall": 100,
+      "total": 3
+    },
+    {
+      "family": "Insurance",
+      "precision": 100,
+      "recall": 33,
+      "total": 3
+    }
+  ],
+  "errors": [
+    {
+      "id": "AmazonControl-TRIG-002",
+      "expected": "AmazonControl",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "Assignment-ACC-001",
+      "expected": "Assignment",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "Assignment-UNACC-002",
+      "expected": "Assignment",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "Assignment-TRIG-002",
+      "expected": "Assignment",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "ConditionsPrecedent-TRIG-002",
+      "expected": "ConditionsPrecedent",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "DataProtection-UNACC-002",
+      "expected": "DataProtection",
+      "predicted": "GoverningLaw",
+      "correct": false,
+      "confidence": 0.68,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "DataProtection-TRIG-001",
+      "expected": "DataProtection",
+      "predicted": "Confidentiality",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "DataProtection-TRIG-002",
+      "expected": "DataProtection",
+      "predicted": "Confidentiality",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "DisputeResolution-UNACC-002",
+      "expected": "DisputeResolution",
+      "predicted": "GoverningLaw",
+      "correct": false,
+      "confidence": 0.68,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "DisputeResolution-TRIG-001",
+      "expected": "DisputeResolution",
+      "predicted": "GoverningLaw",
+      "correct": false,
+      "confidence": 0.68,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "ThirdPartyCredits-GUIDE-001",
+      "expected": "ThirdPartyCredits",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "ThirdPartyCredits-GUIDE-002",
+      "expected": "ThirdPartyCredits",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "PaymentCredits-STD-001",
+      "expected": "PaymentCredits",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "PaymentCredits-GUIDE-001",
+      "expected": "PaymentCredits",
+      "predicted": "TerminationRights",
+      "correct": false,
+      "confidence": 0.63,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "PaymentCredits-AMZPOS-001",
+      "expected": "PaymentCredits",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "PaymentCredits-UNACC-002",
+      "expected": "PaymentCredits",
+      "predicted": "ThirdPartyCredits",
+      "correct": false,
+      "confidence": 0.63,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "PaymentCredits-UNACC-003",
+      "expected": "PaymentCredits",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "PaymentCredits-TRIG-002",
+      "expected": "PaymentCredits",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "ForceMajeure-ACC-001",
+      "expected": "ForceMajeure",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "ForceMajeure-ACC-003",
+      "expected": "ForceMajeure",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "ForceMajeure-TRIG-002",
+      "expected": "ForceMajeure",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityAmazon-GUIDE-001",
+      "expected": "IndemnityAmazon",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityAmazon-ACC-002",
+      "expected": "IndemnityAmazon",
+      "predicted": "Publicity",
+      "correct": false,
+      "confidence": 0.62,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "IndemnityAmazon-GUIDE-002",
+      "expected": "IndemnityAmazon",
+      "predicted": "Publicity",
+      "correct": false,
+      "confidence": 0.62,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "IndemnityAmazon-ACC-003",
+      "expected": "IndemnityAmazon",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityAmazon-GUIDE-003",
+      "expected": "IndemnityAmazon",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityAmazon-ACC-004",
+      "expected": "IndemnityAmazon",
+      "predicted": "ForceMajeure",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "IndemnityAmazon-GUIDE-004",
+      "expected": "IndemnityAmazon",
+      "predicted": "ForceMajeure",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "IndemnityProcedures-ACC-001",
+      "expected": "IndemnityProcedures",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProcedures-GUIDE-001",
+      "expected": "IndemnityProcedures",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProcedures-GUIDE-002",
+      "expected": "IndemnityProcedures",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProcedures-AMZPOS-002",
+      "expected": "IndemnityProcedures",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProcedures-TRIG-001",
+      "expected": "IndemnityProcedures",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProcedures-TRIG-002",
+      "expected": "IndemnityProcedures",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProdCo-ACC-001",
+      "expected": "IndemnityProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProdCo-GUIDE-001",
+      "expected": "IndemnityProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProdCo-AMZPOS-001",
+      "expected": "IndemnityProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "IndemnityProdCo-UNACC-001",
+      "expected": "IndemnityProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "InjunctiveReliefWaiver-UNACC-001",
+      "expected": "InjunctiveReliefWaiver",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "InjunctiveReliefWaiver-UNACC-002",
+      "expected": "InjunctiveReliefWaiver",
+      "predicted": "RightsGrant",
+      "correct": false,
+      "confidence": 0.66,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "InjunctiveReliefWaiver-TRIG-001",
+      "expected": "InjunctiveReliefWaiver",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "LiabilityLimitation-GUIDE-002",
+      "expected": "LiabilityLimitation",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "LiabilityLimitation-UNACC-001",
+      "expected": "LiabilityLimitation",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "LiabilityLimitation-UNACC-003",
+      "expected": "LiabilityLimitation",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "LiabilityLimitation-TRIG-001",
+      "expected": "LiabilityLimitation",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "LiabilityLimitation-TRIG-002",
+      "expected": "LiabilityLimitation",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-ACC-005",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-ACC-007",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-UNACC-001",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-UNACC-002",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-TRIG-002",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RepsProdCo-ACC-001",
+      "expected": "RepsProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RepsProdCo-GUIDE-001",
+      "expected": "RepsProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RepsProdCo-GUIDE-002",
+      "expected": "RepsProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RepsProdCo-ACC-003",
+      "expected": "RepsProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RepsProdCo-GUIDE-004",
+      "expected": "RepsProdCo",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RepsProdCo-UNACC-002",
+      "expected": "RepsProdCo",
+      "predicted": "ForceMajeure",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "RightsGrant-TRIG-001",
+      "expected": "RightsGrant",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "RightsGrant-TRIG-002",
+      "expected": "RightsGrant",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-STD-001",
+      "expected": "GeneralProvisions",
+      "predicted": "RepsProdCo",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "GeneralProvisions-ACC-001",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-ACC-002",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "GeneralProvisions-TRIG-002",
+      "expected": "GeneralProvisions",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "Confidentiality-GUIDE-001",
+      "expected": "Confidentiality",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    },
+    {
+      "id": "Insurance-STD-001",
+      "expected": "Insurance",
+      "predicted": "RepsProdCo",
+      "correct": false,
+      "confidence": 0.64,
+      "method": "KEYWORD"
+    },
+    {
+      "id": "Insurance-TRIG-001",
+      "expected": "Insurance",
+      "predicted": "OtherUnknown",
+      "correct": false,
+      "confidence": 0,
+      "method": "NEEDS_LLM"
+    }
+  ],
+  "confusion_matrix": {
+    "AmazonControl": {
+      "AmazonControl": 2,
+      "OtherUnknown": 1
+    },
+    "Assignment": {
+      "Assignment": 4,
+      "OtherUnknown": 3
+    },
+    "ConditionsPrecedent": {
+      "ConditionsPrecedent": 2,
+      "OtherUnknown": 1
+    },
+    "DataProtection": {
+      "DataProtection": 2,
+      "GoverningLaw": 1,
+      "Confidentiality": 2
+    },
+    "DisputeResolution": {
+      "DisputeResolution": 3,
+      "GoverningLaw": 2
+    },
+    "ThirdPartyCredits": {
+      "ThirdPartyCredits": 3,
+      "OtherUnknown": 2
+    },
+    "PaymentCredits": {
+      "OtherUnknown": 4,
+      "TerminationRights": 1,
+      "ThirdPartyCredits": 1,
+      "PaymentCredits": 1
+    },
+    "ForceMajeure": {
+      "ForceMajeure": 5,
+      "OtherUnknown": 3
+    },
+    "IndemnityAmazon": {
+      "IndemnityAmazon": 5,
+      "OtherUnknown": 3,
+      "Publicity": 2,
+      "ForceMajeure": 2
+    },
+    "IndemnityProcedures": {
+      "IndemnityProcedures": 2,
+      "OtherUnknown": 6
+    },
+    "IndemnityProdCo": {
+      "IndemnityProdCo": 4,
+      "OtherUnknown": 4
+    },
+    "InjunctiveReliefWaiver": {
+      "InjunctiveReliefWaiver": 2,
+      "OtherUnknown": 2,
+      "RightsGrant": 1
+    },
+    "LiabilityLimitation": {
+      "LiabilityLimitation": 2,
+      "OtherUnknown": 5
+    },
+    "GeneralProvisions": {
+      "GeneralProvisions": 4,
+      "OtherUnknown": 8,
+      "RepsProdCo": 1
+    },
+    "RepsProdCo": {
+      "RepsProdCo": 4,
+      "OtherUnknown": 5,
+      "ForceMajeure": 1
+    },
+    "RightsGrant": {
+      "RightsGrant": 2,
+      "OtherUnknown": 2
+    },
+    "ServicesScope": {
+      "ServicesScope": 3
+    },
+    "Confidentiality": {
+      "Confidentiality": 3,
+      "OtherUnknown": 1
+    },
+    "Insurance": {
+      "RepsProdCo": 1,
+      "OtherUnknown": 1,
+      "Insurance": 1
+    }
+  }
+}

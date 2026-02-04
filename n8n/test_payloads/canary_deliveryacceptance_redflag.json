@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-deliveryacceptance-001",
+    "clause_id": "delivery-deemed-accepted",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000206",
+    "heading": "DELIVERY AND ACCEPTANCE",
+    "clause_text": "Deliverables shall be deemed accepted if Amazon fails to provide a rejection notice within 5 business days. Amazon's acceptance shall not be unreasonably withheld. ProdCo determines completion and conformity with specifications. Amazon waives its right to reject deliverables after the automatic acceptance period.",
+    "expected_result": {
+        "detected_family": "DeliveryAcceptance",
+        "red_flags_found_min": 3,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'deemed accepted', 'acceptance not unreasonably withheld', 'ProdCo determines completion', 'Amazon waives right to reject'. Amazon should retain rejection rights."
+}

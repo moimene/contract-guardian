@@ -71,6 +71,15 @@ export interface ProposedChange {
     accepted: boolean
     rejected: boolean
     modified_text?: string
+    // CG-011: Audit trail fields
+    edited: boolean
+    original_suggestion?: string  // For undo capability
+    accepted_by?: string
+    accepted_at?: string
+    rejected_by?: string
+    rejected_at?: string
+    edited_by?: string
+    edited_at?: string
 }
 
 export interface ClauseReview {
@@ -177,4 +186,100 @@ export const STATUS_CONFIG = {
     in_review: { label: 'En revisión', color: 'text-blue-700', bgColor: 'bg-blue-100' },
     resolved: { label: 'Resuelta', color: 'text-green-700', bgColor: 'bg-green-100' },
     rejected: { label: 'Rechazada', color: 'text-red-700', bgColor: 'bg-red-100' },
+}
+
+// ============================================
+// PRD v2.3 - Contract Lifecycle Management
+// ============================================
+
+export type ContractLifecycleStatus =
+    | 'DRAFT_REVIEW'
+    | 'REDLINE_READY'
+    | 'SENT_FOR_NEGOTIATION'
+    | 'UNDER_NEGOTIATION'
+    | 'READY_FOR_SIGNATURE'
+    | 'ARCHIVED'
+
+export interface LifecycleStatusConfig {
+    label: string
+    color: string
+    bgColor: string
+    borderColor: string
+    icon: string
+    nextAction?: string
+    allowedTransitions: ContractLifecycleStatus[]
+}
+
+export const LIFECYCLE_STATUS_CONFIG: Record<ContractLifecycleStatus, LifecycleStatusConfig> = {
+    DRAFT_REVIEW: {
+        label: 'Draft Review',
+        color: 'text-blue-700',
+        bgColor: 'bg-blue-100',
+        borderColor: 'border-blue-300',
+        icon: 'edit',
+        nextAction: 'Complete review to mark as ready',
+        allowedTransitions: ['REDLINE_READY']
+    },
+    REDLINE_READY: {
+        label: 'Redline Ready',
+        color: 'text-green-700',
+        bgColor: 'bg-green-100',
+        borderColor: 'border-green-300',
+        icon: 'check-circle',
+        nextAction: 'Send redline to counterparty',
+        allowedTransitions: ['SENT_FOR_NEGOTIATION', 'DRAFT_REVIEW']
+    },
+    SENT_FOR_NEGOTIATION: {
+        label: 'Sent for Negotiation',
+        color: 'text-amber-700',
+        bgColor: 'bg-amber-100',
+        borderColor: 'border-amber-300',
+        icon: 'send',
+        nextAction: 'Awaiting counterparty response',
+        allowedTransitions: ['UNDER_NEGOTIATION', 'REDLINE_READY']
+    },
+    UNDER_NEGOTIATION: {
+        label: 'Under Negotiation',
+        color: 'text-purple-700',
+        bgColor: 'bg-purple-100',
+        borderColor: 'border-purple-300',
+        icon: 'message-circle',
+        nextAction: 'Review counterparty changes',
+        allowedTransitions: ['READY_FOR_SIGNATURE', 'SENT_FOR_NEGOTIATION']
+    },
+    READY_FOR_SIGNATURE: {
+        label: 'Ready for Signature',
+        color: 'text-emerald-700',
+        bgColor: 'bg-emerald-100',
+        borderColor: 'border-emerald-300',
+        icon: 'file-signature',
+        nextAction: 'Contract awaiting signature',
+        allowedTransitions: ['ARCHIVED', 'UNDER_NEGOTIATION']
+    },
+    ARCHIVED: {
+        label: 'Archived',
+        color: 'text-gray-600',
+        bgColor: 'bg-gray-100',
+        borderColor: 'border-gray-300',
+        icon: 'archive',
+        allowedTransitions: []
+    }
+}
+
+// Redline Set aggregation
+export interface RedlineSet {
+    accepted: number
+    rejected: number
+    pending: number
+    total: number
+    isReady: boolean
+}
+
+// Extended ContractRun with CLM fields
+export interface ContractRunWithCLM extends ContractRun {
+    lifecycle_status: ContractLifecycleStatus
+    redline_accepted_count: number
+    redline_rejected_count: number
+    redline_pending_count: number
+    lifecycle_updated_at?: string
 }

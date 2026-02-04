@@ -92,6 +92,37 @@ unacceptable_deviations:
       limitation on indemnity is unacceptable.
 
 # ================================================================
+# DETECTION PATTERNS (v3.0 Schema)
+# ================================================================
+detection_patterns:
+  # Red flags: Phrases that ALWAYS trigger HIGH severity + MatchesUnacceptable
+  red_flags:
+    - "shall not exceed"
+    - "not to exceed"
+    - "capped at"
+    - "limited to"
+    - "maximum liability"
+    - "aggregate liability"
+    - "to ProdCo's knowledge"
+    - "to the best of ProdCo's knowledge"
+    - "as far as ProdCo is aware"
+    - "consequential"
+    - "indirect damages"
+    - "punitive damages"
+    - "special damages"
+    - "incidental damages"
+    - "lost profits"
+    - "uncured breach"
+    - "material breach"
+    - "uncured, material breach"
+
+  # Must-have: Elements that MUST be present (absence = MissingRequired)
+  must_have:
+    - "indemnify"
+    - "defend"
+    - "hold harmless"
+
+# ================================================================
 # DETECTION TRIGGERS
 # ================================================================
 triggers:
@@ -110,3 +141,4 @@ triggers:
     - "Amazon shall indemnify"
   heading_patterns:
     - "INDEMNITY"
+

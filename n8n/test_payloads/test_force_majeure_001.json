@@ -1,0 +1,10 @@
+{
+    "clause_instance_id": "test-force-majeure-001",
+    "clause_id": "12.2",
+    "clause_text": "Neither party shall be liable for any failure or delay in performance due to an Event of Force Majeure including but not limited to acts of God, pandemic, government lockdown, natural disaster, hurricane, earthquake, flood, war, or terrorism. If such circumstances continue beyond sixty (60) days, either party may terminate this Agreement upon written notice.",
+    "heading": "FORCE MAJEURE",
+    "run_id": "test-fm-001",
+    "document_id": "doc-test-fm-001",
+    "playbook_id": "PB_PSA_V1",
+    "contract_type": "nueva_planta"
+}

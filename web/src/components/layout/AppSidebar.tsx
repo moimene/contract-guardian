@@ -8,7 +8,8 @@ import {
     Shield,
     ChevronLeft,
     ChevronRight,
-    BookOpen
+    BookOpen,
+    Activity
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -18,6 +19,7 @@ const navItems = [
     { href: '/new', label: 'Nuevo Análisis', icon: FilePlus },
     { href: '/playbook', label: 'Playbook', icon: BookOpen },
     { href: '/escalations', label: 'Escalaciones', icon: AlertTriangle },
+    { href: '/observability', label: 'Observabilidad', icon: Activity },
 ]
 
 interface AppSidebarProps {

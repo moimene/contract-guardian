@@ -1,0 +1,32 @@
+# ================================================================
+# PLAYBOOK SPEC: DeliveryAcceptance
+# Delivery & Acceptance
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: DeliveryAcceptance
+display_name: "Delivery & Acceptance"
+priority: HIGH
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "deemed accepted"
+    - "automatically accepted"
+    - "ProdCo determines completion"
+    - "Amazon waives right to reject"
+    - "acceptance not unreasonably withheld"
+    - "silent for"
+    - "no rejection permitted after"
+    - "ProdCo's determination of conformity"
+  must_have:
+    - "delivery"
+    - "acceptance"
+  strong_indicators:
+    - "final delivery"
+    - "delivery requirements"
+    - "technical specifications"
+    - "acceptance criteria"
+    - "rejection notice"
+    - "cure period"
+    - "re-delivery"

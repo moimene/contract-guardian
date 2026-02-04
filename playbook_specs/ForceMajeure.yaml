@@ -128,3 +128,39 @@ triggers:
     - "labor dispute"
     - "acts of war or terrorism"
     - "unavailability, disability or death"
+
+# ================================================================
+# DETECTION PATTERNS (CG-012 Guardrail)
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+detection_patterns:
+  red_flags:
+    - "commercially impracticable"
+    - "significantly more expensive"
+    - "ProdCo may terminate"
+    - "continue making payments"
+    - "Amazon waives any right to terminate"
+    - "shortage of personnel"
+    - "shortage of equipment"
+    - "uneconomic"
+    - "full remaining Production Fee"
+    - "payment obligations shall continue"
+    - "ProdCo shall not be liable"
+    - "limit suspension for ProdCo's breach"
+    - "remove Amazon's right to suspend"
+  must_have:
+    - "beyond reasonable control"
+    - "promptly notifies"
+    - "reasonable efforts to mitigate"
+  strong_indicators:
+    - "force majeure"
+    - "act of God"
+    - "natural disaster"
+    - "pandemic"
+    - "epidemic"
+    - "government action"
+    - "labor dispute"
+    - "acts of war"
+    - "terrorism"
+    - "suspend any services"
+    - "automatically extend"

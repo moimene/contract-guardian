@@ -1,0 +1,20 @@
+{
+    "clause_instance_id": "canary-test-002-missing-musthave",
+    "clause_id": "indemnity-missing-defend-clause",
+    "document_id": "test-document-001",
+    "run_id": "00000000-0000-0000-0000-000000000002",
+    "clause_text": "ProdCo shall indemnify and hold harmless Amazon, its affiliates, and their respective officers, directors, employees, agents and representatives from and against any and all claims, damages, losses, costs, and expenses (including reasonable attorneys' fees) arising out of or relating to any breach of ProdCo's representations, warranties, or obligations under this Agreement.",
+    "expected_result": {
+        "observations_count_min": 1,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation",
+        "expected_observations": [
+            {
+                "evidence": "[missing: defend]",
+                "possible_category": "MissingRequired",
+                "reason": "The clause is missing the 'defend' component which is a mandatory element of Amazon's indemnification standard"
+            }
+        ],
+        "notes": "This clause is missing 'defend' which is a must-have anchor. The guardrail should inject a MissingRequired observation."
+    }
+}

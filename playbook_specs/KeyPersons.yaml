@@ -1,0 +1,31 @@
+# ================================================================
+# PLAYBOOK SPEC: KeyPersons
+# Key Persons
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: KeyPersons
+display_name: "Key Persons"
+priority: HIGH
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "ProdCo may replace"
+    - "ProdCo's sole discretion to replace"
+    - "no pay-or-play"
+    - "automatic termination if Key Person unavailable"
+    - "ProdCo shall not be obligated"
+    - "replacement not subject to Amazon approval"
+    - "Key Person may be removed by ProdCo"
+  must_have:
+    - "Key Person"
+  strong_indicators:
+    - "Key Person"
+    - "Key Persons"
+    - "key talent"
+    - "attached talent"
+    - "continued attachment"
+    - "becomes unavailable"
+    - "replacement"
+    - "suspension"

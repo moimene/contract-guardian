@@ -1,0 +1,597 @@
+{
+    "name": "W3 ContractReview - v3.2 (AI Fix)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "contract-review-v3",
+                "options": {}
+            },
+            "id": "webhook",
+            "name": "Webhook",
+            "position": [
+                480,
+                304
+            ],
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "webhookId": "93f12089-a5c6-43d9-95e2-0402d2443022"
+        },
+        {
+            "parameters": {
+                "jsCode": "if (!items || items.length === 0) return [{json: {}}];\nconst inputData = items[0].json;\nconst body = inputData.body || {};\nconst runId = body.run_id;\nconst docId = body.document_id;\n\nconst now = new Date().toISOString();\n\nreturn [{\n  json: {\n    run_id: runId,\n    document_id: docId,\n    started_at: now,\n    update_url: 'https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/contract_runs?run_id=eq.' + runId,\n    processing_payload: { status: \"PROCESSING\", started_at: now },\n    extraction_payload: { document_id: docId },\n    completed_payload: { status: \"COMPLETED\", completed_at: now }\n  }\n}];"
+            },
+            "id": "precalc_params",
+            "name": "Pre-calc Params",
+            "position": [
+                608,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "PATCH",
+                "url": "={{ $json.update_url }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($json.processing_payload) }}",
+                "options": {}
+            },
+            "id": "update_processing",
+            "name": "Update Run Processing",
+            "position": [
+                800,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/extract_text",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($('Pre-calc Params').first().json.extraction_payload) }}",
+                "options": {
+                    "timeout": 120000
+                }
+            },
+            "id": "extract_text",
+            "name": "Extract Text EF",
+            "position": [
+                1008,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "jsCode": "// v3.2 FIX: Prompt ahora pide objeto JSON con array \"clauses\"\nconst text = $json.extracted_text || $json.text || '';\nconst prevJson = $('Pre-calc Params').first().json;\n\nconsole.log(`[Prepare AI Payload] Text length: ${text.length} chars`);\n\nif (!text || text.length < 100) {\n  throw new Error(`Extracted text too short (${text.length} chars) - check extract_text function`);\n}\n\nconst aiPayload = {\n  model: 'gpt-4o',\n  temperature: 0,\n  messages: [\n    {\n      role: 'system',\n      content: `You are a legal document parser. Extract ALL numbered or titled clauses/sections from the contract.\n\nIMPORTANT: Return a JSON object with this EXACT structure:\n{\n  \"clauses\": [\n    {\n      \"clause_id\": \"clause_1\",\n      \"heading\": \"SECTION TITLE OR CLAUSE NUMBER\",\n      \"clause_text\": \"Full text of the clause...\"\n    }\n  ]\n}\n\nRules:\n- Extract EVERY distinct clause/section you can identify\n- Include numbered sections (1., 2., etc.) and titled sections\n- Preserve the full text of each clause\n- The \"clauses\" array MUST contain at least one item`\n    },\n    {\n      role: 'user',\n      content: text.substring(0, 100000)\n    }\n  ],\n  response_format: { type: 'json_object' }\n};\n\nreturn [{\n  json: {\n    ...prevJson,\n    ai_payload: aiPayload,\n    extracted_text: text\n  }\n}];"
+            },
+            "id": "prepare_ai_payload",
+            "name": "Prepare AI Payload",
+            "position": [
+                1104,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.openai.com/v1/chat/completions",
+                "authentication": "predefinedCredentialType",
+                "nodeCredentialType": "openAiApi",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($json.ai_payload) }}",
+                "options": {
+                    "timeout": 120000
+                }
+            },
+            "id": "ai_parse",
+            "name": "AI Parse Clauses",
+            "position": [
+                1200,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "credentials": {
+                "openAiApi": {
+                    "id": "SIqSVUfX83ooZaUa",
+                    "name": "amazon redliner"
+                }
+            },
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "jsCode": "// v3.2 FIX: Robust parsing with extensive logging\nconst prevJson = $('Pre-calc Params').first().json;\nconst aiResponse = $json;\n\nconst uuid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {\n  const r = Math.random() * 16 | 0;\n  return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);\n});\n\nconst isUuid = (s) => typeof s === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);\n\nif (!isUuid(prevJson.document_id)) throw new Error(`Invalid document_id UUID: ${prevJson.document_id}`);\nif (!isUuid(prevJson.run_id)) throw new Error(`Invalid run_id UUID: ${prevJson.run_id}`);\n\nlet clauses = [];\ntry {\n  const content = aiResponse.choices?.[0]?.message?.content || '';\n  console.log(`[Format & Split] OpenAI response (first 500 chars): ${content.substring(0, 500)}`);\n  \n  if (!content) throw new Error('OpenAI returned empty content');\n  \n  const parsed = JSON.parse(content);\n  console.log(`[Format & Split] Parsed keys: ${Object.keys(parsed).join(', ')}`);\n  \n  clauses = parsed.clauses || parsed.items || parsed.sections || parsed.data || parsed.results || (Array.isArray(parsed) ? parsed : []);\n  \n  if (clauses.length === 0) {\n    for (const key of Object.keys(parsed)) {\n      if (Array.isArray(parsed[key]) && parsed[key].length > 0) {\n        console.log(`[Format & Split] Found array in key: ${key}`);\n        clauses = parsed[key];\n        break;\n      }\n    }\n  }\n  console.log(`[Format & Split] Found ${clauses.length} clauses`);\n} catch (e) {\n  console.error(`[Format & Split] Parse error: ${e.message}`);\n  console.error(`[Format & Split] Raw response: ${JSON.stringify(aiResponse).substring(0, 1000)}`);\n  throw new Error(`AI Parse failed: ${e.message}`);\n}\n\nif (clauses.length === 0) {\n  const rawContent = aiResponse.choices?.[0]?.message?.content || 'NO CONTENT';\n  throw new Error(`AI Parse returned 0 clauses. Raw: ${rawContent.substring(0, 500)}`);\n}\n\nreturn clauses.map((c, i) => ({\n  json: {\n    ...prevJson,\n    clause_instance_id: uuid(),\n    clause_id: c.clause_id || c.id || `clause_${i+1}`,\n    clause_text: c.clause_text || c.text || c.content || '',\n    heading: c.heading || c.title || c.section || '',\n    total_clauses: clauses.length,\n    clause_index: i\n  }\n}));"
+            },
+            "id": "format_split",
+            "name": "Format & Split",
+            "position": [
+                1408,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/clause_instances?on_conflict=document_id,clause_index",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=representation,resolution=merge-duplicates"
+                        },
+                        {
+                            "name": "on-conflict",
+                            "value": "document_id,clause_index"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ id: $json.clause_instance_id, run_id: $json.run_id, document_id: $json.document_id, clause_index: $json.clause_index, heading: $json.heading || '', original_text: $json.clause_text }) }}",
+                "options": {}
+            },
+            "id": "insert_clauses",
+            "name": "Insert Clauses",
+            "position": [
+                1600,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2
+        },
+        {
+            "parameters": {
+                "jsCode": "// v3.3: Simplified - just log and pass data through\nconst d = Array.isArray($json) ? $json[0] : $json;\nif (!d?.id) throw new Error('Insert failed');\nreturn [{json: d}];"
+            },
+            "id": "verify_insert",
+            "name": "Verify Insert",
+            "position": [
+                1700,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ (() => { const d = Array.isArray($json) ? $json[0] : $json; return JSON.stringify({ clause_instance_id: d.id, clause_id: 'clause_' + (d.clause_index + 1), clause_text: d.original_text, run_id: d.run_id, document_id: d.document_id, heading: d.heading || '', contract_type: 'psa_amazon', sequence_number: d.clause_index }); })() }}",
+                "options": {
+                    "timeout": 90000
+                }
+            },
+            "id": "call_w2",
+            "name": "Call W2 Review",
+            "position": [
+                1808,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "method": "GET",
+                "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/clause_reviews",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "select",
+                            "value": "*"
+                        },
+                        {
+                            "name": "run_id",
+                            "value": "eq.={{ $('Pre-calc Params').first().json.run_id }}"
+                        }
+                    ]
+                },
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "parameters": {
+                "jsCode": "// v3.5 FIX: Handle parallel execution results from Call W2\nconst items = $input.all().map(i => i.json);\nconst precalc = $('Pre-calc Params').first().json;\nconst startTime = new Date(precalc.started_at);\nconst totalDurationMs = new Date() - startTime;\n\n// Basic counting - W2 response indicates success/failure per item\nlet clausesProcessed = items.length;\n\nconsole.log('[Collect Metrics] Total items processed in parallel: ' + clausesProcessed);\n\nreturn [{ json: { run_id: precalc.run_id, document_id: precalc.document_id, total_items: clausesProcessed, _pipeline_metrics: { run_id: precalc.run_id, total_duration_ms: totalDurationMs, total_clauses: clausesProcessed, clauses_auto_passed: null, clauses_escalated: null, clauses_blocked: null, avg_rag_score: null, workflow_version: 'v3.5-parallel' } } }];"
+            },
+            "id": "collect_metrics",
+            "name": "Collect Metrics",
+            "position": [
+                2208,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/rpc/log_pipeline_metrics",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ ({ p_run_id: $('Collect Metrics').first().json._pipeline_metrics.run_id, p_total_duration_ms: $('Collect Metrics').first().json._pipeline_metrics.total_duration_ms, p_total_clauses: $('Collect Metrics').first().json._pipeline_metrics.total_clauses, p_clauses_auto_passed: $('Collect Metrics').first().json._pipeline_metrics.clauses_auto_passed, p_clauses_escalated: $('Collect Metrics').first().json._pipeline_metrics.clauses_escalated, p_clauses_blocked: $('Collect Metrics').first().json._pipeline_metrics.clauses_blocked, p_avg_rag_score: $('Collect Metrics').first().json._pipeline_metrics.avg_rag_score ?? null, p_workflow_version: $('Collect Metrics').first().json._pipeline_metrics.workflow_version }) }}",
+                "options": {
+                    "timeout": 5000,
+                    "response": {
+                        "response": {
+                            "responseFormat": "text"
+                        }
+                    }
+                }
+            },
+            "id": "log_metrics",
+            "name": "Log Pipeline Metrics",
+            "position": [
+                2400,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "method": "PATCH",
+                "url": "=https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/contract_runs?run_id=eq.{{ $('Pre-calc Params').first().json.run_id }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ status: 'COMPLETED', completed_at: new Date().toISOString(), total_clauses: ($('Collect Metrics').first().json._pipeline_metrics?.total_clauses || 0) }) }}",
+                "options": {}
+            },
+            "id": "update_completed",
+            "name": "Update Run Completed",
+            "position": [
+                2608,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2
+        },
+        {
+            "parameters": {},
+            "id": "error_trigger",
+            "name": "Error Trigger",
+            "position": [
+                480,
+                500
+            ],
+            "type": "n8n-nodes-base.errorTrigger",
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "method": "PATCH",
+                "url": "=https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/contract_runs?run_id=eq.{{ $json.execution?.customData?.run_id || $json.workflow?.id || 'unknown' }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ status: 'FAILED', error_message: ($json.error?.message || 'Workflow execution failed').substring(0, 500), completed_at: new Date().toISOString() }) }}",
+                "options": {
+                    "timeout": 5000
+                }
+            },
+            "id": "update_failed",
+            "name": "Update Run FAILED",
+            "position": [
+                700,
+                500
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "onError": "continueRegularOutput"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Pre-calc Params",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Pre-calc Params": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run Processing",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Run Processing": {
+            "main": [
+                [
+                    {
+                        "node": "Extract Text EF",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract Text EF": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare AI Payload",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare AI Payload": {
+            "main": [
+                [
+                    {
+                        "node": "AI Parse Clauses",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Parse Clauses": {
+            "main": [
+                [
+                    {
+                        "node": "Format & Split",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format & Split": {
+            "main": [
+                [
+                    {
+                        "node": "Insert Clauses",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Insert Clauses": {
+            "main": [
+                [
+                    {
+                        "node": "Verify Insert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Verify Insert": {
+            "main": [
+                [
+                    {
+                        "node": "Call W2 Review",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Call W2 Review": {
+            "main": [
+                [
+                    {
+                        "node": "Collect Metrics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Collect Metrics": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run Completed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Run Completed": {
+            "main": [
+                [
+                    {
+                        "node": "Log Pipeline Metrics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log Pipeline Metrics": {
+            "main": []
+        },
+        "Error Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run FAILED",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "saveExecutionProgress": true,
+        "saveManualExecutions": true,
+        "saveDataErrorExecution": "all",
+        "saveDataSuccessExecution": "all",
+        "executionTimeout": 3600,
+        "timezone": "UTC",
+        "callerPolicy": "workflowsFromSameOwner"
+    },
+    "versionId": "v3.2-ai-fix-20260203",
+    "meta": {
+        "instanceId": "e30f3d921a61d3f73e3eabe4fb1f4cfa51dfa5c1aaf9fb23188d4bcf355ee15a"
+    },
+    "id": "YzXEmynMgRCQsihN",
+    "tags": []
+}

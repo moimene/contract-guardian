@@ -204,3 +204,36 @@ risk_assessment:
     - "No audit right"
     - "ProdCo approval required for audit"
     - "No discrepancy remediation"
+
+# ================================================================
+# DETECTION PATTERNS (CG-012 Guardrail)
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+detection_patterns:
+  red_flags:
+    - "no right to audit"
+    - "ProdCo's sole discretion"
+    - "prohibitively expensive"
+    - "only once per year"
+    - "only with ProdCo's consent"
+    - "waive any right to audit"
+    - "no access to"
+    - "reimburse ProdCo's costs"
+    - "sixty (60) days"
+    - "three (3) business days"
+    - "exclude financial records"
+    - "attorney-client privilege"
+  must_have:
+    - "audit"
+    - "reasonable notice"
+    - "books and records"
+  strong_indicators:
+    - "audit rights"
+    - "right to audit"
+    - "inspect books"
+    - "examine records"
+    - "access to records"
+    - "production costs"
+    - "accounting"
+    - "verification"
+    - "reasonable advance notice"

@@ -1,0 +1,1149 @@
+{
+  "name": "W2_ClauseReview - Paranoid v2.1 (CG-012-FIX)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clause-review-rag",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0e39b5b1-baaa-45b1-b6ac-902f6aac54c9",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -6960,
+        1016
+      ],
+      "webhookId": "clause-review-rag-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('Webhook').first().json;\nconst clause = input.body || input;\n\nif (!clause.clause_text) {\n  throw new Error('clause_text is required');\n}\n\nreturn [{\n  json: {\n    clause_instance_id: clause.clause_instance_id || 'unknown',\n    clause_id: clause.clause_id || 'unknown',\n    clause_text: clause.clause_text,\n    run_id: clause.run_id || '',\n    document_id: clause.document_id || '',\n    blueprint_version_id: clause.blueprint_version_id || null,\n    matter_policy_id: clause.matter_policy_id || null,\n    contract_type: clause.contract_type || 'nueva_planta',\n    started_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "27024f9e-9682-497f-9184-d1bdebb752a1",
+      "name": "Parse Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6736,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// CG-008.P: Hybrid Router Stage 1 with Stability Patches\n// Combines Keyword Router + LLM fallback decision\n\nconst clauseText = $json.clause_text || '';\nconst heading = $json.heading || '';\n\n// ============================================================\n// CG-008.P: KEYWORD PATTERNS WITH STABILITY PATCHES\n// ============================================================\n\nconst KEYWORD_PATTERNS = {\n    // HIGH PRIORITY - INDEMNITY\n    IndemnityProdCo: {\n        patterns: [\n            /ProdCo\\s+(shall|will|agrees?\\s+to)\\s+indemnify/i,\n            /indemnify,?\\s+defend,?\\s+(and\\s+)?hold\\s+harmless\\s+Amazon/i,\n            /Amazon\\s+Indemnitees/i,\n            /from\\s+and\\s+against\\s+any\\s+(and\\s+all\\s+)?claims/i,\n            /ProdCo\\s+shall\\s+defend/i,\n            /hold\\s+Amazon\\s+harmless/i\n        ],\n        negative: [/Amazon\\s+(shall|will)\\s+indemnify/i],\n        min_matches: 1,\n        confidence: 0.90,\n        priority: 1\n    },\n    IndemnityAmazon: {\n        patterns: [\n            /Amazon\\s+(shall|will|agrees?\\s+to)\\s+indemnify/i,\n            /indemnify\\s+ProdCo/i,\n            /ProdCo\\s+Indemnitees/i,\n            /hold\\s+ProdCo\\s+harmless/i\n        ],\n        negative: [/ProdCo\\s+(shall|will)\\s+indemnify/i],\n        min_matches: 1,\n        confidence: 0.90,\n        priority: 1\n    },\n    \n    // CG-008.P Fix A: LiabilityLimitation with STRONG patterns\n    LiabilityLimitation: {\n        patterns: [\n            // Strong ALL CAPS patterns\n            /IN\\s+NO\\s+EVENT\\s+SHALL/i,\n            /CONSEQUENTIAL\\s+DAMAGES/i,\n            /INDIRECT\\s+DAMAGES/i,\n            /INCIDENTAL\\s+DAMAGES/i,\n            /PUNITIVE\\s+DAMAGES/i,\n            /AGGREGATE\\s+LIABILITY/i,\n            /SHALL\\s+NOT\\s+EXCEED/i,\n            /LIMITATION\\s+OF\\s+LIABILITY/i,\n            /MAXIMUM\\s+LIABILITY/i,\n            /LOST\\s+PROFITS/i,\n            /UNDER\\s+NO\\s+CIRCUMSTANCES/i,\n            // Mixed case\n            /aggregate\\s+liability\\s+shall\\s+not\\s+exceed/i,\n            /liability\\s+shall\\s+be\\s+limited\\s+to/i,\n            /liability\\s+cap/i\n        ],\n        negative: [\n            /shall\\s+indemnify/i,\n            /gross\\s+negligence/i,\n            /willful\\s+misconduct/i\n        ],\n        min_matches: 1,\n        confidence: 0.92,\n        priority: 1\n    },\n    \n    // CG-008.P Fix B: RightsReversion with termination context negatives\n    RightsReversion: {\n        patterns: [\n            /reversion\\s+of\\s+rights/i,\n            /rights\\s+shall\\s+revert/i,\n            /turnaround/i,\n            /reacquisition/i,\n            /revert\\s+to\\s+ProdCo/i,\n            /no\\s+reversion/i,\n            /waives?\\s+(any\\s+)?reversion/i\n        ],\n        negative: [\n            // CG-008.P: Termination context → TerminationConsequences wins\n            /upon\\s+termination/i,\n            /effect\\s+of\\s+termination/i,\n            /following\\s+termination/i,\n            /termination\\s+fee/i,\n            /kill\\s+fee/i,\n            /return\\s+(all\\s+)?materials/i,\n            /deliver\\s+(all\\s+)?work\\s+product/i\n        ],\n        min_matches: 1,\n        confidence: 0.92,\n        priority: 1\n    },\n    \n    // CG-008: DataProtection with HIGH PRIORITY\n    DataProtection: {\n        patterns: [\n            /\\bGDPR\\b/i,\n            /\\bCCPA\\b/i,\n            /data\\s+protection\\s+laws?/i,\n            /data\\s+controller/i,\n            /data\\s+processor/i,\n            /personal\\s+data/i,\n            /processing\\s+of\\s+personal\\s+data/i,\n            /data\\s+subject\\s+rights/i,\n            /privacy\\s+impact\\s+assessment/i\n        ],\n        negative: [\n            /trade\\s+secrets?/i,\n            /proprietary\\s+information/i\n        ],\n        min_matches: 1,\n        confidence: 0.90,\n        priority: 1\n    },\n    \n    // CG-008: Confidentiality WITHOUT GDPR patterns\n    Confidentiality: {\n        patterns: [\n            /maintain\\s+in\\s+strict\\s+confidence/i,\n            /confidential\\s+information/i,\n            /non-public\\s+information/i,\n            /\\bNPI\\b/,\n            /shall\\s+not\\s+disclose/i,\n            /keep\\s+confidential/i,\n            /proprietary\\s+information/i,\n            /trade\\s+secrets/i,\n            /confidentiality\\s+obligations/i,\n            /non-disclosure/i\n        ],\n        negative: [\n            /\\bGDPR\\b/i,\n            /data\\s+protection/i,\n            /data\\s+controller/i,\n            /personal\\s+data/i,\n            /assign/i\n        ],\n        min_matches: 1,\n        confidence: 0.90,\n        priority: 2\n    },\n    \n    // CG-008: Assignment with expanded negatives\n    Assignment: {\n        patterns: [\n            /may\\s+not\\s+assign/i,\n            /shall\\s+not\\s+assign/i,\n            /assignment\\s+is\\s+void/i,\n            /successors\\s+and\\s+assigns/i,\n            /change\\s+of\\s+control/i,\n            /assignment\\s+of\\s+this\\s+Agreement/i,\n            /may\\s+freely\\s+assign/i,\n            /Amazon\\s+may\\s+assign/i\n        ],\n        negative: [\n            /counterparts/i,\n            /entire\\s+agreement/i,\n            /confidential/i,\n            /disclose/i,\n            /non-disclosure/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    \n    // TerminationConsequences with RightsReversion negatives\n    TerminationConsequences: {\n        patterns: [\n            /upon\\s+termination/i,\n            /effect\\s+of\\s+termination/i,\n            /following\\s+termination/i,\n            /termination\\s+payment/i,\n            /kill\\s+fee/i,\n            /termination\\s+fee/i,\n            /return\\s+all\\s+materials/i\n        ],\n        negative: [],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    \n    // TerminationRights\n    TerminationRights: {\n        patterns: [\n            /may\\s+terminate\\s+this\\s+Agreement/i,\n            /right\\s+to\\s+terminate/i,\n            /terminate\\s+immediately/i,\n            /upon\\s+\\\\d+\\s+days.*notice/i,\n            /material\\s+breach/i,\n            /terminate\\s+for\\s+cause/i,\n            /terminate\\s+for\\s+convenience/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    \n    // AuditRights with negatives\n    AuditRights: {\n        patterns: [\n            /audit\\s+rights/i,\n            /right\\s+to\\s+audit/i,\n            /inspect.*books\\s+and\\s+records/i,\n            /books\\s+and\\s+records/i,\n            /accountant/i,\n            /examine.*accounting\\s+records/i\n        ],\n        negative: [\n            /grant/i,\n            /license/i,\n            /exploitation/i,\n            /in\\s+perpetuity/i\n        ],\n        min_matches: 1,\n        confidence: 0.90,\n        priority: 2\n    },\n    \n    // ServicesScope expanded\n    ServicesScope: {\n        patterns: [\n            /ProdCo\\s+(shall|will)\\s+provide\\s+(the\\s+)?services/i,\n            /production\\s+services/i,\n            /scope\\s+of\\s+services/i,\n            /services\\s+to\\s+be\\s+provided/i,\n            /deliverables/i,\n            /services\\s+as\\s+set\\s+forth\\s+in\\s+Exhibit/i,\n            /production\\s+of\\s+the\\s+(Series|Program|Film)/i,\n            /set\\s+forth\\s+in\\s+Exhibit\\s+A/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    \n    // Other families\n    ForceMajeure: {\n        patterns: [\n            /force\\s+majeure/i,\n            /acts?\\s+of\\s+God/i,\n            /war,?\\s+terrorism/i,\n            /beyond\\s+reasonable\\s+control/i,\n            /natural\\s+disaster/i,\n            /pandemic/i,\n            /earthquake|flood|hurricane/i\n        ],\n        min_matches: 1,\n        confidence: 0.92,\n        priority: 1\n    },\n    RightsGrant: {\n        patterns: [\n            /grants?\\s+to\\s+Amazon/i,\n            /all\\s+rights.*throughout\\s+the\\s+universe/i,\n            /in\\s+perpetuity/i,\n            /exclusive\\s+license/i,\n            /exploitation\\s+rights/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    Insurance: {\n        patterns: [\n            /obtain\\s+and\\s+maintain.*insurance/i,\n            /errors\\s+and\\s+omissions/i,\n            /\\bE\\s*&\\s*O\\b/i,\n            /commercial\\s+general\\s+liability/i,\n            /certificate\\s+of\\s+insurance/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    DisputeResolution: {\n        patterns: [\n            /binding\\s+arbitration/i,\n            /dispute.*resolution/i,\n            /mediation/i,\n            /exclusive\\s+jurisdiction/i,\n            /governed\\s+by\\s+the\\s+laws/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    AmazonControl: {\n        patterns: [\n            /sole\\s+and\\s+final\\s+control/i,\n            /Amazon['']?s\\s+sole\\s+discretion/i,\n            /subject\\s+to\\s+Amazon['']?s\\s+approval/i,\n            /final\\s+cut/i,\n            /creative\\s+control/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    Publicity: {\n        patterns: [\n            /publicity\\s+materials/i,\n            /press\\s+release/i,\n            /use\\s+of\\s+name\\s+and\\s+likeness/i,\n            /promotional\\s+purposes/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    PaymentCredits: {\n        patterns: [\n            /Amazon\\s+(shall|will)\\s+pay/i,\n            /payable\\s+within\\s+\\\\d+\\s+days/i,\n            /net\\s+30/i,\n            /production\\s+fee/i,\n            /milestone\\s+payment/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    GoverningLaw: {\n        patterns: [\n            /governed\\s+by.*laws\\s+of/i,\n            /laws\\s+of\\s+(the\\s+State\\s+of\\s+)?California/i,\n            /exclusive\\s+jurisdiction/i,\n            /venue.*shall\\s+be/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    },\n    GeneralProvisions: {\n        patterns: [\n            /entire\\s+agreement/i,\n            /supersedes\\s+all\\s+prior/i,\n            /severability/i,\n            /executed\\s+in\\s+counterparts/i,\n            /no\\s+waiver/i\n        ],\n        min_matches: 1,\n        confidence: 0.85,\n        priority: 3\n    },\n    RepsProdCo: {\n        patterns: [\n            /ProdCo\\s+represents\\s+and\\s+warrants/i,\n            /ProdCo\\s+warrants\\s+that/i,\n            /full\\s+authority\\s+to\\s+enter/i\n        ],\n        min_matches: 1,\n        confidence: 0.88,\n        priority: 2\n    }\n};\n\n// Routing function\nfunction routeClause(text) {\n    const results = [];\n    const lowerText = text.toLowerCase();\n    \n    for (const [family, config] of Object.entries(KEYWORD_PATTERNS)) {\n        let matchCount = 0;\n        let matchedPatterns = [];\n        \n        // Check positive patterns\n        for (const pattern of config.patterns) {\n            if (pattern.test(text)) {\n                matchCount++;\n                matchedPatterns.push(pattern.source);\n            }\n        }\n        \n        // Check negative patterns\n        let hasNegative = false;\n        if (config.negative && config.negative.length > 0) {\n            for (const negPattern of config.negative) {\n                if (negPattern.test(text)) {\n                    hasNegative = true;\n                    break;\n                }\n            }\n        }\n        \n        if (matchCount >= (config.min_matches || 1) && !hasNegative) {\n            results.push({\n                family,\n                matchCount,\n                matchedPatterns,\n                confidence: config.confidence,\n                priority: config.priority\n            });\n        }\n    }\n    \n    // Sort by priority (lower = higher priority), then by match count\n    results.sort((a, b) => {\n        if (a.priority !== b.priority) return a.priority - b.priority;\n        return b.matchCount - a.matchCount;\n    });\n    \n    return results;\n}\n\n// Execute routing\nconst routingResults = routeClause(clauseText);\nconst topMatch = routingResults[0];\n\nconst detected_family = topMatch ? topMatch.family : 'OtherUnknown';\nconst confidence = topMatch ? topMatch.confidence : 0.0;\nconst needs_llm = !topMatch || topMatch.confidence < 0.7;\n\nreturn [{\n    json: {\n        ...$json,\n        detected_family,\n        _routing_method: needs_llm ? 'PENDING_LLM' : 'KEYWORD',\n        _keyword_confidence: confidence,\n    routing_confidence: confidence,\n        _matches: routingResults.slice(0, 3),\n        needs_llm_fallback: needs_llm\n    }\n}];"
+      },
+      "id": "acb4b419-3466-470f-9578-1986c3e1a18b",
+      "name": "Hybrid Router (Stage 1)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6512,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"text-embedding-3-small\",\n  \"input\": \"{{ $json.clause_text }}\",\n  \"dimensions\": 1536\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "ad563027-90fb-4c50-b78e-9499727a47e2",
+      "name": "Generate Clause Embedding",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5616,
+        1016
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get data from either Parse LLM Result (LLM path) or Hybrid Router (direct path)\nlet prevData;\ntry {\n  prevData = $('Parse LLM Result').first().json;\n} catch (e) {\n  // Direct path - get from Hybrid Router\n  prevData = $('Hybrid Router (Stage 1)').first().json;\n}\n\nlet embedding = null;\ntry {\n  embedding = $json.data?.[0]?.embedding || null;\n} catch (e) {\n  console.log('Embedding parse error:', e.message);\n}\n\nreturn [{ json: { ...prevData, clauseEmbedding: embedding } }];"
+      },
+      "id": "b4e0982c-d391-4c81-a504-a6e452804dbe",
+      "name": "Parse Embedding",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5392,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/rpc/search_policy_examples",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            },
+            {
+              "name": "apikey",
+              "value": "{{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query_embedding\": {{ JSON.stringify($json.clauseEmbedding) }},\n  \"match_threshold\": 0.6,\n  \"match_count\": 5,\n  \"filter_matter_policy_id\": null,\n  \"filter_acceptance\": null\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "2fd05ac1-919e-4d1b-9185-90af3e745320",
+      "name": "RAG: Search Similar Examples",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5168,
+        1016
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prevData = $('Parse Embedding').first().json;\nlet ragResults = [];\n\ntry {\n  // Handle both array response and empty response\n  const response = $input.first().json;\n  if (Array.isArray(response)) {\n    ragResults = response;\n  } else if (response && typeof response === 'object') {\n    // If it's an object with error, treat as empty\n    ragResults = [];\n  }\n} catch (e) {\n  console.log('RAG parse error:', e.message);\n  ragResults = [];\n}\n\n// Group examples by acceptance level\nconst acceptableExamples = ragResults.filter(r => r.acceptance === 'ACCEPTABLE').slice(0, 2);\nconst passableExamples = ragResults.filter(r => r.acceptance === 'PASSABLE').slice(0, 2);\nconst unacceptableExamples = ragResults.filter(r => r.acceptance === 'UNACCEPTABLE').slice(0, 2);\n\n// Format for prompt\nconst formatExample = (ex) => `[${ex.acceptance}] (similarity: ${(ex.similarity * 100).toFixed(0)}%)\\n${ex.example_text.substring(0, 500)}...`;\n\nconst ragContext = {\n  hasResults: ragResults.length > 0,\n  totalFound: ragResults.length,\n  acceptableExamples: acceptableExamples.map(formatExample),\n  passableExamples: passableExamples.map(formatExample),\n  unacceptableExamples: unacceptableExamples.map(formatExample),\n  topSimilarity: ragResults[0]?.similarity || 0,\n  topAcceptance: ragResults[0]?.acceptance || 'NONE'\n};\n\nreturn [{ json: { ...prevData, ragContext, ragResults } }];"
+      },
+      "id": "bec25632-086a-4c8c-adb8-45a762e3cbf7",
+      "name": "Parse RAG Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4944,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/rpc/get_playbook_spec",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            },
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzMTI5MDIsImV4cCI6MjA4Mzg4ODkwMn0.AYhrbvL5OZ5cdG5e5THLEiEAxOD7n8p3eif0sTrzWbg"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzMTI5MDIsImV4cCI6MjA4Mzg4ODkwMn0.AYhrbvL5OZ5cdG5e5THLEiEAxOD7n8p3eif0sTrzWbg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"p_family_id\": \"{{ $json.detected_family }}\" }",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "10c2d9c8-70b1-4abe-a556-9f69303cde71",
+      "name": "Get Playbook Spec",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4720,
+        1016
+      ],
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enrich Policy (CG-012) - with v2→v3 adapter\n// =============================================\n// This node enriches the policy spec with playbook data and normalizes\n// the acceptability_matrix to v3 format for consistent consumption.\n\n// Get data from Parse RAG Results and Playbook Spec\nconst prevData = $('Parse RAG Results').first().json;\nconst family = prevData.detected_family || 'OtherUnknown';\n\n// Get playbook spec from database response (from Get Playbook Spec node)\nlet playbookSpec = null;\ntry {\n    const specResponse = $input.all()[0]?.json;\n    if (Array.isArray(specResponse) && specResponse.length > 0) {\n        playbookSpec = specResponse[0];\n    } else if (specResponse && !Array.isArray(specResponse)) {\n        playbookSpec = specResponse;\n    }\n} catch (e) {\n    console.log('Playbook spec parse error:', e.message);\n}\n\n// -------------------------\n// v2→v3 Adapter\n// -------------------------\nfunction normalizeAcceptabilityMatrix(matrix) {\n    const empty = {\n        acceptable: { description: '', examples: [] },\n        passable: { description: '', requires_approval: '', variations: [] },\n        unacceptable: { description: '', action: '', patterns: [] }\n    };\n    if (!matrix || typeof matrix !== 'object') return empty;\n\n    // v3 already OK - check if patterns[0] is an object\n    const hasV3 = matrix?.unacceptable?.patterns?.length &&\n        typeof matrix.unacceptable.patterns[0] === 'object';\n    if (hasV3) return matrix;\n\n    // v2: arrays of strings (legacy)\n    const unacceptableStrings = matrix?.unacceptable?.patterns || matrix?.unacceptable || matrix?.unacceptable_patterns || [];\n    const passableStrings = matrix?.passable?.variations || matrix?.passable || matrix?.passable_variations || [];\n    const acceptableStrings = matrix?.acceptable?.examples || matrix?.acceptable || matrix?.acceptable_examples || [];\n\n    return {\n        acceptable: {\n            description: matrix?.acceptable?.description || '',\n            examples: (Array.isArray(acceptableStrings) ? acceptableStrings : []).map((s, i) => ({\n                id: `acc-legacy-${i + 1}`,\n                pattern: String(s),\n                example: '',\n                reason: 'requires playbook_specs data',\n                risk_level: 'NONE'\n            }))\n        },\n        passable: {\n            description: matrix?.passable?.description || '',\n            requires_approval: matrix?.passable?.requires_approval || '',\n            variations: (Array.isArray(passableStrings) ? passableStrings : []).map((s, i) => ({\n                id: `pas-legacy-${i + 1}`,\n                pattern: String(s),\n                condition: '',\n                example: '',\n                reason: 'requires playbook_specs data',\n                risk_level: 'MEDIUM'\n            }))\n        },\n        unacceptable: {\n            description: matrix?.unacceptable?.description || '',\n            action: matrix?.unacceptable?.action || 'REJECT',\n            patterns: (Array.isArray(unacceptableStrings) ? unacceptableStrings : []).map((s, i) => ({\n                id: `unacc-legacy-${i + 1}`,\n                pattern: String(s),\n                example: '',\n                reason: 'requires playbook_specs data',\n                risk_level: 'CRITICAL'\n            }))\n        }\n    };\n}\n\n// Build policySpec from database data or fallback\nlet policySpec;\nif (playbookSpec && playbookSpec.family_id) {\n    // Normalize the matrix to v3\n    const matrixV3 = normalizeAcceptabilityMatrix(playbookSpec.acceptability_matrix);\n\n    policySpec = {\n        clause_family: playbookSpec.family_id,\n        display_name: playbookSpec.display_name,\n        priority: playbookSpec.priority,\n        requires_legal_review: playbookSpec.requires_legal_review,\n        rule_id: `PB:v2026-02:${playbookSpec.family_id}-Core`,\n        has_policy_spec: true,\n\n        // Amazon position data\n        amazon_position: playbookSpec.amazon_position,\n        standard_position: {\n            text: playbookSpec.amazon_position?.summary || '',\n            summary: playbookSpec.amazon_position?.summary || '',\n            core_requirements: playbookSpec.amazon_position?.core_requirements || []\n        },\n\n        // Acceptability data (v3 normalized)\n        acceptability_matrix: matrixV3,\n\n        // v3 objects for advanced consumers (Paranoid, Valuator)\n        unacceptable_patterns: matrixV3.unacceptable.patterns,\n        passable_variations: matrixV3.passable.variations,\n        acceptable_examples: matrixV3.acceptable.examples,\n\n        // Flat labels for compatibility/logging/UI\n        unacceptable_pattern_labels: matrixV3.unacceptable.patterns.map(p => p.pattern),\n        passable_variation_labels: matrixV3.passable.variations.map(v => v.pattern),\n        acceptable_example_labels: matrixV3.acceptable.examples.map(e => e.pattern),\n\n        // Negotiation and risk\n        negotiation_guidance: playbookSpec.negotiation_guidance,\n        risk_assessment: playbookSpec.risk_assessment,\n        detection_patterns: playbookSpec.detection_patterns,\n\n        // Policies\n        analysis_mode: 'MODE_ENUMERATED_DEVIATIONS',\n        required: true,\n        routing_policy: {\n            type: playbookSpec.priority === 'CRITICAL' ? 'ESCALATE_IF_UNACCEPTABLE' : 'LOG_ONLY',\n            block_export: playbookSpec.priority === 'CRITICAL'\n        },\n        decision_policy: {\n            anchor_conf_threshold: 0.85,\n            gating_logic: 'STANDARD',\n            block_export_if_escalated: playbookSpec.priority === 'CRITICAL'\n        }\n    };\n} else {\n    // Fallback for families without playbook spec\n    policySpec = {\n        id: null,\n        rule_id: `default:${family}`,\n        clause_family: family,\n        required: true,\n        analysis_mode: 'MODE_ENUMERATED_DEVIATIONS',\n        standard_position: { text: 'Not defined', summary: 'Manual review required' },\n        acceptability_matrix: normalizeAcceptabilityMatrix(null),\n        unacceptable_patterns: [],\n        passable_variations: [],\n        acceptable_examples: [],\n        unacceptable_pattern_labels: [],\n        passable_variation_labels: [],\n        acceptable_example_labels: [],\n        routing_policy: { type: 'ESCALATE', block_export: true },\n        decision_policy: { anchor_conf_threshold: 0.85, gating_logic: 'STANDARD', block_export_if_escalated: true },\n        has_policy_spec: false\n    };\n}\n\nconst TH_ANCHOR = policySpec.decision_policy?.anchor_conf_threshold || 0.85;\nconst TH_CONF = 0.80;\n\nreturn [{ json: { ...prevData, policySpec, playbookSpec, TH_ANCHOR, TH_CONF } }];\n"
+      },
+      "id": "cf0feea8-bd48-46f8-88ff-b14eecbd67ea",
+      "name": "Enrich Policy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4496,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Family Prompt (CG-012) - v3.0 rendering + English prompts + RAG injection\n// ================================================================================\n// This node builds the system/user prompts for Paranoid and Valuator agents,\n// correctly rendering v3.0 acceptability_matrix objects and injecting RAG context.\n\nconst data = $('Enrich Policy').first().json;\nconst family = data.policySpec?.clause_family || 'OtherUnknown';\nconst clauseText = data.clause_text;\nconst policySpec = data.policySpec || {};\nconst playbookSpec = data.playbookSpec;\nconst ragContext = data.ragContext || {};\n\n// -------------------------\n// v3 Formatters\n// -------------------------\nfunction formatUnacceptable(patterns = []) {\n    if (!Array.isArray(patterns) || !patterns.length) return '  • None defined';\n    return patterns.map(p => {\n        if (!p || typeof p !== 'object') return `  • ${String(p)}`;\n        return [\n            `  • [${p.id || 'unacc'}] ${p.pattern || ''}`,\n            p.example ? `    Example: \"${p.example}\"` : null,\n            p.reason ? `    Reason: ${p.reason}` : null,\n            p.risk_level ? `    Risk: ${p.risk_level}` : null,\n        ].filter(Boolean).join('\\n');\n    }).join('\\n');\n}\n\nfunction formatPassable(vars = []) {\n    if (!Array.isArray(vars) || !vars.length) return '  • None defined';\n    return vars.map(v => {\n        if (!v || typeof v !== 'object') return `  • ${String(v)}`;\n        return [\n            `  • [${v.id || 'pas'}] ${v.pattern || v.variation || ''}`,\n            v.condition ? `    Condition: ${v.condition}` : null,\n            v.example ? `    Example: \"${v.example}\"` : null,\n            v.reason ? `    Reason: ${v.reason}` : null,\n            v.risk_level ? `    Risk: ${v.risk_level}` : null,\n        ].filter(Boolean).join('\\n');\n    }).join('\\n');\n}\n\nfunction formatAcceptable(examples = []) {\n    if (!Array.isArray(examples) || !examples.length) return '  • None defined';\n    return examples.slice(0, 3).map(e => {\n        if (!e || typeof e !== 'object') return `  • ${String(e)}`;\n        return [\n            `  • [${e.id || 'acc'}] ${e.pattern || ''}`,\n            e.example ? `    Example: \"${e.example}\"` : null,\n            e.reason ? `    Reason: ${e.reason}` : null,\n        ].filter(Boolean).join('\\n');\n    }).join('\\n');\n}\n\nfunction formatRedFlags(flags = []) {\n    if (!Array.isArray(flags) || !flags.length) return '  • None defined';\n    return flags.map(f => `  • \"${f}\" → Severity: high, Category: MatchesUnacceptable`).join('\\n');\n}\n\nfunction formatMustHave(anchors = []) {\n    if (!Array.isArray(anchors) || !anchors.length) return '  • None defined';\n    return anchors.map(a => `  • \"${a}\"`).join('\\n');\n}\n\nfunction formatCoreRequirements(reqs = []) {\n    if (!Array.isArray(reqs) || !reqs.length) return '  • None defined';\n    return reqs.map(r => `  • ${r}`).join('\\n');\n}\n\nfunction formatEscalationTriggers(triggers = []) {\n    if (!Array.isArray(triggers) || !triggers.length) return '  • None defined';\n    return triggers.map(t => `  • ${t}`).join('\\n');\n}\n\n// -------------------------\n// RAG Context Formatter\n// -------------------------\nfunction formatRagExamples(rag = {}) {\n    const topUnacc = (rag.unacceptableExamples || rag.unacceptable || []).slice(0, 2);\n    const topAcc = (rag.acceptableExamples || rag.acceptable || []).slice(0, 1);\n    const topPass = (rag.passableExamples || rag.passable || []).slice(0, 1);\n\n    let out = '';\n    if (topUnacc.length) {\n        out += '\\n  UNACCEPTABLE examples (for grounding):\\n';\n        out += topUnacc.map((e, i) => `    ${i + 1}. ${String(e.example_text || e.text || e).slice(0, 400)}...`).join('\\n');\n    }\n    if (topAcc.length) {\n        out += '\\n  ACCEPTABLE examples (for grounding):\\n';\n        out += topAcc.map((e, i) => `    ${i + 1}. ${String(e.example_text || e.text || e).slice(0, 400)}...`).join('\\n');\n    }\n    if (topPass.length) {\n        out += '\\n  PASSABLE examples (for grounding):\\n';\n        out += topPass.map((e, i) => `    ${i + 1}. ${String(e.example_text || e.text || e).slice(0, 400)}...`).join('\\n');\n    }\n\n    return out || '  • No RAG examples available';\n}\n\n// -------------------------\n// Build Prompts\n// -------------------------\nlet paranoidSystem, valuatorSystem, TH_ANCHOR;\n\nif (playbookSpec && playbookSpec.amazon_position) {\n    const pos = playbookSpec.amazon_position || {};\n    const matrix = playbookSpec.acceptability_matrix || {};\n    const detection = playbookSpec.detection_patterns || {};\n    const risk = playbookSpec.risk_assessment || {};\n\n    // PARANOID SYSTEM PROMPT (English, imperative, v2.0)\n    paranoidSystem = `PARANOID ANALYSIS AGENT — ${playbookSpec.display_name}\nVersion: 2.0 | Family: ${playbookSpec.family_id} | Priority: ${playbookSpec.priority}\n\nYOUR MISSION\nYou must identify EVERY deviation, risk, or concern with HIGH RECALL.\nFalse positives are acceptable. False negatives are NOT acceptable.\n\nCRITICAL RULE (NO EMPTY OBSERVATIONS)\nIf ANY red_flag is found OR ANY unacceptable pattern is matched OR ANY must-have is missing:\n- observations.length MUST be > 0\n- risk_level MUST be RED or YELLOW (never GREEN)\n\nMATCHING RULES (DETERMINISTIC)\n- Match is case-insensitive and whitespace-tolerant.\n- evidence MUST be an exact substring from clause_text.\n- offsets are 0-indexed character positions in clause_text.\n- If a must-have is missing: evidence = \"[missing: <anchor>]\" and offsets = {start:0,end:0}\n\nAMAZON STANDARD POSITION\n${pos.summary || 'Not defined'}\n\nCORE REQUIREMENTS\n${formatCoreRequirements(pos.core_requirements)}\n\nMUST-HAVE ANCHORS (required elements)\n${formatMustHave(detection.must_have)}\n\nRED FLAGS (report immediately if found)\n${formatRedFlags(detection.red_flags)}\n\nUNACCEPTABLE PATTERNS (must reject if matched)\n${formatUnacceptable(matrix?.unacceptable?.patterns)}\n\nPASSABLE VARIATIONS (acceptable only with legal approval)\n${formatPassable(matrix?.passable?.variations)}\n\nACCEPTABLE EXAMPLES (fully compliant language)\n${formatAcceptable(matrix?.acceptable?.examples)}\n\nESCALATION TRIGGERS\n${formatEscalationTriggers(risk.escalation_triggers)}\n\nOUTPUT FORMAT (JSON ONLY)\nReturn exactly this structure:\n{\n  \"observations\": [\n    {\n      \"evidence\": \"exact substring from clause_text OR [missing: <anchor>]\",\n      \"offsets\": { \"start\": 0, \"end\": 0 },\n      \"change_type\": \"missing|added|modified\",\n      \"possible_category\": \"MatchesUnacceptable|MissingRequired|PassableVariation|UnknownChange\",\n      \"pattern_matched\": \"red_flag OR pattern name\",\n      \"confidence\": 0.0,\n      \"severity\": \"high|medium|low\",\n      \"reason\": \"brief explanation\",\n      \"playbook_reference\": \"pattern id or null\"\n    }\n  ],\n  \"summary\": {\n    \"counts\": {\"total\": 0, \"missing\": 0, \"added\": 0, \"modified\": 0},\n    \"coverage_confidence\": 0.0,\n    \"red_flags_found\": 0,\n    \"unacceptable_patterns_found\": 0,\n    \"must_have_missing\": 0\n  },\n  \"risk_level\": \"RED|YELLOW|GREEN\"\n}`;\n\n    // VALUATOR SYSTEM PROMPT (English, deterministic)\n    valuatorSystem = `VALUATOR AGENT — ${playbookSpec.display_name}\nVersion: 2.0 | Mode: MODE_ENUMERATED_DEVIATIONS | Priority: ${playbookSpec.priority}\n\nYOUR MISSION\nBased on Paranoid observations, determine final_status and propose changes.\n\nRULES\n1. NO NEW TEXT - proposed replacement_text MUST come from playbook standard_position or fallback_clauses\n2. SOURCE REQUIRED - every proposed_change needs source_reference with exact_text\n3. DETERMINISTIC MAPPING:\n   - observations contains MatchesUnacceptable → final_status = UnacceptableDeviation\n   - observations contains MissingRequired → final_status = UnacceptableDeviation  \n   - observations only PassableVariation → final_status = AcceptableDeviation\n   - observations empty AND risk_level=GREEN → final_status = Compliant\n4. ESCALATE ON UNCERTAINTY - if confidence_overall < 0.75 → escalation_recommended = true\n\nSTANDARD POSITION (use as source for replacement_text):\n${pos.summary || 'Not defined'}\n\nOUTPUT FORMAT (JSON ONLY):\n{\n  \"final_status\": \"Compliant|AcceptableDeviation|UnacceptableDeviation|Ambiguous\",\n  \"escalation_recommended\": false,\n  \"escalation_reason\": null,\n  \"proposed_changes\": [\n    {\n      \"target_text\": \"exact text from clause to replace\",\n      \"replacement_text\": \"text from playbook standard_position\",\n      \"change_type\": \"delete|replace|insert\",\n      \"priority\": \"critical|high|medium\",\n      \"source_reference\": {\n        \"type\": \"standard_position|fallback_clause\",\n        \"exact_text\": \"verbatim from playbook\"\n      }\n    }\n  ],\n  \"confidence_overall\": 0.0\n}`;\n\n    TH_ANCHOR = playbookSpec.priority === 'CRITICAL' ? 0.86 : 0.85;\n\n} else {\n    // Fallback for unknown families\n    paranoidSystem = `PARANOID ANALYSIS AGENT — ${family}\nFamily: ${family} | Status: NOT COVERED BY PLAYBOOK\n\nYOUR MISSION\nThis clause family has no playbook specification. Analyze defensively.\n\nANALYZE FOR:\n1. Party obligations and responsibilities\n2. Timelines and conditions\n3. Exclusions and limitations\n4. Escape clauses or penalties\n5. Any unusual or concerning language\n\nOUTPUT FORMAT:\n{\n  \"observations\": [...],\n  \"summary\": { \"counts\": {...}, \"coverage_confidence\": 0.0 },\n  \"risk_level\": \"YELLOW\",\n  \"possible_family\": \"suggested family if identifiable\"\n}\n\nIMPORTANT: Since no playbook exists, default to cautious analysis.`;\n\n    valuatorSystem = `VALUATOR AGENT — ${family}\nStatus: NOT COVERED BY PLAYBOOK\n\nRULES:\n- final_status = NotCoveredByPlaybook\n- escalation_recommended = true\n- No proposed_changes (no playbook reference available)\n\nOUTPUT: { \"final_status\": \"NotCoveredByPlaybook\", \"escalation_recommended\": true, \"escalation_reason\": \"No playbook spec for ${family}\", \"proposed_changes\": [], \"confidence_overall\": 0.0 }`;\n\n    TH_ANCHOR = 0.85;\n}\n\n// -------------------------\n// Build User Message (with RAG context)\n// -------------------------\nconst ragBlock = `\nRAG CONTEXT (for grounding only — DO NOT use as evidence; evidence must come from clause_text):\n${formatRagExamples(ragContext)}`;\n\nconst paranoidUserMessage = `CLAUSE TEXT TO ANALYZE:\n---\n${clauseText}\n---\n\n${ragBlock}\n\nINSTRUCTIONS:\n1. First, check for ALL red flags (literal matches, case-insensitive)\n2. Then, check for ALL must-have anchors (report missing ones)\n3. Then, check for unacceptable patterns using examples for semantic matching\n4. Finally, check for passable variations\n\nReport EVERY finding with:\n- evidence: exact substring from clause_text (or [missing: X])\n- offsets: character positions in clause_text\n- severity: high for red_flags/unacceptable, medium for passable, low for unknown\n\nRESPOND ONLY WITH JSON.`;\n\n// Build complete messages for OpenAI\nconst paranoidMessages = [\n    { role: 'system', content: paranoidSystem },\n    { role: 'user', content: paranoidUserMessage }\n];\n\nreturn [{\n    json: {\n        ...data,\n        paranoidMessages,\n        paranoidSystemPrompt: paranoidSystem,\n        paranoidUserPrompt: paranoidUserMessage,\n        valuatorSystemPrompt: valuatorSystem,\n        TH_ANCHOR: TH_ANCHOR,\n        usedDynamicPrompt: !!playbookSpec,\n        promptVersion: '2.0',\n        ragInjected: !!(ragContext && Object.keys(ragContext).length)\n    }\n}];\n"
+      },
+      "id": "c5dfb483-ec9e-44a9-b0de-2b690f7dd9bc",
+      "name": "Build Family Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4272,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o\",\n  \"temperature\": 0,\n  \"messages\": {{ JSON.stringify($json.paranoidMessages) }},\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "c2d27910-f341-450a-b58e-c827df55a44c",
+      "name": "Paranoid Agent (RAG Enhanced)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4048,
+        1016
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// Parse Paranoid (CG-012-FIX) - Deterministic Red Flag Detection\n// =====================================================\n// COPIA ESTE CÓDIGO EN EL NODO \"Parse Paranoid\" DE n8n\n// Este fix resuelve:\n// 1. Severity override para observaciones del LLM con severidad incorrecta\n// 2. Matching case-insensitive para red flags\n// 3. Risk level determinístico: RED si hay red flags\n// =====================================================\n\nconst prev = $('Build Family Prompt').first().json || {};\nconst clauseText = String(prev.clause_text || '');\nconst playbookSpec = prev.playbookSpec || {};\nconst matrix = playbookSpec.acceptability_matrix || {};\nconst detection = playbookSpec.detection_patterns || {};\n\nconst redFlags = Array.isArray(detection.red_flags) ? detection.red_flags : [];\nconst mustHave = Array.isArray(detection.must_have) ? detection.must_have : [];\nconst unacceptablePatterns = Array.isArray(matrix?.unacceptable?.patterns) ? matrix.unacceptable.patterns : [];\n\nconst raw = $json?.choices?.[0]?.message?.content || '{}';\n\n// -------------------------\n// Helpers\n// -------------------------\nfunction safeJsonParse(str) {\n    try { return JSON.parse(str); } catch { return null; }\n}\n\nfunction escapeRegex(s) {\n    return String(s).replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');\n}\n\nfunction makeWsRegex(phrase) {\n    const tokens = String(phrase).trim().split(/\\s+/).filter(Boolean).map(escapeRegex);\n    if (!tokens.length) return null;\n    return new RegExp(tokens.join('\\\\s+'), 'gi');\n}\n\nfunction findAllOccurrences(text, phrase) {\n    const rx = makeWsRegex(phrase);\n    if (!rx) return [];\n    const out = [];\n    let m;\n    while ((m = rx.exec(text)) !== null) {\n        const start = m.index;\n        const end = m.index + m[0].length;\n        out.push({ evidence: text.slice(start, end), offsets: { start, end } });\n        if (m[0].length === 0) rx.lastIndex++;\n    }\n    return out;\n}\n\nfunction bestEvidenceFromExample(text, example) {\n    const words = String(example).match(/[A-Za-z0-9']+/g) || [];\n    for (let n = Math.min(8, words.length); n >= 3; n--) {\n        for (let i = 0; i + n <= words.length; i++) {\n            const needle = words.slice(i, i + n).join(' ');\n            const hits = findAllOccurrences(text, needle);\n            if (hits.length) {\n                return { ...hits[0], needle };\n            }\n        }\n    }\n    return null;\n}\n\nfunction toSeverity(riskLevel) {\n    const v = String(riskLevel || '').toUpperCase();\n    if (v === 'CRITICAL' || v === 'HIGH') return 'high';\n    if (v === 'MEDIUM') return 'medium';\n    return 'low';\n}\n\nfunction defaultOutput() {\n    return {\n        observations: [],\n        summary: {\n            counts: { total: 0, missing: 0, added: 0, modified: 0 },\n            coverage_confidence: 0,\n            red_flags_found: 0,\n            unacceptable_patterns_found: 0,\n            must_have_missing: 0\n        },\n        risk_level: 'GREEN'\n    };\n}\n\nfunction normalizeParanoid(parsed) {\n    const out = defaultOutput();\n    if (parsed && typeof parsed === 'object') {\n        if (Array.isArray(parsed.observations)) out.observations = parsed.observations;\n        if (parsed.summary && typeof parsed.summary === 'object') out.summary = { ...out.summary, ...parsed.summary };\n        if (typeof parsed.risk_level === 'string') out.risk_level = parsed.risk_level;\n    }\n    if (!Array.isArray(out.observations)) out.observations = [];\n    if (!out.summary || typeof out.summary !== 'object') out.summary = defaultOutput().summary;\n    if (!out.summary.counts || typeof out.summary.counts !== 'object') out.summary.counts = defaultOutput().summary.counts;\n    if (typeof out.risk_level !== 'string') out.risk_level = 'GREEN';\n    return out;\n}\n\n// =====================================================\n// CG-012-FIX: Helper para matching case-insensitive de red flags\n// =====================================================\nfunction matchesRedFlag(text, redFlags) {\n    const textLower = String(text || '').toLowerCase();\n    for (const rf of redFlags) {\n        const rfLower = String(rf).toLowerCase();\n        if (textLower.includes(rfLower) || rfLower.includes(textLower.substring(0, 20))) {\n            return rf;\n        }\n    }\n    return null;\n}\n\n// -------------------------\n// 1) Parse LLM JSON\n// -------------------------\nconst parsed = safeJsonParse(raw);\nlet paranoidOutput = normalizeParanoid(parsed);\n\n// =====================================================\n// CG-012-FIX: SEVERITY OVERRIDE FOR LLM OBSERVATIONS\n// =====================================================\n// If LLM returned observations but assigned wrong severity to red flags,\n// FORCE severity=high and possible_category=MatchesUnacceptable\nlet severityOverrideCount = 0;\nfor (const obs of paranoidOutput.observations) {\n    const evidenceLower = String(obs.evidence || '').toLowerCase();\n\n    const matchedFlag = matchesRedFlag(obs.evidence, redFlags);\n\n    if (matchedFlag) {\n        if (obs.severity !== 'high') {\n            obs.severity = 'high';\n            severityOverrideCount++;\n        }\n        if (obs.possible_category !== 'MatchesUnacceptable') {\n            obs.possible_category = 'MatchesUnacceptable';\n        }\n        obs.pattern_matched = matchedFlag;\n        obs.confidence = Math.max(obs.confidence || 0.7, 0.95);\n        obs.reason = obs.reason ? obs.reason + ` [GUARDRAIL: Red flag '${matchedFlag}' detected]` : `GUARDRAIL: Red flag '${matchedFlag}' detected`;\n    }\n}\n\n// -------------------------\n// 2) Deterministic findings (guardrail)\n// -------------------------\nconst injected = [];\n\n// 2.1 Red flags\nfor (const flag of redFlags) {\n    const hits = findAllOccurrences(clauseText, flag);\n    for (const h of hits) {\n        injected.push({\n            evidence: h.evidence,\n            offsets: h.offsets,\n            change_type: 'modified',\n            possible_category: 'MatchesUnacceptable',\n            pattern_matched: String(flag),\n            confidence: 0.95,\n            severity: 'high',\n            reason: `Red flag found: \"${flag}\"`,\n            playbook_reference: null\n        });\n    }\n}\n\n// 2.2 Must-have\nfor (const anchor of mustHave) {\n    const hits = findAllOccurrences(clauseText, anchor);\n    if (!hits.length) {\n        injected.push({\n            evidence: `[missing: ${anchor}]`,\n            offsets: { start: 0, end: 0 },\n            change_type: 'missing',\n            possible_category: 'MissingRequired',\n            pattern_matched: String(anchor),\n            confidence: 0.95,\n            severity: 'high',\n            reason: `Missing required must-have element: \"${anchor}\"`,\n            playbook_reference: null\n        });\n    }\n}\n\n// 2.3 Unacceptable patterns\nfor (const p of unacceptablePatterns) {\n    const pat = (p && typeof p === 'object') ? p : { pattern: String(p) };\n    const patternName = String(pat.pattern || '').trim();\n    const example = String(pat.example || '').trim();\n    const isShort = patternName.length > 0 && patternName.length <= 40;\n\n    let hits = [];\n    let matchedBy = null;\n\n    if (isShort && patternName) {\n        hits = findAllOccurrences(clauseText, patternName);\n        if (hits.length) matchedBy = patternName;\n    }\n\n    if (!hits.length && example) {\n        hits = findAllOccurrences(clauseText, example);\n        if (hits.length) matchedBy = example;\n    }\n\n    if (!hits.length && example) {\n        const best = bestEvidenceFromExample(clauseText, example);\n        if (best) {\n            hits = [{ evidence: best.evidence, offsets: best.offsets }];\n            matchedBy = best.needle || example;\n        }\n    }\n\n    for (const h of hits) {\n        injected.push({\n            evidence: h.evidence,\n            offsets: h.offsets,\n            change_type: 'modified',\n            possible_category: 'MatchesUnacceptable',\n            pattern_matched: patternName || matchedBy || 'UnacceptablePattern',\n            confidence: 0.90,\n            severity: toSeverity(pat.risk_level),\n            reason: pat.reason || `Matches unacceptable pattern: ${patternName || matchedBy}`,\n            playbook_reference: pat.id || null\n        });\n    }\n}\n\n// -------------------------\n// 3) Merge strategy\n// -------------------------\nfunction obsKey(o) {\n    const start = o?.offsets?.start ?? -1;\n    const end = o?.offsets?.end ?? -1;\n    const pat = String(o?.pattern_matched ?? '');\n    const ev = String(o?.evidence ?? '');\n    return `${start}:${end}:${pat}:${ev}`;\n}\n\nif (paranoidOutput.observations.length === 0 && injected.length > 0) {\n    paranoidOutput.observations = injected;\n} else if (injected.length > 0) {\n    const existing = new Set(paranoidOutput.observations.map(obsKey));\n    for (const inj of injected) {\n        const k = obsKey(inj);\n        if (!existing.has(k)) paranoidOutput.observations.push(inj);\n    }\n}\n\n// -------------------------\n// 4) Recompute summary + risk_level deterministically\n// -------------------------\nconst obs = paranoidOutput.observations;\n\nconst counts = {\n    total: obs.length,\n    missing: obs.filter(o => o.change_type === 'missing').length,\n    added: obs.filter(o => o.change_type === 'added').length,\n    modified: obs.filter(o => o.change_type === 'modified').length\n};\n\n// =====================================================\n// CG-012-FIX: Count red flags using case-insensitive partial matching\n// =====================================================\nconst redFlagsFound = obs.filter(o => {\n    const patLower = String(o.pattern_matched || '').toLowerCase();\n    return redFlags.some(rf => patLower.includes(rf.toLowerCase()) || rf.toLowerCase().includes(patLower));\n}).length;\n\nconst mustHaveMissing = obs.filter(o => o.possible_category === 'MissingRequired').length;\nconst unacceptableFound = obs.filter(o => o.possible_category === 'MatchesUnacceptable').length;\n\n// =====================================================\n// CG-012-FIX: DETERMINISTIC RISK LEVEL\n// =====================================================\nlet risk = 'GREEN';\nif (redFlagsFound > 0 || unacceptableFound > 0 || mustHaveMissing > 0) {\n    risk = 'RED';\n} else if (obs.some(o => o.severity === 'high')) {\n    risk = 'RED';\n} else if (obs.some(o => o.severity === 'medium')) {\n    risk = 'YELLOW';\n}\n\nparanoidOutput.summary = {\n    ...paranoidOutput.summary,\n    counts,\n    red_flags_found: redFlagsFound,\n    unacceptable_patterns_found: unacceptableFound,\n    must_have_missing: mustHaveMissing,\n    coverage_confidence: paranoidOutput.summary?.coverage_confidence ?? 0\n};\nparanoidOutput.risk_level = risk;\n\nconst guardrailTriggered = injected.length > 0 || severityOverrideCount > 0;\n\n// -------------------------\n// 5) Return merged data\n// -------------------------\nreturn [{\n    json: {\n        ...prev,\n        paranoidOutput,\n        paranoidRaw: raw,\n        paranoid_guardrail_triggered: guardrailTriggered,\n        paranoid_guardrail_injected_count: injected.length,\n        paranoid_severity_overrides: severityOverrideCount\n    }\n}];\n"
+      },
+      "id": "0cb99bbf-dac5-43ed-a7af-933d1ab7fad8",
+      "name": "Parse Paranoid",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3824,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": {{ JSON.stringify($json.valuatorSystemPrompt) }}\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"OBSERVACIONES DEL PARANOID:\\n{{ JSON.stringify($json.paranoidOutput) }}\\n\\nPOSICIÓN ESTÁNDAR:\\n{{ JSON.stringify($json.policySpec.standard_position || {}) }}\\n\\nVARIACIONES ACEPTABLES:\\n{{ JSON.stringify($json.policySpec.acceptable_variations || []) }}\\n\\nTEXTO ORIGINAL:\\n{{ $json.clause_text }}\\n\\nCONFIG:\\nMode: {{ $json.policySpec.analysis_mode }}\\nRequired: {{ $json.policySpec.required }}\\nTH_ANCHOR: {{ $json.TH_ANCHOR }}\\n\\nEvalúa y decide.\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "9a4ac201-f410-43e4-bae2-e65a6a32f23f",
+      "name": "Valuator Agent (RAG Enhanced)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3600,
+        1016
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// Parse Valuator (CG-012-FIX) - Deterministic Status Override\n// =====================================================\n// COPIA ESTE CÓDIGO EN EL NODO \"Parse Valuator\" DE n8n\n// Este fix resuelve:\n// 1. Status override: si hay red flags → UnacceptableDeviation\n// 2. Escalation automática para cláusulas críticas\n// =====================================================\n\nconst prevData = $('Parse Paranoid').first().json;\nlet valuatorOutput = {\n    decision: 'ACCEPT',\n    final_status: 'Compliant',\n    needs_review: false,\n    proposed_changes: [],\n    internal_comment: '',\n    client_state: 'OK',\n    confidence_overall: 0.5,\n    confidences: { anchor_confidence: 0.5 }\n};\nlet validationErrors = prevData.paranoidValidationErrors || [];\n\ntry {\n    const content = $json.choices?.[0]?.message?.content || '{}';\n    const parsed = JSON.parse(content);\n\n    // SCHEMA VALIDATION\n    const validStatuses = ['Compliant', 'AcceptableDeviation', 'UnacceptableDeviation', 'NotCoveredByPlaybook', 'Ambiguous'];\n    if (!validStatuses.includes(parsed.final_status)) {\n        validationErrors.push(`Invalid final_status: ${parsed.final_status}, defaulting to Ambiguous`);\n        parsed.final_status = 'Ambiguous';\n    }\n\n    // Ensure proposed_changes is array\n    if (!Array.isArray(parsed.proposed_changes)) {\n        parsed.proposed_changes = [];\n    }\n\n    // Validate each proposed change has source_reference for no-new-text\n    for (let i = 0; i < parsed.proposed_changes.length; i++) {\n        const change = parsed.proposed_changes[i];\n        if (!change.source_reference && change.replacement_text) {\n            validationErrors.push(`Change ${i}: missing source_reference`);\n            change.source_reference = {\n                source_type: 'STANDARD_POSITION',\n                exact_text: change.replacement_text\n            };\n        }\n        if (!change.anchor || !change.anchor.offsets) {\n            change.anchor = {\n                quote: change.original_text || '',\n                offsets: { start: 0, end: 0 },\n                anchor_confidence: parsed.confidences?.anchor_confidence || 0.7\n            };\n        }\n    }\n\n    // Ensure confidences object\n    if (!parsed.confidences) {\n        parsed.confidences = { anchor_confidence: 0.7 };\n    }\n    parsed.confidence_overall = parsed.confidence_overall || parsed.confidences.anchor_confidence || 0.7;\n\n    valuatorOutput = parsed;\n} catch (e) {\n    console.log('Valuator parse error:', e.message);\n    validationErrors.push('JSON parse error: ' + e.message);\n    valuatorOutput.final_status = 'Ambiguous';\n}\n\n// =====================================================\n// CG-012-FIX: DETERMINISTIC STATUS OVERRIDE\n// =====================================================\n// Extract critical signals from Paranoid output\nconst observations = prevData.paranoidOutput?.observations || [];\nconst redFlagsFound = prevData.paranoidOutput?.summary?.red_flags_found || 0;\nconst mustHaveMissing = prevData.paranoidOutput?.summary?.must_have_missing || 0;\nconst unacceptableFound = prevData.paranoidOutput?.summary?.unacceptable_patterns_found || 0;\nconst riskLevel = prevData.paranoidOutput?.risk_level || 'GREEN';\n\n// Check observation categories\nconst hasMatchesUnacceptable = observations.some(o => o.possible_category === 'MatchesUnacceptable');\nconst hasMissingRequired = observations.some(o => o.possible_category === 'MissingRequired');\nconst hasHighSeverity = observations.some(o => o.severity === 'high');\n\n// DETERMINISTIC STATUS OVERRIDE\n// If ANY critical condition is true, FORCE UnacceptableDeviation\nif (hasMatchesUnacceptable || hasMissingRequired || redFlagsFound > 0 || mustHaveMissing > 0 || unacceptableFound > 0) {\n    const originalStatus = valuatorOutput.final_status;\n    valuatorOutput.final_status = 'UnacceptableDeviation';\n    valuatorOutput.internal_comment =\n        `[CG-012-FIX] GUARDRAIL OVERRIDE: Status forced from '${originalStatus}' to 'UnacceptableDeviation'. ` +\n        `Red flags: ${redFlagsFound}, Unacceptable patterns: ${unacceptableFound}, Missing anchors: ${mustHaveMissing}. ` +\n        (valuatorOutput.internal_comment || '');\n    valuatorOutput.needs_review = true;\n    valuatorOutput.client_state = 'REQUIRED';\n    valuatorOutput.escalation_recommended = true;\n    valuatorOutput.escalation_reason = 'GUARDRAIL_OVERRIDE_RED_FLAG';\n}\n// Also escalate on high severity observations\nelse if (hasHighSeverity || riskLevel === 'RED') {\n    if (valuatorOutput.final_status === 'Compliant') {\n        valuatorOutput.final_status = 'AcceptableDeviation';\n    }\n    valuatorOutput.needs_review = true;\n    valuatorOutput.internal_comment =\n        `[CG-012-FIX] High severity observation detected. Review recommended. ` +\n        (valuatorOutput.internal_comment || '');\n}\n\nreturn [{ json: { ...prevData, valuatorOutput, valuatorValidationErrors: validationErrors } }];\n"
+      },
+      "id": "388529bf-7e3f-4f92-adf3-d0e3f9697619",
+      "name": "Parse Valuator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3376,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ValidatorDeterministic - Validates valuator output before decision\nconst data = $('Parse Valuator').first().json;\nconst errors = [];\nlet passed = true;\n\nconst TH_ANCHOR = data.policySpec?.decision_policy?.anchor_conf_threshold || 0.85;\n\n// 1. Validate \"No new text\" - each change must have source_reference\nfor (const change of data.valuatorOutput?.proposed_changes || []) {\n  if (change.op_type === 'INSERT' || change.op_type === 'REPLACE') {\n    if (!change.source_reference?.exact_text) {\n      errors.push({ \n        type: 'NO_SOURCE_REFERENCE', \n        change_id: change.change_id || 'unknown',\n        message: 'Cambio sin source_reference'\n      });\n      passed = false;\n    }\n  }\n}\n\n// 2. Validate anchor confidence\nlet minAnchorConf = 1.0;\nfor (const change of data.valuatorOutput?.proposed_changes || []) {\n  if (change.anchor?.anchor_confidence !== undefined) {\n    minAnchorConf = Math.min(minAnchorConf, change.anchor.anchor_confidence);\n  }\n}\n\nif (minAnchorConf < TH_ANCHOR && data.valuatorOutput?.proposed_changes?.length > 0) {\n  errors.push({ \n    type: 'LOW_ANCHOR_CONFIDENCE', \n    min: minAnchorConf, \n    threshold: TH_ANCHOR \n  });\n  // No hard fail, but recorded for potential escalation\n}\n\n// 3. Validate anchors exist in clause text\nfor (const change of data.valuatorOutput?.proposed_changes || []) {\n  if (change.anchor?.quote && !data.clause_text.includes(change.anchor.quote)) {\n    errors.push({ \n      type: 'ANCHOR_NOT_FOUND', \n      quote: change.anchor.quote.substring(0, 50) + '...'\n    });\n    passed = false;\n  }\n}\n\nreturn [{\n  json: {\n    ...data,\n    validation_passed: passed,\n    validation_errors: errors,\n    min_anchor_confidence: minAnchorConf,\n    TH_ANCHOR: TH_ANCHOR\n  }\n}];"
+      },
+      "id": "17a92d72-33ac-4b75-b3bb-f54672e4f2d3",
+      "name": "ValidatorDeterministic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2928,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// DECISION ENGINE v2 - Priority-based thresholds + approval routing\nconst data = $('ValidatorDeterministic').first().json;\nconst valOut = data.valuatorOutput || {};\nconst policy = data.policySpec || {};\nconst family = data.detected_family || data.routerOutput?.route || 'OtherUnknown';\nconst playbookSpec = data.playbookSpec || {};\n\n// THRESHOLDS by priority\nconst THRESHOLDS = {\n  CRITICAL: { auto: 0.95, notes: 0.85, escalate: 0.75, maxObsAuto: 0, maxObsNotes: 2 },\n  HIGH: { auto: 0.92, notes: 0.82, escalate: 0.72, maxObsAuto: 1, maxObsNotes: 3 },\n  MEDIUM: { auto: 0.90, notes: 0.80, escalate: 0.70, maxObsAuto: 1, maxObsNotes: 3 },\n  LOW: { auto: 0.85, notes: 0.75, escalate: 0.65, maxObsAuto: 2, maxObsNotes: 5 }\n};\n\n// FAMILY PRIORITY (from 25 playbook_specs)\nconst FAMILY_PRIORITY = {\n  PaymentCredits: 'CRITICAL', ThirdPartyCredits: 'CRITICAL', RepsProdCo: 'CRITICAL',\n  IndemnityProdCo: 'CRITICAL', IndemnityAmazon: 'CRITICAL', IndemnityProcedures: 'CRITICAL',\n  RightsGrant: 'CRITICAL', RightsReversion: 'CRITICAL', LiabilityLimitation: 'CRITICAL',\n  InjunctiveReliefWaiver: 'CRITICAL', Assignment: 'CRITICAL', ForceMajeure: 'HIGH',\n  AmazonControl: 'CRITICAL', TerminationRights: 'CRITICAL', TerminationConsequences: 'CRITICAL',\n  DisputeResolution: 'HIGH', Confidentiality: 'HIGH', Insurance: 'HIGH',\n  DataProtection: 'MEDIUM', ServicesScope: 'MEDIUM', PowerOfAttorney: 'MEDIUM',\n  ConditionsPrecedent: 'MEDIUM', StandardTerms: 'MEDIUM', AuditRights: 'MEDIUM',\n  Definitions: 'LOW', GeneralProvisions: 'LOW', Parties: 'LOW'\n};\n\nconst priority = playbookSpec.priority || FAMILY_PRIORITY[family] || 'MEDIUM';\nconst th = THRESHOLDS[priority] || THRESHOLDS.MEDIUM;\n\n// Gather observations\nconst observations = data.paranoidOutput?.observations || [];\nconst obsCount = observations.length;\nconst riskLevel = data.paranoidOutput?.risk_level || 'medium';\nconst finalStatus = valOut.final_status || 'Ambiguous';\nconst confOverall = valOut.confidence_overall || data.min_anchor_confidence || 0.7;\n\n// Critical/passable detection\nconst CRITICAL_KW = ['CRITICAL', 'UNACCEPTABLE', 'REJECT', 'must reject', 'hold to form', 'unlimited liability', 'no cap'];\nconst PASSABLE_KW = ['compliant', 'acceptable', 'passable', 'OK to', 'NTD', 'standard'];\n\nlet hasCriticalIssue = false, hasPassableOnly = true;\nfor (const obs of observations) {\n  const text = JSON.stringify(obs).toLowerCase();\n  if (CRITICAL_KW.some(kw => text.includes(kw.toLowerCase()))) hasCriticalIssue = true;\n  if (!PASSABLE_KW.some(kw => text.includes(kw.toLowerCase()))) hasPassableOnly = false;\n}\n\n// DECISION MATRIX v2\nlet decision = 'LOG_ONLY', escalation = { recommended: false, block_export: false, reason: '' };\n\n// R1: Validation failed\nif (!data.validation_passed && data.validation_errors?.length > 0) {\n  decision = 'ESCALATE_HUMAN'; escalation = { recommended: true, block_export: true, reason: 'VALIDATION_FAILED' };\n}\n// R2: Unknown family\nelse if (family === 'OtherUnknown' || !FAMILY_PRIORITY[family]) {\n  decision = 'ESCALATE_HUMAN'; escalation = { recommended: true, block_export: true, reason: 'UNKNOWN_FAMILY' };\n}\n// R3: Critical issue detected\nelse if (hasCriticalIssue) {\n  decision = 'ESCALATE_HUMAN'; escalation = { recommended: true, block_export: priority === 'CRITICAL', reason: 'CRITICAL_ISSUE_DETECTED' };\n}\n// R4: Unacceptable in CRITICAL/HIGH\nelse if (finalStatus === 'UnacceptableDeviation' && (priority === 'CRITICAL' || priority === 'HIGH')) {\n  decision = 'ESCALATE_HUMAN'; escalation = { recommended: true, block_export: true, reason: 'UNACCEPTABLE_DEVIATION' };\n}\n// R5: Compliant - AUTO APPROVE\nelse if (finalStatus === 'Compliant' && confOverall >= th.notes && obsCount <= th.maxObsNotes) {\n  decision = 'AUTO_PASS'; escalation = { recommended: false, block_export: false, reason: 'COMPLIANT' };\n}\n// R6: AcceptableDeviation with confidence\nelse if (finalStatus === 'AcceptableDeviation' && confOverall >= th.notes && obsCount <= th.maxObsNotes) {\n  decision = priority === 'CRITICAL' ? 'APPROVE_WITH_NOTES' : 'AUTO_PASS';\n  escalation = { recommended: false, block_export: false, reason: 'ACCEPTABLE_DEVIATION' };\n}\n// R7: HIGH/MEDIUM/LOW without critical issues\nelse if ((priority === 'HIGH' || priority === 'MEDIUM' || priority === 'LOW') && !hasCriticalIssue && finalStatus !== 'UnacceptableDeviation') {\n  decision = 'APPROVE_WITH_NOTES'; escalation = { recommended: false, block_export: false, reason: 'PASSABLE_VARIATION' };\n}\n// R8: CRITICAL passable\nelse if (priority === 'CRITICAL' && !hasCriticalIssue && (hasPassableOnly || obsCount <= 2)) {\n  decision = 'APPROVE_WITH_NOTES'; escalation = { recommended: true, block_export: false, reason: 'CRITICAL_NEEDS_REVIEW' };\n}\n// Default\nelse {\n  decision = 'ESCALATE_HUMAN'; escalation = { recommended: true, block_export: false, reason: 'DEFAULT_ESCALATION' };\n}\n\n// Map to client_state\nconst client_state = decision === 'AUTO_PASS' ? 'OK' : decision === 'APPROVE_WITH_NOTES' ? 'RECOMMENDED' : 'REQUIRED';\n\nreturn [{ json: {\n  ...data,\n  decisorOutput: {\n    decision, escalation, client_state, family_priority: priority,\n    anchor_confidence: data.min_anchor_confidence || confOverall,\n    confidence_overall: confOverall, observation_count: obsCount,\n    has_critical_issues: hasCriticalIssue, has_passable_flag: hasPassableOnly,\n    final_status: finalStatus, TH_ANCHOR: th.notes, TH_CONF: th.escalate,\n    version: 'v2.0'\n  }\n}}];"
+      },
+      "id": "48da26d2-98d8-4dbe-bd04-1f1dad20b707",
+      "name": "Decision Engine v2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2704,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Sanitize internal comments for client. NEVER mention: playbook, policy, rules, thresholds, internal position, risk analysis.\\n\\nMake it: professional, neutral, max 3 sentences, focused on client impact.\\n\\nRespond in JSON: {\\n  \\\"client_comment\\\": \\\"sanitized comment\\\",\\n  \\\"client_summary_line\\\": \\\"1-line summary\\\",\\n  \\\"safety\\\": { \\\"pass\\\": boolean, \\\"leaked_terms\\\": [] }\\n}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Sanitize: {{ $json.valuatorOutput.internal_comment || 'Clause reviewed per industry standards.' }}\"\n    }\n  ],\n  \"response_format\": { \"type\": \"json_object\" }\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "07435cb4-ae1b-47cf-93f4-3b56605dfde4",
+      "name": "Sanitizer Agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2256,
+        1016
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Decision Engine v2').first().json;\nlet sanitizerOut = { client_comment: '', client_summary_line: '', safety: { pass: true, leaked_terms: [] } };\n\ntry {\n  const content = $json.choices?.[0]?.message?.content || '{}';\n  sanitizerOut = JSON.parse(content);\n} catch (e) {\n  console.log('Sanitizer parse error', e);\n}\n\n// LEAKAGE GUARD - Extended blocklist (Gap 8)\nconst blocklist = [\n  'playbook', 'policy', 'policyspec', 'rule_id', 'rulename',\n  'aceptable', 'inaceptable', 'acceptable', 'unacceptable',\n  'threshold', 'confidence', 'anchor_conf', 'coverage',\n  'escalate', 'escalation', 'routing', 'gating',\n  'policyowner', 'amazonlegal', 'legal team', 'despacho',\n  'internal', 'guidance', 'standard_position',\n  'variation', 'variationset', 'paranoid', 'valuator', 'sanitizer',\n  'source_reference', 'exact_text', 'mode_strict', 'mode_enumerated',\n  'block_export', 'auto_pass', 'auto_redline', 'observation',\n  'evidence_span', 'anchor_confidence', 'confidence_overall',\n  'rule_candidate', 'policy_judgment', 'family_pack', 'v2026'\n];\n\nconst textToCheck = (\n  (sanitizerOut.client_summary_line || '') + ' ' +\n  (sanitizerOut.client_comment || '')\n).toLowerCase();\n\nconst detectedTerms = blocklist.filter(term => textToCheck.includes(term.toLowerCase()));\nconst leakScore = detectedTerms.length / blocklist.length;\nconst safetyPass = detectedTerms.length === 0;\n\n// Override decision if leakage detected\nlet decision = data.decisorOutput.decision;\nlet blockExport = data.decisorOutput.escalation?.block_export || false;\nif (!safetyPass) {\n  decision = 'BLOCK_EXPORT';\n  blockExport = true;\n}\n\n// Build internal result for clause_reviews_internal table\nconst internalResult = {\n  run_id: data.run_id,\n  clause_instance_id: data.clause_instance_id,\n  detected_family: data.detected_family,\n  rule_id: data.policySpec?.rule_id || null,\n  analysis_mode: data.policySpec?.analysis_mode || 'MODE_ENUMERATED_DEVIATIONS',\n  observations: data.paranoidOutput || {},\n  observations_count: data.paranoidOutput?.observations?.length || data.paranoidOutput?.summary?.counts?.total || 0,\n  final_status: data.valuatorOutput?.final_status || 'Unknown',\n  proposed_changes: data.valuatorOutput?.proposed_changes || [],\n  anchor_confidence: data.decisorOutput?.anchor_confidence || 0,\n  confidence_overall: data.decisorOutput?.confidence_overall || 0,\n  decision: decision,\n  escalation_recommended: data.decisorOutput?.escalation?.recommended || false,\n  escalation_reason: data.decisorOutput?.escalation?.reason || null,\n  block_export: blockExport,\n  validation_passed: true,\n  processing_time_ms: 0,\n  routing_method: data._routing_method || data.routing_method || null,\n  routing_confidence: data._keyword_confidence || data.routing_confidence || 0,\n  keyword_confidence: data._keyword_confidence || 0,\n  top_matches: data._matches || null\n};\n\n// Build sanitized result for sanitizer_outputs table\nconst sanitizedResult = {\n  run_id: data.run_id,\n  clause_instance_id: data.clause_instance_id,\n  client_summary_line: sanitizerOut.client_summary_line || '',\n  client_comment: sanitizerOut.client_comment || '',\n  client_status: data.decisorOutput?.client_state || 'NEEDS_REVIEW',\n  safety_pass: safetyPass,\n  blocked_terms_detected: detectedTerms,\n  leak_score: leakScore,\n  proposed_changes_client: (data.valuatorOutput?.proposed_changes || []).map(c => ({\n    op_type: c.change_type || c.op_type,\n    original_text: c.original_text,\n    replacement_text: c.replacement_text\n  }))\n};\n\n// Combined for response\nconst responseResult = {\n  clause_instance_id: data.clause_instance_id,\n  clause_id: data.clause_id,\n  document_id: data.document_id,\n  run_id: data.run_id,\n  detected_family: data.detected_family,\n  client_state: data.decisorOutput?.client_state,\n  client_comment: sanitizerOut.client_comment,\n  client_summary_line: sanitizerOut.client_summary_line,\n  decision: decision,\n  safety_pass: safetyPass,\n  completed_at: new Date().toISOString(),\n  _internal: internalResult,\n  _sanitized: sanitizedResult\n};\n\nreturn [{ json: responseResult }];"
+      },
+      "id": "88c8f313-79ef-499a-9cfb-5e85a8c8c3cd",
+      "name": "Build Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2032,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "clause_reviews_internal",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "run_id",
+              "fieldValue": "={{ $json._internal.run_id }}"
+            },
+            {
+              "fieldId": "clause_instance_id",
+              "fieldValue": "={{ $json._internal.clause_instance_id }}"
+            },
+            {
+              "fieldId": "detected_family",
+              "fieldValue": "={{ $json._internal.detected_family }}"
+            },
+            {
+              "fieldId": "rule_id",
+              "fieldValue": "={{ $json._internal.rule_id }}"
+            },
+            {
+              "fieldId": "analysis_mode",
+              "fieldValue": "={{ $json._internal.analysis_mode }}"
+            },
+            {
+              "fieldId": "observations",
+              "fieldValue": "={{ $json._internal.observations }}"
+            },
+            {
+              "fieldId": "final_status",
+              "fieldValue": "={{ $json._internal.final_status }}"
+            },
+            {
+              "fieldId": "proposed_changes",
+              "fieldValue": "={{ $json._internal.proposed_changes }}"
+            },
+            {
+              "fieldId": "anchor_confidence",
+              "fieldValue": "={{ $json._internal.anchor_confidence }}"
+            },
+            {
+              "fieldId": "confidence_overall",
+              "fieldValue": "={{ $json._internal.confidence_overall }}"
+            },
+            {
+              "fieldId": "decision",
+              "fieldValue": "={{ $json._internal.decision }}"
+            },
+            {
+              "fieldId": "escalation_recommended",
+              "fieldValue": "={{ $json._internal.escalation_recommended }}"
+            },
+            {
+              "fieldId": "escalation_reason",
+              "fieldValue": "={{ $json._internal.escalation_reason }}"
+            },
+            {
+              "fieldId": "block_export",
+              "fieldValue": "={{ $json._internal.block_export }}"
+            }
+          ]
+        }
+      },
+      "id": "c41232db-6236-42ef-ba58-98c81589bd8b",
+      "name": "Save to clause_reviews_internal",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        1016
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "tableId": "sanitizer_outputs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "run_id",
+              "fieldValue": "={{ $json.run_id }}"
+            },
+            {
+              "fieldId": "document_id",
+              "fieldValue": "={{ $json.document_id }}"
+            },
+            {
+              "fieldId": "clause_instance_id",
+              "fieldValue": "={{ $json._sanitized.clause_instance_id }}"
+            },
+            {
+              "fieldId": "original_text",
+              "fieldValue": "={{ $json.clause_text || '' }}"
+            },
+            {
+              "fieldId": "client_summary_line",
+              "fieldValue": "={{ $json._sanitized.client_summary_line }}"
+            },
+            {
+              "fieldId": "client_comment",
+              "fieldValue": "={{ $json._sanitized.client_comment }}"
+            },
+            {
+              "fieldId": "client_state",
+              "fieldValue": "={{ $json._sanitized.client_status }}"
+            },
+            {
+              "fieldId": "safety_pass",
+              "fieldValue": "={{ $json._sanitized.safety_pass }}"
+            },
+            {
+              "fieldId": "blocked_terms_detected",
+              "fieldValue": "={{ $json._sanitized.blocked_terms_detected }}"
+            },
+            {
+              "fieldId": "leak_score",
+              "fieldValue": "={{ $json._sanitized.leak_score }}"
+            }
+          ]
+        }
+      },
+      "id": "eca8a03b-357b-4d99-b9c2-e1a80926b0ce",
+      "name": "Save to sanitizer_outputs",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1584,
+        1016
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "4xA4P6BVQQ2lcvuG",
+          "name": "Amazon_redliner"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detect potential routing failures for logging\nconst data = $json;\n\n// Define variables from $json to avoid bare reference errors\nconst detected_family = data.detected_family || data._internal?.detected_family || 'OtherUnknown';\nconst routerOutput = data.routerOutput || data._internal || {};\nconst internalData = data._internal || {};\n\n// Detect failure conditions\nconst failures = [];\n\n// 1. Low confidence routing (< 0.65)\nconst routingConf = routerOutput.confidence || routerOutput.routing_confidence || 0;\nif (routingConf > 0 && routingConf < 0.65) {\n  failures.push({\n    type: 'low_confidence',\n    agent: 'router',\n    confidence: routingConf,\n    route: detected_family,\n    method: routerOutput._routing_method || routerOutput.routing_method || 'unknown'\n  });\n}\n\n// 2. LLM fallback when keyword should have matched\nconst routingMethod = routerOutput._routing_method || routerOutput.routing_method || '';\nconst keywordConf = routerOutput._keyword_confidence || 0;\nif (routingMethod === 'LLM' && keywordConf > 0.4) {\n  failures.push({\n    type: 'keyword_fallback',\n    agent: 'router',\n    confidence: routingConf,\n    keyword_conf: keywordConf\n  });\n}\n\n// 3. OtherUnknown classification (potentially missed family)\nif (detected_family === 'OtherUnknown') {\n  failures.push({\n    type: 'unknown_classification',\n    agent: 'router',\n    confidence: routingConf,\n    clause_text_preview: (data.clause_text || '').substring(0, 200)\n  });\n}\n\n// 4. Escalation due to low anchor confidence\nconst anchorConf = internalData.anchor_confidence || 0;\nif (internalData.escalation_recommended && anchorConf < 0.7) {\n  failures.push({\n    type: 'low_anchor_confidence',\n    agent: 'decision_engine',\n    confidence: anchorConf,\n    anchor_reason: internalData.escalation_reason || 'unknown'\n  });\n}\n\n// Build failure payload if any failures detected\nconst hasFailures = failures.length > 0;\nconst failurePayload = hasFailures ? {\n  run_id: data.run_id || '',\n  clause_instance_id: data.clause_instance_id || '',\n  agent_name: failures[0].agent,\n  failure_type: failures[0].type,\n  original_input: (data.clause_text || '').substring(0, 1000),\n  actual_output: JSON.stringify(routerOutput),\n  confidence: failures[0].confidence,\n  route_assigned: detected_family\n} : null;\n\nreturn [{\n  json: {\n    ...data,\n    _failure_detection: {\n      has_failures: hasFailures,\n      failures: failures,\n      payload: failurePayload\n    }\n  }\n}];"
+      },
+      "id": "a9a122fe-8c76-4826-9716-747d5502e8e8",
+      "name": "Detect Failures",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "failure_check",
+              "leftValue": "={{ $json._failure_detection.has_failures }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c91dfcd0-20e0-4dac-b6ec-aa3e7a3d2812",
+      "name": "Has Failures?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/rpc/log_agent_failure",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "apikey",
+              "value": "{{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_run_id: $json._failure_detection.payload?.run_id || null, p_clause_instance_id: null, p_agent_name: $json._failure_detection.payload?.agent_name || 'unknown', p_failure_type: $json._failure_detection.payload?.failure_type || 'unknown', p_original_input: $json._failure_detection.payload?.original_input || '', p_actual_output: $json._failure_detection.payload?.actual_output || '', p_confidence: $json._failure_detection.payload?.confidence || 0, p_route_assigned: $json._failure_detection.payload?.route_assigned || '' }) }}",
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "id": "6e5b06b7-8751-4e58-8cf0-56075b8c1cf3",
+      "name": "Log Agent Failure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -912,
+        944
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $('Build Result').first().json }}",
+        "options": {}
+      },
+      "id": "dbd01e02-0858-4f3f-ad28-f637c4b80cc3",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -688,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cg007-llm-check",
+              "leftValue": "={{ $json.needs_llm_fallback }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fe10d78c-02e6-43ec-90f0-6e5b5c1105e7",
+      "name": "IF LLM Required",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -6288,
+        1016
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a legal contract classifier for Amazon PSA/DSA agreements. Classify clauses into one of these families: PaymentCredits, ThirdPartyCredits, RepsProdCo, RepsAmazon, IndemnityProdCo, IndemnityAmazon, IndemnityProcedures, LiabilityLimitation, InjunctiveReliefWaiver, TerminationRights, TerminationConsequences, Confidentiality, DataProtection, GoverningLaw, DisputeResolution, ForceMajeure, Insurance, RightsGrant, RightsReversion, AuditRights, Publicity, Assignment, ServicesScope, SurvivalRemedies, AmazonControl, GeneralProvisions, ConditionsPrecedent, Definitions, Parties. Respond with JSON only: {family, confidence, reasoning}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Classify this clause (keyword hint: {{ $json.detected_family }} with {{ $json.routing_confidence }} confidence):\\n\\n{{ $json.clause_text.substring(0, 2000) }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "d8a3f4ea-f321-40eb-aa66-90a09212be12",
+      "name": "LLM Classification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -6064,
+        1088
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "SIqSVUfX83ooZaUa",
+          "name": "amazon redliner"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// CG-007: Parse LLM Classification Result\nconst input = $input.item.json;\n\n// Get data from previous nodes\nconst clauseData = $('Hybrid Router (Stage 1)').first().json;\nconst llmResponse = input.choices?.[0]?.message?.content || '';\nconst keywordFamily = clauseData.detected_family;\nconst keywordConfidence = clauseData.routing_confidence || 0;\n\n// Parse LLM response\nlet llmResult = { family: 'OtherUnknown', confidence: 0.5, reasoning: 'Parse failed' };\ntry {\n    const jsonMatch = llmResponse.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n        llmResult = JSON.parse(jsonMatch[0]);\n    }\n} catch (e) {\n    // Fallback to keyword\n}\n\n// Conflict resolution\nconst CANONICAL_FAMILIES = [\"PaymentCredits\", \"ThirdPartyCredits\", \"RepsProdCo\", \"RepsAmazon\",\n    \"IndemnityProdCo\", \"IndemnityAmazon\", \"IndemnityProcedures\", \"LiabilityLimitation\",\n    \"InjunctiveReliefWaiver\", \"TerminationRights\", \"TerminationConsequences\", \"Confidentiality\",\n    \"DataProtection\", \"GoverningLaw\", \"DisputeResolution\", \"ForceMajeure\", \"Insurance\",\n    \"RightsGrant\", \"RightsReversion\", \"AuditRights\", \"Publicity\", \"Assignment\", \"ServicesScope\",\n    \"SurvivalRemedies\", \"AmazonControl\", \"GeneralProvisions\", \"ConditionsPrecedent\", \"Definitions\",\n    \"Parties\", \"OtherUnknown\"];\n\nif (!CANONICAL_FAMILIES.includes(llmResult.family)) {\n    llmResult.family = 'OtherUnknown';\n}\n\nconst llmConf = llmResult.confidence || 0.5;\nlet finalFamily = llmResult.family;\nlet finalConfidence = llmConf;\nlet method = 'llm_semantic';\n\n// Resolution rules\nif (keywordFamily === llmResult.family) {\n    method = 'keyword+llm_agree';\n    finalConfidence = Math.max(keywordConfidence, llmConf);\n} else if (llmConf >= 0.85) {\n    method = 'llm_semantic';\n} else if (keywordConfidence >= 0.90 && llmConf < 0.80) {\n    finalFamily = keywordFamily;\n    finalConfidence = keywordConfidence;\n    method = 'keyword_override';\n}\n\nreturn {\n    json: {\n        ...clauseData,\n        detected_family: finalFamily,\n        routing_confidence: finalConfidence,\n        routing_method: method,\n        _llm_result: llmResult,\n        _keyword_family: keywordFamily,\n        _keyword_confidence: keywordConfidence\n    }\n};"
+      },
+      "id": "24c23c6c-a329-4905-91a2-8e7683a76704",
+      "name": "Parse LLM Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5840,
+        1088
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// CG-010: Auto-Redline Generator v1 (Suggest-Only)\n// PO-mandated: CRITICAL families only, source_reference required\n\nconst CRITICAL_FAMILIES = [\n    'IndemnityProdCo',\n    'IndemnityAmazon',\n    'IndemnityProcedures',\n    'LiabilityLimitation',\n    'TerminationRights',\n    'TerminationConsequences',\n    'RightsGrant',\n    'RightsReversion',\n    'AuditRights'\n];\n\nconst TH_ANCHOR = 0.75; // Minimum anchor confidence threshold\n\n/**\n * Generate redline suggestions for a clause\n * @param {Object} input - Clause data with valuator output\n * @returns {Array} - suggestions array\n */\nfunction generateSuggestions(input) {\n    const {\n        clause_text,\n        family,\n        valuator_status,\n        paranoid_observations,\n        policy_spec\n    } = input;\n\n    // Only CRITICAL families get suggestions in v1\n    if (!CRITICAL_FAMILIES.includes(family)) {\n        return [];\n    }\n\n    const suggestions = [];\n\n    // Logic by Valuator status\n    switch (valuator_status) {\n        case 'Compliant':\n            // No suggestions needed\n            return [];\n\n        case 'AcceptableDeviation':\n            // Optional suggestions (requires_review = false)\n            if (policy_spec?.acceptable_variations?.length > 0) {\n                const suggestion = buildSuggestion({\n                    clause_text,\n                    policy_spec,\n                    requires_review: false,\n                    rationale: 'Optional alignment with standard position'\n                });\n                if (suggestion) suggestions.push(suggestion);\n            }\n            break;\n\n        case 'UnacceptableDeviation':\n            // Mandatory suggestions (requires_review = true)\n            const suggestion = buildSuggestion({\n                clause_text,\n                policy_spec,\n                requires_review: true,\n                rationale: 'Clause deviates from acceptable range - review required'\n            });\n            if (suggestion) suggestions.push(suggestion);\n            break;\n\n        case 'NotCoveredByPlaybook':\n            // Comment only, no suggestions\n            return [];\n\n        default:\n            return [];\n    }\n\n    return suggestions;\n}\n\n/**\n * Build a single suggestion with anchor detection\n */\nfunction buildSuggestion({ clause_text, policy_spec, requires_review, rationale }) {\n    if (!policy_spec?.standard_position) {\n        return null;\n    }\n\n    // Find anchor in clause text\n    const anchor = findAnchor(clause_text, policy_spec.unacceptable_patterns || []);\n\n    if (!anchor || anchor.confidence < TH_ANCHOR) {\n        // Cannot anchor reliably - skip suggestion\n        return null;\n    }\n\n    return {\n        op_type: 'REPLACE',\n        anchor: {\n            quote: anchor.text,\n            offsets: { start: anchor.start, end: anchor.end },\n            anchor_confidence: anchor.confidence\n        },\n        replacement_text: standardPositionText,\n        source_reference: {\n            source_type: 'STANDARD_POSITION',\n            exact_text: standardPositionText\n        },\n        rationale,\n        requires_review\n    };\n}\n\n/**\n * Find anchor text in clause based on unacceptable patterns\n */\nfunction findAnchor(clause_text, unacceptable_patterns) {\n    const lowerClause = clause_text.toLowerCase();\n\n    for (const pattern of unacceptable_patterns) {\n        // Simple pattern matching - can be enhanced with regex\n        const patternText = pattern.pattern || '';\n        const lowerPattern = patternText.toLowerCase();\n\n        const startIdx = lowerClause.indexOf(lowerPattern);\n        if (startIdx !== -1) {\n            const endIdx = startIdx + patternText.length;\n            // Extract actual text with original casing\n            const matchedText = clause_text.substring(startIdx, endIdx);\n\n            return {\n                text: matchedText,\n                start: startIdx,\n                end: endIdx,\n                confidence: 0.85 // Pattern match confidence\n            };\n        }\n    }\n\n    // Fallback: no anchor found\n    return null;\n}\n\n/**\n * Validate suggestion meets no-new-text rule\n */\nfunction validateNoLeakage(suggestion) {\n    if (!suggestion.source_reference?.exact_text) {\n        return { valid: false, reason: 'Missing source_reference.exact_text' };\n    }\n\n    // Check replacement comes from source\n    const sourceText = suggestion.source_reference.exact_text;\n    const replacement = suggestion.replacement_text;\n\n    if (replacement && !sourceText.includes(replacement.substring(0, 50))) {\n        return { valid: false, reason: 'Replacement text not found in source' };\n    }\n\n    return { valid: true };\n}\n\n// n8n Code Node wrapper\n// Get data from Parse Valuator with correct field names\nconst prevData = $input.first().json;\n\n// Extract standard text from policySpec (handles object or string)\nconst getStandardText = (sp) => {\n  if (!sp) return '';\n  if (typeof sp === 'string') return sp;\n  return sp.text || sp.summary || JSON.stringify(sp);\n};\nconst standardPositionText = getStandardText(prevData.policySpec?.standard_position);\n\nconst family = prevData.detected_family || 'OtherUnknown';\nconst clause_text = prevData.clause_text || '';\nconst valuator_status = prevData.valuatorOutput?.final_status || 'Unknown';\nconst policy_spec = prevData.policySpec || {};\n\n// Build input with correct mapping\nconst input = { clause_text, family, valuator_status, policy_spec };\nconst suggestions = generateSuggestions(input);\n\n// Validate all suggestions\nconst validatedSuggestions = suggestions.filter(s => {\n    const validation = validateNoLeakage(s);\n    if (!validation.valid) {\n        console.log(`Blocked suggestion: ${validation.reason}`);\n        return false;\n    }\n    return true;\n});\n\nreturn [{\n    json: {\n        ...prevData,\n        family: family,\n        suggestions: validatedSuggestions,\n        suggestion_count: validatedSuggestions.length\n    }\n}];\n"
+      },
+      "id": "ead80389-24c4-4c9d-8ef2-9a0670a155d2",
+      "name": "Auto-Redline Generator",
+      "position": [
+        -3152,
+        1016
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/redline_suggestions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ \"Bearer \" + $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ \n      $json.suggestions && $json.suggestions.length > 0 \n      ? JSON.stringify($json.suggestions.map(s => ({\n          run_id: $json.run_id,\n          clause_instance_id: $json.clause_instance_id,\n          family: $json.family,\n          op_type: s.op_type,\n          anchor_quote: s.anchor?.quote || null,\n          anchor_start: s.anchor?.offsets?.start || null,\n          anchor_end: s.anchor?.offsets?.end || null,\n          anchor_confidence: s.anchor?.anchor_confidence || 0,\n          replacement_text: s.replacement_text,\n          source_reference: s.source_reference,\n          rationale: s.rationale,\n          requires_review: s.requires_review\n        })))\n      : '[]'\n    }}",
+        "options": {}
+      },
+      "id": "273844d6-f57b-42d1-8fa2-df68c4916a71",
+      "name": "Persist Suggestions",
+      "position": [
+        -2480,
+        944
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Input": {
+      "main": [
+        [
+          {
+            "node": "Hybrid Router (Stage 1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Clause Embedding": {
+      "main": [
+        [
+          {
+            "node": "Parse Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Embedding": {
+      "main": [
+        [
+          {
+            "node": "RAG: Search Similar Examples",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG: Search Similar Examples": {
+      "main": [
+        [
+          {
+            "node": "Parse RAG Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse RAG Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse RAG Results": {
+      "main": [
+        [
+          {
+            "node": "Get Playbook Spec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Playbook Spec": {
+      "main": [
+        [
+          {
+            "node": "Enrich Policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Policy": {
+      "main": [
+        [
+          {
+            "node": "Build Family Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Family Prompt": {
+      "main": [
+        [
+          {
+            "node": "Paranoid Agent (RAG Enhanced)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paranoid Agent (RAG Enhanced)": {
+      "main": [
+        [
+          {
+            "node": "Parse Paranoid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Paranoid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Paranoid": {
+      "main": [
+        [
+          {
+            "node": "Valuator Agent (RAG Enhanced)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valuator Agent (RAG Enhanced)": {
+      "main": [
+        [
+          {
+            "node": "Parse Valuator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parse Valuator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Valuator": {
+      "main": [
+        [
+          {
+            "node": "Auto-Redline Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-Redline Generator": {
+      "main": [
+        [
+          {
+            "node": "ValidatorDeterministic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Suggestions": {
+      "main": [
+        [
+          {
+            "node": "Sanitizer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ValidatorDeterministic": {
+      "main": [
+        [
+          {
+            "node": "Decision Engine v2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision Engine v2": {
+      "main": [
+        [
+          {
+            "node": "Sanitizer Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Persist Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitizer Agent": {
+      "main": [
+        [
+          {
+            "node": "Build Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Result": {
+      "main": [
+        [
+          {
+            "node": "Save to clause_reviews_internal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to clause_reviews_internal": {
+      "main": [
+        [
+          {
+            "node": "Save to sanitizer_outputs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save to sanitizer_outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to sanitizer_outputs": {
+      "main": [
+        [
+          {
+            "node": "Detect Failures",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Detect Failures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Failures": {
+      "main": [
+        [
+          {
+            "node": "Has Failures?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Failures?": {
+      "main": [
+        [
+          {
+            "node": "Log Agent Failure",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Agent Failure": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hybrid Router (Stage 1)": {
+      "main": [
+        [
+          {
+            "node": "IF LLM Required",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF LLM Required": {
+      "main": [
+        [
+          {
+            "node": "LLM Classification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Clause Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Classification": {
+      "main": [
+        [
+          {
+            "node": "Parse LLM Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse LLM Result": {
+      "main": [
+        [
+          {
+            "node": "Generate Clause Embedding",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0669de84-7615-4fe5-8695-0887ee9d455a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e30f3d921a61d3f73e3eabe4fb1f4cfa51dfa5c1aaf9fb23188d4bcf355ee15a"
+  },
+  "id": "NjadjA14ODg3lQbP",
+  "tags": [
+    {
+      "updatedAt": "2025-12-27T17:25:44.934Z",
+      "createdAt": "2025-12-27T17:25:44.934Z",
+      "id": "RB8EJ1lEIBeIOqJe",
+      "name": "rag"
+    },
+    {
+      "updatedAt": "2026-01-17T04:15:07.992Z",
+      "createdAt": "2026-01-17T04:15:07.992Z",
+      "id": "vbEAwg8M0RsbBP0A",
+      "name": "nueva-planta"
+    }
+  ]
+}

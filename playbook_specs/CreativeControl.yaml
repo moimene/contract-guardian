@@ -1,0 +1,34 @@
+# ================================================================
+# PLAYBOOK SPEC: CreativeControl
+# Creative Control
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: CreativeControl
+display_name: "Creative Control"
+priority: HIGH
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "ProdCo shall have final approval"
+    - "ProdCo retains creative control"
+    - "mutual approval required"
+    - "ProdCo consent required"
+    - "shared creative control"
+    - "joint creative decisions"
+    - "cannot be unreasonably withheld"
+    - "ProdCo's sole discretion"
+  must_have:
+    - "Amazon"
+    - "control"
+  strong_indicators:
+    - "creative consultation"
+    - "creative control"
+    - "creative decisions"
+    - "approval rights"
+    - "final approval"
+    - "meaningful consultation"
+    - "casting"
+    - "directing"
+    - "consider in good faith"

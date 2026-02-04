@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-moralrights-001",
+    "clause_id": "moral-rights-waiver",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000201",
+    "heading": "MORAL RIGHTS",
+    "clause_text": "ProdCo and all contributors reserve their moral rights (droit moral) under applicable law, including the right of integrity and the right of paternity. ProdCo shall not waive any moral rights on behalf of any contributor without their express written consent. Amazon acknowledges that moral rights are retained by authors.",
+    "expected_result": {
+        "detected_family": "MoralRights",
+        "red_flags_found_min": 2,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'reserve moral rights', 'shall not waive', 'retained by authors'. Amazon position requires waiver."
+}

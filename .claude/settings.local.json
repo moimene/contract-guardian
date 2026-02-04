@@ -4,7 +4,21 @@
       "Bash(wc:*)",
       "Bash(find:*)",
       "Bash(python3:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:antigravity.codes)",
+      "Bash(npm install:*)",
+      "Bash(npx --version:*)",
+      "Bash(npx -y @leonardsellem/n8n-mcp-server --version)",
+      "Bash(mdfind:*)",
+      "Bash(ls:*)",
+      "mcp__mcp-registry__search_mcp_registry",
+      "Bash(npx:*)",
+      "Bash(N8N_API_URL=\"https://mmenendeza.app.n8n.cloud/api/v1\" N8N_API_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNzJmNDhmOC0wZDBlLTQ1N2YtYWQxZC0wODg1YjFhZDJiYTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5Nzk5MDIyfQ.oNaMusflrzgIwg9TNKQu63UXcIbEyqiyNwz1dk8IwhQ\" npx:*)",
+      "Bash(npm search:*)",
+      "Bash(N8N_HOST=\"https://mmenendeza.app.n8n.cloud\" N8N_API_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNzJmNDhmOC0wZDBlLTQ1N2YtYWQxZC0wODg1YjFhZDJiYTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5Nzk5MDIyfQ.oNaMusflrzgIwg9TNKQu63UXcIbEyqiyNwz1dk8IwhQ\" timeout 15 npx -y n8n-mcp)",
+      "Bash(N8N_HOST=\"https://mmenendeza.app.n8n.cloud\" N8N_API_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNzJmNDhmOC0wZDBlLTQ1N2YtYWQxZC0wODg1YjFhZDJiYTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY5Nzk5MDIyfQ.oNaMusflrzgIwg9TNKQu63UXcIbEyqiyNwz1dk8IwhQ\" npx -y n8n-mcp --help)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(MCP_MODE=\"stdio\" LOG_LEVEL=\"error\" DISABLE_CONSOLE_OUTPUT=\"true\" N8N_API_URL=\"https://mmenendeza.app.n8n.cloud\" N8N_API_KEY=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNzJmNDhmOC0wZDBlLTQ1N2YtYWQxZC0wODg1YjFhZDJiYTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzcwMDk5MDU4fQ.NwgJ2Z15TEtZw2pETcXyPf3xLZfj803YTLeNjoSMxlc\" npx -y n8n-mcp)"
     ]
   }
 }

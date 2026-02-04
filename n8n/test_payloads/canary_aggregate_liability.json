@@ -1,0 +1,25 @@
+{
+    "clause_instance_id": "canary-test-005-aggregate",
+    "clause_id": "indemnity-aggregate-clause",
+    "document_id": "test-document-003",
+    "run_id": "00000000-0000-0000-0000-000000000005",
+    "clause_text": "ProdCo shall indemnify, defend and hold harmless Amazon and its affiliates from and against any and all claims arising from ProdCo's obligations under this Agreement. Notwithstanding anything to the contrary, ProdCo's aggregate liability for all claims under this indemnification shall be capped at $5,000,000.",
+    "expected_result": {
+        "observations_count_min": 2,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation",
+        "expected_observations": [
+            {
+                "pattern_matched": "aggregate liability",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            },
+            {
+                "pattern_matched": "capped at",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            }
+        ],
+        "notes": "Red flags: 'aggregate liability' and 'capped at' indicate unacceptable cap on indemnification."
+    }
+}

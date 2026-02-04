@@ -1,47 +1,21 @@
-# Ralph Progress Log - Contract Guardian v2.1
+# Progress Log
 
-Iniciado: 2026-01-27
+## Session 1
+- Initialized Ralph loop.
+- Diagnosed W2 failure: potential authentication issue in 'Log Agent Failure' and table configuration in 'Save to clause_reviews_internal'.
+- Verified W3 payload correctness.
+- **FIX APPLIED (v3.1)**: Corrected W2 `Save` node to target `clause_reviews` table and map `detected_family` to `clause_family`.
+- **FIX APPLIED (v3.1)**: Hardcoded Supabase token in W2 `Log Agent Failure` to ensure error visibility.
 
----
+## Session 2
+- User provided updated W2 file: `W2_ClauseReview - CG010 v3.2 (26 Families) (2).json`.
+- **FIX RE-APPLIED (v3.2)**: Configured `Save to clause_reviews_internal` to `clause_reviews` table.
+- **FIX RE-APPLIED (v3.2)**: Mapped `detected_family` to `clause_family`.
+- **FIX RE-APPLIED (v3.2)**: Hardcoded Supabase token in `Log Agent Failure`.
 
-## T-001: Cargar Dataset Harvey Completo ✅
-**Status**: PASSED
-**Fecha**: 2026-01-27 12:30
-
-### Acciones:
-- Creados 4 matters faltantes (third_party_credit, control_publicity_trademarks, prodco_reps_title_noninfringement, compliance_policies_laws)
-- Creadas 4 matter_policies
-- Creados 24 clause_types faltantes
-- Insertados 458 policy_examples nuevos
-- Generados 458 embeddings (100% del dataset)
-
-### Verificación:
-- Total: 1,367 policy_examples
-- Distribución: 456 ACCEPTABLE, 458 PASSABLE, 453 UNACCEPTABLE
-- Embeddings: 1,367/1,367 (100%)
-- RAG Test: Top similarity 98.3%
-
-### Learnings:
-- El JSONL original tiene matters/clause_types que no existían en la taxonomía base
-- Hay que verificar FK dependencies antes de cargar datos
-- El script load_missing_harvey.js es útil para cargas incrementales
-
----
-
-## T-002: Webhook Retorno contract_runs ✅
-**Status**: PASSED
-**Fecha**: 2026-01-27 12:26
-
-### Acciones:
-- Creada Edge Function `update_run_status`
-- Desplegada a Supabase (verify_jwt=false para n8n)
-- Creada documentación `docs/N8N_UPDATE_RUN_STATUS.md`
-
-### Endpoint:
-`POST https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/update_run_status`
-
-### Verificación:
-- Función responde correctamente
-- Actualiza contract_runs y documents
-
----
+## Session 3
+- **ARCHITECTURE CHANGE (W3 Parallel)**: User requested parallel architecture (removing SplitInBatches).
+- **ACTION**: Removed `Split In Batches` node to enable native n8n parallel processing.
+- **ACTION**: Removed `Get Run Results` node (not needed in parallel flow as `Call W2` returns results).
+- **ACTION**: Activated `Verify Insert` node to ensure clauses are persisted before contacting W2.
+- **ACTION**: Rewired `Insert Clauses` -> `Verify Insert` -> `Call W2 Review` -> `Collect Metrics`.

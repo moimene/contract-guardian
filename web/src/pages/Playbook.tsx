@@ -132,13 +132,25 @@ export function Playbook() {
         <div className="p-6 max-w-6xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                    <BookOpen className="h-8 w-8 text-primary" />
-                    Playbook
-                </h1>
-                <p className="text-muted-foreground mt-2">
+                <div className="flex items-center gap-3 mb-2">
+                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                        <BookOpen className="h-8 w-8 text-primary" />
+                        Playbook
+                    </h1>
+                    {/* PRD v2.3: Reference Only Badge */}
+                    <Badge className="bg-blue-100 text-blue-800 border-blue-200 px-3 py-1">
+                        Reference Only
+                    </Badge>
+                </div>
+                <p className="text-muted-foreground">
                     Explora las materias y ejemplos de referencia por tipología de contrato
                 </p>
+                {/* PRD v2.3: Governance Message */}
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
+                    <strong>📘 Este Playbook es de solo lectura.</strong> Los cambios en reglas y políticas
+                    son gestionados por el equipo de Legal Ops. Para solicitar actualizaciones,
+                    contacta al administrador del sistema.
+                </div>
             </div>
 
             {/* Selector de Tipología */}

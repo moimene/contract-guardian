@@ -27,7 +27,7 @@ export function useClauseActions(): UseClauseActionsResult {
         )
 
         const { error } = await supabase
-            .from('clause_reviews')
+            .from('clause_reviews_internal')
             .update({ proposed_changes: updatedChanges })
             .eq('clause_instance_id', clauseInstanceId)
 
@@ -45,7 +45,7 @@ export function useClauseActions(): UseClauseActionsResult {
         )
 
         const { error } = await supabase
-            .from('clause_reviews')
+            .from('clause_reviews_internal')
             .update({ proposed_changes: updatedChanges })
             .eq('clause_instance_id', clauseInstanceId)
 
@@ -62,7 +62,7 @@ export function useClauseActions(): UseClauseActionsResult {
         }))
 
         const { error } = await supabase
-            .from('clause_reviews')
+            .from('clause_reviews_internal')
             .update({
                 proposed_changes: updatedChanges,
                 client_state: 'OK'
@@ -84,7 +84,7 @@ export function useClauseActions(): UseClauseActionsResult {
         }
 
         const { error } = await supabase
-            .from('clause_reviews')
+            .from('clause_reviews_internal')
             .update(updateData)
             .eq('clause_instance_id', clauseInstanceId)
 

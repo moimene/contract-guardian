@@ -10,6 +10,7 @@ import ContractReview from "./pages/ContractReview";
 import Escalations from "./pages/Escalations";
 import ConfigPlaybooks from "./pages/ConfigPlaybooks";
 import ConfigKnowledgeGraph from "./pages/ConfigKnowledgeGraph";
+import Observability from "./pages/Observability";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/new" element={<NewAnalysis />} />
             <Route path="/review/:documentId" element={<ContractReview />} />
             <Route path="/escalations" element={<Escalations />} />
+            <Route path="/observability" element={<Observability />} />
             <Route path="/config/playbooks" element={<ConfigPlaybooks />} />
             <Route path="/config/knowledge-graph" element={<ConfigKnowledgeGraph />} />
             <Route path="/auth" element={<Auth />} />

@@ -1,0 +1,1018 @@
+[
+  {
+    "id": "AmazonControl-STD-001",
+    "clause_text": "As between ProdCo and Amazon, Amazon has sole and final control \nover the Program.",
+    "expected_family": "AmazonControl",
+    "source": "AmazonControl.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "AmazonControl-UNACC-001",
+    "clause_text": "Amazon Position: If ProdCo requests to make this language subject \nto ProdCo's approval rights and/or control of \"day-to-day\" \noperations, Amazon must be clear that it has final control of the \nProgram as the commissioner/financier. ProdCo can rely on its \napproval rights (if any) granted in Exhibit A, however these rights \n(and ProdCo's control of day-to-day operations as the production \ncompany) do not negate or condition Amazon's final control.",
+    "expected_family": "AmazonControl",
+    "source": "AmazonControl.yaml:unacc:CTRL-UNACC-001",
+    "type": "negative",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "AmazonControl-TRIG-001",
+    "clause_text": "The parties agree that sole and final control shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "AmazonControl",
+    "source": "AmazonControl.yaml:trigger:sole and final control",
+    "type": "synthetic"
+  },
+  {
+    "id": "AmazonControl-TRIG-002",
+    "clause_text": "The parties agree that Amazon has sole shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "AmazonControl",
+    "source": "AmazonControl.yaml:trigger:Amazon has sole",
+    "type": "synthetic"
+  },
+  {
+    "id": "Assignment-STD-001",
+    "clause_text": "ProdCo may not assign this Agreement or any rights or obligations \nwithout Amazon's prior written consent. This Agreement, in whole \nor in part (including rights and obligations), may be freely \nassigned by Amazon, and any such assignment will be binding upon \nProdCo and inure to the benefit of such assignee.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "Assignment-ACC-001",
+    "clause_text": "provided that Amazon will remain secondarily liable hereunder \nunless the assignee assumes in writing all of Amazon's obligations \nas of the date of such assignment or such assignee is: (i) a \nso-called \"major\", \"mini-major\" or \"major independent\" motion \npicture company, national television network or studio, or \nsimilarly financially responsible party (as determined by Amazon \nin its discretion at the time of assignment); or (ii) an entity \naffiliated with, owned or controlled by, or owning or controlling \nAmazon, or an entity that succeeds to substantially all of the \nassets of Amazon",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:acc:ASSIGN-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "Assignment-GUIDE-001",
+    "clause_text": "Amazon Position: ProdCo is pushing back on the free assignability \nof the agreement by Amazon, hold on Amazon right to assign to \nanyone. That said, Amazon is willing to accept secondary liability \nunless assigned to a financially responsible entity that assumes \nin writing Amazon's obligations.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:guidance:ASSIGN-ACC-001",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "Assignment-ACC-002",
+    "clause_text": "Amazon will make reasonable efforts to notify ProdCo of an \nassignment by Amazon of this Agreement in whole (for clarity, \nAmazon will not need to make such efforts to notify ProdCo for \na partial assignment of this Agreement including with respect \nto Amazon's assignment of its rights) unless such assignment \nis to an Amazon affiliate, provided that inadvertent failure \nto do so will not be deemed a breach of this Agreement nor \naffect the validity of such assignment.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:acc:ASSIGN-ACC-002",
+    "type": "variant"
+  },
+  {
+    "id": "Assignment-ACC-003",
+    "clause_text": "On a non-precedential, non-citable basis, Amazon may not assign \nthis Agreement without ProdCo's prior written consent; provided, \nhowever, that Amazon may assign (i) this Agreement to an entity \naffiliated with, owned or controlled by, or owning or controlling \nAmazon, or an entity that succeeds to substantially all of the \nassets of Amazon, and (ii) any of Amazon's rights hereunder to \nany third parties.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:acc:ASSIGN-ACC-003",
+    "type": "variant"
+  },
+  {
+    "id": "Assignment-GUIDE-003",
+    "clause_text": "With Amazon Legal Regional Lead (e.g., Hendrik for International) \napproval, we can agree to only assign to Amazon affiliates (so \nno 3P assignment). But we should add clarifying language that \nany restriction on assignment does not limit or impact Amazon's \nright to license or assign exploitation rights to the series or \nmovie. Should add a carve out to this restriction that excludes \nan entity into which Amazon is merged, or to an acquirer of all \nor substantially all of Amazon's business or assets.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:guidance:ASSIGN-ACC-003",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^With\\s+Amazon\\s+Legal/i"
+    ]
+  },
+  {
+    "id": "Assignment-UNACC-002",
+    "clause_text": "Hold on Amazon right to assign to anyone. Amazon's ability to \nfreely assign is fundamental to exploitation of rights.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:unacc:ASSIGN-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "Assignment-TRIG-001",
+    "clause_text": "The parties agree that may not assign shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:trigger:may not assign",
+    "type": "synthetic"
+  },
+  {
+    "id": "Assignment-TRIG-002",
+    "clause_text": "The parties agree that may be freely assigned shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "Assignment",
+    "source": "Assignment.yaml:trigger:may be freely assigned",
+    "type": "synthetic"
+  },
+  {
+    "id": "ConditionsPrecedent-STD-001",
+    "clause_text": "Amazon's obligations hereunder are subject to any conditions precedent \nset forth in Exhibit A.",
+    "expected_family": "ConditionsPrecedent",
+    "source": "ConditionsPrecedent.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "ConditionsPrecedent-GUIDE-001",
+    "clause_text": "Amazon Position: If ProdCo requests to acknowledge the conditions \nprecedent as satisfied (or waived), inform ProdCo of the outstanding \nsteps required to satisfy the conditions. To the extent applicable, \nwith Amazon Legal approval, conditions can be acknowledged satisfied \nvia email.",
+    "expected_family": "ConditionsPrecedent",
+    "source": "ConditionsPrecedent.yaml:guidance:CP-ACC-001",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "ConditionsPrecedent-TRIG-001",
+    "clause_text": "The parties agree that conditions precedent shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ConditionsPrecedent",
+    "source": "ConditionsPrecedent.yaml:trigger:conditions precedent",
+    "type": "synthetic"
+  },
+  {
+    "id": "ConditionsPrecedent-TRIG-002",
+    "clause_text": "The parties agree that subject to any conditions shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ConditionsPrecedent",
+    "source": "ConditionsPrecedent.yaml:trigger:subject to any conditions",
+    "type": "synthetic"
+  },
+  {
+    "id": "DataProtection-STD-001",
+    "clause_text": "When processing personal data in connection with this Agreement, \nAmazon or ProdCo shall act as independent data controllers and \nshall be individually and separately responsible for their own \ncompliance with applicable data protection legislation, including, \nwhere applicable, the European General Data Protection Regulation \nand any implementing or equivalent national laws. Where applicable, \nProdCo agrees to provide Amazon's privacy notice (as amended from \ntime to time) to, and if relevant, seek the consent of any data \nsubject whose personal data is processed by Amazon for the purpose \nof the Agreement.",
+    "expected_family": "DataProtection",
+    "source": "DataProtection.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "DataProtection-UNACC-001",
+    "clause_text": "Amazon and ProdCo act as independent data controllers. Any \nchange to this structure requires Amazon Legal review.",
+    "expected_family": "DataProtection",
+    "source": "DataProtection.yaml:unacc:DP-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "DataProtection-UNACC-002",
+    "clause_text": "Data protection section may be required depending on applicable \nlaw. Consult Amazon Legal before removing.",
+    "expected_family": "DataProtection",
+    "source": "DataProtection.yaml:unacc:DP-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "DataProtection-TRIG-001",
+    "clause_text": "The parties agree that DATA PROTECTION shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "DataProtection",
+    "source": "DataProtection.yaml:trigger:DATA PROTECTION",
+    "type": "synthetic"
+  },
+  {
+    "id": "DataProtection-TRIG-002",
+    "clause_text": "The parties agree that personal data shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "DataProtection",
+    "source": "DataProtection.yaml:trigger:personal data",
+    "type": "synthetic"
+  },
+  {
+    "id": "DisputeResolution-ACC-001",
+    "clause_text": "This Agreement will be governed and construed in accordance with \nthe internal laws of the State of New York applicable to contracts \nentered into and fully to be performed therein. The parties consent \nand agree to the exclusive jurisdiction and venue of the state and \nfederal courts having jurisdiction over New York, New York, with \nrespect to any action that any party desires to commence arising \nout of or in connection with this Agreement or any breach or \nalleged breach of any provision of this Agreement. The parties \nwaive any objection to such venue, any claim that any state or \nfederal court of New York is an inconvenient forum and further \nwaive any right, in any state or federal court proceeding to jury \ntrial, and the parties agree that there will be no jury trial in \nthe event of a dispute between them.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:acc:DR-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "DisputeResolution-GUIDE-001",
+    "clause_text": "Amazon Position: If ProdCo requests to change to New York governing \nlaw, Amazon can agree to change from California governing law to \nNew York governing law, provided that you confirm a foreign court \njudgment is enforceable in your country.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:guidance:DR-ACC-001",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "DisputeResolution-UNACC-001",
+    "clause_text": "Amazon Position: If ProdCo requests to change governing law \nlanguage to local law or some \"neutral\" law, hold to form. \nGoverning law should be expressly addressed and agreed upon in \nthe closed deal terms and we must maintain U.S. governing law \nper practice standards as Amazon is a U.S. entity. Any exception \nto this requires Amazon Legal L8 approval and Litigation approval.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:unacc:DR-UNACC-001",
+    "type": "negative",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "DisputeResolution-UNACC-002",
+    "clause_text": "Any exception to US governing law requires Amazon Legal L8 approval \nand Litigation approval.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:unacc:DR-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "DisputeResolution-UNACC-003",
+    "clause_text": "Confidential, binding arbitration is Amazon's standard position \nfor dispute resolution.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:unacc:DR-UNACC-003",
+    "type": "negative"
+  },
+  {
+    "id": "DisputeResolution-TRIG-001",
+    "clause_text": "The parties agree that GOVERNING LAW shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:trigger:GOVERNING LAW",
+    "type": "synthetic"
+  },
+  {
+    "id": "DisputeResolution-TRIG-002",
+    "clause_text": "The parties agree that JURISDICTION shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "DisputeResolution",
+    "source": "DisputeResolution.yaml:trigger:JURISDICTION",
+    "type": "synthetic"
+  },
+  {
+    "id": "ThirdPartyCredits-STD-001",
+    "clause_text": "If ProdCo is not in breach of this Agreement, and completes ProdCo's \nservices hereunder, subject to any other applicable terms and \nconditions (including any applicable guild/union requirements), \nProdCo will receive the entitlements and credit specified in \nExhibit A for the applicable episode(s).",
+    "expected_family": "ThirdPartyCredits",
+    "source": "EntitlementsCredit.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "ThirdPartyCredits-GUIDE-001",
+    "clause_text": "NTD: If any unacceptable qualifiers to the concept of breach are \nproposed, please suggest \"uncured, material\" instead, as a fallback. \nThis fallback can be applied directly without Amazon's approval.",
+    "expected_family": "ThirdPartyCredits",
+    "source": "EntitlementsCredit.yaml:guidance:CREDIT-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "ThirdPartyCredits-GUIDE-002",
+    "clause_text": "The parenthetical \"(including any applicable guild/union \nrequirements)\" may be inapplicable in certain countries; if there \nare no relevant guilds/unions and no guild talent engaged on the \nProgram, consult Amazon Legal regarding removal.",
+    "expected_family": "ThirdPartyCredits",
+    "source": "EntitlementsCredit.yaml:guidance:CREDIT-ACC-002",
+    "type": "near-miss"
+  },
+  {
+    "id": "ThirdPartyCredits-TRIG-001",
+    "clause_text": "The parties agree that ENTITLEMENTS shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ThirdPartyCredits",
+    "source": "EntitlementsCredit.yaml:trigger:ENTITLEMENTS",
+    "type": "synthetic"
+  },
+  {
+    "id": "ThirdPartyCredits-TRIG-002",
+    "clause_text": "The parties agree that CREDIT: shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ThirdPartyCredits",
+    "source": "EntitlementsCredit.yaml:trigger:CREDIT:",
+    "type": "synthetic"
+  },
+  {
+    "id": "PaymentCredits-STD-001",
+    "clause_text": "If ProdCo is not in breach of this Agreement, subject to any other \napplicable terms and conditions, ProdCo will receive the fees \nspecified in Exhibit A.",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "PaymentCredits-GUIDE-001",
+    "clause_text": "NTD: The acceptable deviations (\"uncured, material breach\") can \nbe accepted directly, without Amazon's approval.",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:guidance:FEES-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "PaymentCredits-AMZPOS-001",
+    "clause_text": "Generally OK to add these qualifiers before ProdCo's \"breach\" in \nSections 5 and 6 (however do not add for ProdCo's indemnity in \nSection 7). Because a claim can arise out of any breach (whether \nor not material and/or cured by ProdCo) we do not add \"material\" \nor \"uncured\" before breach under ProdCo's indemnity as a matter \nof policy.",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:amz_pos:FEES-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "PaymentCredits-UNACC-002",
+    "clause_text": "If ProdCo asks to remove the language \"subject to any other \napplicable terms and conditions\" either here or in Section 6 \nbelow, Amazon must maintain this language to be clear that these \nfees and entitlements are still subject to any conditions included \nin Exhibit A and/or applicable conditions pursuant to the standard \nterms (such as suspension/termination for force majeure, etc.).",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:unacc:FEES-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "PaymentCredits-UNACC-003",
+    "clause_text": "If ProdCo asks to include that the fees are on a \"pay-or-play\" \nbasis: (i) if the closed deal terms (Exhibit A) does not include \na lock or \"pay-or-play\" mechanisms for ProdCo's services, please \nraise this request with Amazon BA, (ii) if the closed deal terms \ndo include that ProdCo's services are on a \"pay-or-play\" basis, \ninform ProdCo that nothing in the PSA conflicts with the mechanism \nincluded in Exhibit A.",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:unacc:FEES-UNACC-003",
+    "type": "negative"
+  },
+  {
+    "id": "PaymentCredits-TRIG-001",
+    "clause_text": "The parties agree that FEES: shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:trigger:FEES:",
+    "type": "synthetic"
+  },
+  {
+    "id": "PaymentCredits-TRIG-002",
+    "clause_text": "The parties agree that ProdCo will receive the fees shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "PaymentCredits",
+    "source": "Fees.yaml:trigger:ProdCo will receive the fees",
+    "type": "synthetic"
+  },
+  {
+    "id": "ForceMajeure-STD-001",
+    "clause_text": "Amazon may elect to suspend any services, and any option exercise \nand/or other applicable dates under this Agreement will automatically \nextend, for a period of up to the length of (i) any unavailability, \ndisability or death of any key personnel or cast, or any \"force \nmajeure\" event (earthquake or other natural event, government action, \nlabor dispute, acts of war or terrorism, epidemic, pandemic, or any \nother event beyond the control of Amazon), which interrupts or \ninterferes with the Program; and/or (ii) any claims or litigation \nrelating to the Program and/or ProdCo's breach, plus 30 days \nfollowing cessation of any of the foregoing events in clause (i) \nand/or (ii) as applicable.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "ForceMajeure-ACC-001",
+    "clause_text": "plus 15 days following cessation",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:acc:FM-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "ForceMajeure-GUIDE-001",
+    "clause_text": "Amazon Position: If ProdCo wishes to limit the time periods to \nresume activities following a suspension/extension, Amazon is \nwilling to lower this period to 15 days, however this is the \nshortest period Amazon will agree to. Amazon needs a reasonable \nperiod of time after the cessation of the applicable suspension / \nextension event to resume activities.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:guidance:FM-ACC-001",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "ForceMajeure-ACC-002",
+    "clause_text": "provided that the cumulative suspension of such events listed \nin clause (i) [excluding events related to Amazon's breach] will \nnot exceed [X] days (or months) [in aggregate / per each force \nmajeure event]",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:acc:FM-ACC-002",
+    "type": "variant"
+  },
+  {
+    "id": "ForceMajeure-GUIDE-002",
+    "clause_text": "Amazon Position: If ProdCo wishes to limit time periods for \nsuspension/extension for force majeure, Amazon is willing to \ncap the extensions for force majeure on a limited basis.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:guidance:FM-ACC-002",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "ForceMajeure-ACC-003",
+    "clause_text": "provided that the cumulative suspension of such events listed \nin clause (ii) [excluding events related to ProdCo's breach] \nwill not exceed [X] days (or months) [in aggregate / per each \nclaim or litigation]",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:acc:FM-ACC-003",
+    "type": "variant"
+  },
+  {
+    "id": "ForceMajeure-GUIDE-003",
+    "clause_text": "Amazon Position: If ProdCo wishes to limit time periods for \nsuspension/extension for claims/litigation, Amazon is willing \nto cap the extensions for individual claims on a limited basis.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:guidance:FM-ACC-003",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "ForceMajeure-ACC-004",
+    "clause_text": "provided that, in the event that the force majeure event continues \nfor a period in excess of [X] consecutive months, either party \nmay notify the other of its intention to terminate this Agreement \nand, if the force majeure event continues for [X] months after \nsuch notice, this Agreement will automatically terminate",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:acc:FM-ACC-004",
+    "type": "variant"
+  },
+  {
+    "id": "ForceMajeure-GUIDE-004",
+    "clause_text": "Amazon Position: If ProdCo wishes to include a termination right \nfollowing extended force majeure events. To include the ability \nfor either party to terminate post-force majeure, with Amazon \nLegal approval, the alternate language may be used.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:guidance:FM-ACC-004",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "ForceMajeure-UNACC-001",
+    "clause_text": "Amazon Position: If ProdCo wishes to limit time periods for \nsuspension/extension for ProdCo's breach, hold to form. Amazon \ndoes not allow a limitation on suspension/extension for ProdCo's \nbreach. All of the suspension/extension events are outside of \nAmazon's control. Some suspension/extension events may not be \ncaused by ProdCo, but, since ProdCo's breach is caused by ProdCo's \nact or omission, Amazon will not agree to any accommodations \naround this language.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:unacc:FM-UNACC-001",
+    "type": "negative",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "ForceMajeure-UNACC-002",
+    "clause_text": "Amazon must maintain the right to suspend services during force \nmajeure events to protect its investment.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:unacc:FM-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "ForceMajeure-TRIG-001",
+    "clause_text": "The parties agree that force majeure shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:trigger:force majeure",
+    "type": "synthetic"
+  },
+  {
+    "id": "ForceMajeure-TRIG-002",
+    "clause_text": "The parties agree that suspend any services shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ForceMajeure",
+    "source": "ForceMajeure.yaml:trigger:suspend any services",
+    "type": "synthetic"
+  },
+  {
+    "id": "IndemnityAmazon-STD-001",
+    "clause_text": "Amazon will indemnify, defend, and hold harmless ProdCo against any \nLosses arising out of any third-party claim in connection with the \ndistribution and exploitation of the Program by Amazon or its \naffiliates, other than with respect to any Losses for which ProdCo \nis required to indemnify Amazon under this Agreement.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "IndemnityAmazon-ACC-001",
+    "clause_text": "hold harmless ProdCo and its affiliates",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:acc:IND-AMZ-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityAmazon-GUIDE-001",
+    "clause_text": "NTD: The fallback extending the hold harmless obligation to not \nonly ProdCo but also \"its affiliates\" may be accepted directly, \nwithout Amazon's approval.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:guidance:IND-AMZ-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityAmazon-ACC-002",
+    "clause_text": "distribution, marketing, advertising and exploitation",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:acc:IND-AMZ-ACC-002",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityAmazon-GUIDE-002",
+    "clause_text": "NTD: Do not include directly all inclusions contained in the \nfallback, but only those expressly requested by ProdCo \n(\"distribution, marketing, advertising\", as applicable). This \nfallback may be granted directly, without Amazon Legal's approval.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:guidance:IND-AMZ-ACC-002",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityAmazon-ACC-003",
+    "clause_text": "and all ancillary rights therein and thereto",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:acc:IND-AMZ-ACC-003",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityAmazon-GUIDE-003",
+    "clause_text": "NTD: The acceptable deviation (or any substantially equivalent \nlanguage) may be accepted directly, without Amazon's approval.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:guidance:IND-AMZ-ACC-003",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityAmazon-ACC-004",
+    "clause_text": "Amazon's breach of any of its agreements, representations or warranties",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:acc:IND-AMZ-ACC-004",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityAmazon-GUIDE-004",
+    "clause_text": "If ProdCo wishes Amazon to indemnify for Amazon's breach or torts \n(e.g., negligence or willful misconduct), please respond: \"Amazon \nhas broad indemnity obligations hereunder that should cover your \nconcern.\" If receive repeated pushback, with Amazon Legal approval, \ncan add an indemnity trigger for Amazon's breach (with addition of \nthe one applicable representation and warranty).",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:guidance:IND-AMZ-ACC-004",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityAmazon-GUIDE-005",
+    "clause_text": "OK to include the additional entity/individuals to Amazon's \nindemnification as outlined. As a note, Amazon will not include \n\"successors\" or \"assigns\" as ProdCo should not be able to assign \nthis agreement without Amazon's approval.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:guidance:IND-AMZ-ACC-005",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityAmazon-TRIG-001",
+    "clause_text": "The parties agree that Amazon will indemnify shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:trigger:Amazon will indemnify",
+    "type": "synthetic"
+  },
+  {
+    "id": "IndemnityAmazon-TRIG-002",
+    "clause_text": "The parties agree that Amazon shall indemnify shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "IndemnityAmazon",
+    "source": "IndemnityAmazon.yaml:trigger:Amazon shall indemnify",
+    "type": "synthetic"
+  },
+  {
+    "id": "IndemnityProcedures-STD-001",
+    "clause_text": "[GIVE - Only include if ProdCo requests regulation of claims defense]\n\nIf either Amazon or ProdCo is entitled to defense or indemnification \nhereunder, the indemnitee will give the indemnifying party prompt \nwritten notice of the applicable claim (but any delay in notification \nwill not relieve the indemnifying party of its indemnification \nobligations under this Agreement except to the extent that such delay \nmaterially impairs the indemnifying party's ability to defend such \nclaim). Amazon will have the option to control the defense and \nsettlement of any claim and ProdCo will cooperate reasonably with \nAmazon and provide all information and assistance as Amazon may \nreasonably require in connection with the defense and settlement \nof such claim.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "IndemnityProcedures-ACC-001",
+    "clause_text": "but Amazon may not, without the prior written approval of ProdCo \n(which may not be unreasonably withheld), enter into or acquiesce \nto any settlement that contains any admission of or stipulation \nto any guilt, fault, liability or wrongdoing on the part of ProdCo \nor that imposes any restrictions, obligations, or liabilities on \nProdCo",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:acc:PROC-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityProcedures-GUIDE-001",
+    "clause_text": "NTD: Include the fallback only if additions or comments are made \nrequesting regulation of the claims defense process. If no specific \nlanguage is added, include the fallback, or replace any other \nproposed language with the fallback.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:guidance:PROC-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityProcedures-ACC-002",
+    "clause_text": "In addition, ProdCo will have the right to participate, at its \nown expense and with counsel of its own choosing, in the defense \nof any claim.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:acc:PROC-ACC-002",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityProcedures-GUIDE-002",
+    "clause_text": "NTD: Include the fallback only when additions or comments that \nrequest ProdCo to be able to participate in the defense are made. \nIf no specific language is added, please include directly the \nfallback, or replace any proposed language with the fallback.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:guidance:PROC-ACC-002",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityProcedures-AMZPOS-002",
+    "clause_text": "Amazon must be able to control its own defense. That said, ProdCo \nmay have its own counsel present so long as it does not interfere. \nIn order to grant this right, we must include additional language \nclarifying the control of such defense.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:amz_pos:PROC-ACC-002",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityProcedures-TRIG-001",
+    "clause_text": "The parties agree that entitled to defense or indemnification shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:trigger:entitled to defense or indemnification",
+    "type": "synthetic"
+  },
+  {
+    "id": "IndemnityProcedures-TRIG-002",
+    "clause_text": "The parties agree that prompt written notice of the applicable claim shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "IndemnityProcedures",
+    "source": "IndemnityProcedures.yaml:trigger:prompt written notice of the applicable claim",
+    "type": "synthetic"
+  },
+  {
+    "id": "IndemnityProdCo-STD-001",
+    "clause_text": "ProdCo will indemnify, defend (at Amazon's option), and hold harmless \nAmazon and its assignees, licensees, and each of their affiliates \nagainst any losses, liability, damages, judgements, cost or expenses \n(\"Losses\") arising out of any third-party claim in connection with \nthe development and production by ProdCo of the Program, ProdCo's \nbreach or alleged breach of any of its agreements, representations \nor warranties under this Agreement and/or ProdCo's negligence or \nwillful misconduct.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "IndemnityProdCo-ACC-001",
+    "clause_text": "breach of any of its agreements",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:acc:IND-PROD-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "IndemnityProdCo-GUIDE-001",
+    "clause_text": "NTD: If the deletion of \"alleged breach\" is requested by ProdCo, \ndo not accept it automatically, but please push back, as per \nAmazon's policies. However, if ProdCo insists, this should not be \na deal-breaker, so it may be granted in the future at OC's \ndiscretion, without Amazon Legal's approval.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:guidance:IND-PROD-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityProdCo-AMZPOS-001",
+    "clause_text": "While the preference is to keep the wording as is to avoid a \ndispute between ProdCo/Amazon if ProdCo indeed committed a breach \nor not and to avoid Amazon having to wait for a determination to \nbe made whether ProdCo actually committed a breach before seeking \nindemnity from ProdCo, this should not become a deal-breaker.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:amz_pos:IND-PROD-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "IndemnityProdCo-UNACC-001",
+    "clause_text": "Do NOT add \"material\" or \"uncured\" before breach under ProdCo's \nindemnity as a matter of policy. Because a claim can arise out \nof any breach (whether or not material and/or cured by ProdCo), \nif we incur third-party liability as a result of ProdCo's breach, \neven if non-material or cured, ProdCo should be required to \nindemnify us.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:unacc:IND-PROD-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "IndemnityProdCo-UNACC-002",
+    "clause_text": "ProdCo requests to remove the obligation to defend Amazon. We're \nunable to accommodate ProdCo's request. Amazon recognizes a line \nitem in the budget for E&O and general liability insurance funded \nby Amazon that covers tort claims regardless of the ProdCo's \nnegligence or intent, provided there is no fraud, so it is more \nappropriate for insurance to pay for a defense than to transfer \nthis obligation to Amazon. Amazon has the ability to decide \nwhether to control defense, however this does not affect ProdCo's \nobligation to do so.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:unacc:IND-PROD-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "IndemnityProdCo-TRIG-001",
+    "clause_text": "The parties agree that ProdCo will indemnify shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:trigger:ProdCo will indemnify",
+    "type": "synthetic"
+  },
+  {
+    "id": "IndemnityProdCo-TRIG-002",
+    "clause_text": "The parties agree that ProdCo shall indemnify shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "IndemnityProdCo",
+    "source": "IndemnityProdCo.yaml:trigger:ProdCo shall indemnify",
+    "type": "synthetic"
+  },
+  {
+    "id": "InjunctiveReliefWaiver-STD-001",
+    "clause_text": "ProdCo's remedies under this Agreement will be limited to the right, \nif any, to recover monetary damages (which ProdCo acknowledges is \nreasonable and sufficient) and ProdCo hereby irrevocably and \nperpetually waives any right to seek or obtain injunctive or other \nequitable relief or to otherwise enjoin or restrain the development, \nproduction, distribution, promotion, or other exploitation of the \nProgram (or any part thereof or rights therein).",
+    "expected_family": "InjunctiveReliefWaiver",
+    "source": "InjunctiveReliefWaiver.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "InjunctiveReliefWaiver-UNACC-001",
+    "clause_text": "If ProdCo asks to remove, modify or make this language mutual, \nAmazon cannot accommodate these requests. A waiver of injunctive \nrelief is completely customary and necessary for Amazon in order \nto ensure Amazon's ability to exploit its rights (and should not \nbe objectionable as Amazon is the financier of the Program as well).",
+    "expected_family": "InjunctiveReliefWaiver",
+    "source": "InjunctiveReliefWaiver.yaml:unacc:INJ-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "InjunctiveReliefWaiver-UNACC-002",
+    "clause_text": "For requests to make this language mutual, ProdCo has no equivalent \nrights to Amazon as the exhibitor and financier and is providing \nservices as work made for hire.",
+    "expected_family": "InjunctiveReliefWaiver",
+    "source": "InjunctiveReliefWaiver.yaml:unacc:INJ-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "InjunctiveReliefWaiver-TRIG-001",
+    "clause_text": "The parties agree that waives any right to seek or obtain injunctive shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "InjunctiveReliefWaiver",
+    "source": "InjunctiveReliefWaiver.yaml:trigger:waives any right to seek or obtain injunctive",
+    "type": "synthetic"
+  },
+  {
+    "id": "InjunctiveReliefWaiver-TRIG-002",
+    "clause_text": "The parties agree that limited to the right... to recover monetary damages shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "InjunctiveReliefWaiver",
+    "source": "InjunctiveReliefWaiver.yaml:trigger:limited to the right... to recover monetary damages",
+    "type": "synthetic"
+  },
+  {
+    "id": "LiabilityLimitation-STD-001",
+    "clause_text": "EXCEPT FOR THE INDEMNIFICATION OBLIGATIONS AND ANY BREACH OF \nCONFIDENTIALITY AS SET FORTH HEREIN, EACH PARTY HEREBY WAIVES ALL \nCLAIMS AGAINST THE OTHER PARTY (IN CASE OF AMAZON, PRODCO WAIVES \nALL CLAIMS AGAINST AMAZON AND ITS ASSIGNEES, LICENSEES, AND EACH \nOF THEIR AFFILIATES) HEREUNDER FOR INDIRECT, INCIDENTAL, PUNITIVE \nAND/OR CONSEQUENTIAL DAMAGES.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "LiabilityLimitation-GUIDE-001",
+    "clause_text": "If ProdCo misinterprets this waiver to mean that ProdCo is \nwaiving all claims of any type against Amazon and Amazon's \nassignees, licensees and affiliates, can clarify that this \nwaiver is intended to apply to indirect, incidental, punitive \nand/or consequential damages.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:guidance:LIAB-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "LiabilityLimitation-GUIDE-002",
+    "clause_text": "As a fallback, can include clarifying language that the \nindemnification referenced in this sentence applies to \nthird-party claims if the counterparty continues to push \non this issue.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:guidance:LIAB-ACC-002",
+    "type": "near-miss"
+  },
+  {
+    "id": "LiabilityLimitation-UNACC-001",
+    "clause_text": "If ProdCo wishes to delete carveout for indemnification \nobligations and breach of confidentiality from waiver of \nclaims, hold. Since this is a mutual waiver between the \nparties, cannot remove as a matter of corporate policy.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:unacc:LIAB-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "LiabilityLimitation-UNACC-003",
+    "clause_text": "If ProdCo objects to the extended waiver to Amazon's assignees, \nlicensees and affiliates (or wishes to make this mutual), inform \nProdCo that this waiver is broader for Amazon due to its nature \nas the financier and licensee of the Program.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:unacc:LIAB-UNACC-003",
+    "type": "negative"
+  },
+  {
+    "id": "LiabilityLimitation-TRIG-001",
+    "clause_text": "The parties agree that WAIVES ALL CLAIMS shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:trigger:WAIVES ALL CLAIMS",
+    "type": "synthetic"
+  },
+  {
+    "id": "LiabilityLimitation-TRIG-002",
+    "clause_text": "The parties agree that INDIRECT, INCIDENTAL, PUNITIVE shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "LiabilityLimitation",
+    "source": "LiabilityLimitation.yaml:trigger:INDIRECT, INCIDENTAL, PUNITIVE",
+    "type": "synthetic"
+  },
+  {
+    "id": "GeneralProvisions-STD-001",
+    "clause_text": "ProdCo will execute and deliver all additional documents and do any \nother acts as Amazon requests in order to establish or evidence \nAmazon's rights hereunder, including, registration and assignment \nof the Materials. If ProdCo fails to do so within 5 business days \nfollowing Amazon's request, ProdCo hereby irrevocably authorizes \nAmazon to act on ProdCo's behalf, including by providing Amazon \nwith a power of attorney (coupled with an interest) solely to \nexecute, register and record such documents on ProdCo's behalf.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "GeneralProvisions-ACC-001",
+    "clause_text": "execute and deliver all additional documents and do any other acts consistent herewith",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:acc:POA-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "GeneralProvisions-GUIDE-003",
+    "clause_text": "Amazon Position: For ProdCos located outside of the U.S., 7 \nbusiness days is acceptable upon request.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:guidance:POA-ACC-003",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "GeneralProvisions-GUIDE-004",
+    "clause_text": "Amazon Position: Regardless of the location of the other party, \n10 business days is the maximum time period we should agree to.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:guidance:POA-ACC-004",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "GeneralProvisions-ACC-005",
+    "clause_text": "(during which period ProdCo may review and comment on such document)",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:acc:POA-ACC-005",
+    "type": "variant"
+  },
+  {
+    "id": "GeneralProvisions-ACC-007",
+    "clause_text": "Amazon will provide ProdCo with copies of such documents so \nexecuted promptly thereafter, provided that inadvertent failure \nto do so will not be deemed a breach of this Agreement and any \nfailure to do so will not affect the validity of such documents.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:acc:POA-ACC-007",
+    "type": "variant"
+  },
+  {
+    "id": "GeneralProvisions-UNACC-001",
+    "clause_text": "Amazon must generally hold on its right to require further \ndocuments and sign on ProdCo's behalf in the event of \nnon-compliance.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:unacc:POA-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "GeneralProvisions-UNACC-002",
+    "clause_text": "10 business days is the maximum time period Amazon will agree to. \nAgreeing to a longer time period could have negative impacts on \nthe development/production/distribution of the Program.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:unacc:POA-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "GeneralProvisions-TRIG-001",
+    "clause_text": "The parties agree that power of attorney shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:trigger:power of attorney",
+    "type": "synthetic"
+  },
+  {
+    "id": "GeneralProvisions-TRIG-002",
+    "clause_text": "The parties agree that execute and deliver shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "GeneralProvisions",
+    "source": "PowerOfAttorney.yaml:trigger:execute and deliver",
+    "type": "synthetic"
+  },
+  {
+    "id": "RepsProdCo-STD-001",
+    "clause_text": "ProdCo represents, warrants and agrees that: \n(i) the Program (including all materials previously created for the \n    Program) and Materials are original and qualify for full copyright \n    protection (other than materials supplied to ProdCo by Amazon or \n    any elements in the public domain of which ProdCo notifies Amazon), \n    will not infringe or violate any intellectual property rights \n    (including any copyright) of, and will not defame, infringe or \n    violate the rights of privacy or any other rights of any person \n    or entity, and are not subject to any claim, encumbrance or \n    third-party interest; \n(ii) ProdCo will comply with all (A) applicable laws, rules and \n     regulations (including import/re-import, sanctions, anti-boycott, \n     export/re-export control laws, and tax evasion and tax evasion \n     facilitation laws), and (B) Amazon's policies, requirements and \n     guidelines/manuals of which ProdCo is made aware in advance; and \n(iii) ProdCo is capable of and has the full right to enter into and \n      perform under this Agreement.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "RepsProdCo-ACC-001",
+    "clause_text": "and/or materials supplied by ProdCo at Amazon's explicit request and/or direction",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:acc:REPS-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "RepsProdCo-GUIDE-001",
+    "clause_text": "NTD: The acceptable deviation (or any substantially equivalent \nlanguage) may be accepted directly, without Amazon's approval.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:guidance:REPS-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "RepsProdCo-GUIDE-002",
+    "clause_text": "NTD: The acceptable fallback (or any substantially equivalent \nlanguage) may be accepted directly, without Amazon's approval.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:guidance:REPS-ACC-002",
+    "type": "near-miss"
+  },
+  {
+    "id": "RepsProdCo-ACC-003",
+    "clause_text": "(including Amazon's Development Kickoff Packet)",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:acc:REPS-ACC-003",
+    "type": "variant"
+  },
+  {
+    "id": "RepsProdCo-GUIDE-004",
+    "clause_text": "NTD: Please accept only the acceptable deletions that have been \nspecifically requested. This change is acceptable only with Amazon \nLegal's approval. If ProdCo objects to inclusion of specific \ncategories of laws (i.e. one or more of \"import, re-import, \nsanctions, anti-boycott, export, and re-export control laws\"), \nwith Amazon Legal approval, we are willing to delete specific \nlaws and regulations that ProdCo objects to, provided that they \ndo not apply to the contract at hand.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:guidance:REPS-ACC-004",
+    "type": "near-miss"
+  },
+  {
+    "id": "RepsProdCo-UNACC-001",
+    "clause_text": "If ProdCo wishes to add \"to the best of ProdCo's knowledge\" as a \nqualifier to representation and warranty that Program and Material \nwill not infringe or violate the rights of any person or entity, \nwe're unable to accommodate ProdCo's request. Amazon recognizes a \nline item in the budget for E&O insurance funded by Amazon that \ncovers these types of claims regardless of ProdCo's level of \nnegligence or intent, provided there is no fraud, so it is more \nappropriate for insurance to cover the claim than to transfer \nthis obligation to Amazon.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:unacc:REPS-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "RepsProdCo-UNACC-002",
+    "clause_text": "If ProdCo wishes to add \"to the best of ProdCo's knowledge\" as a \nqualifier to representation and warranty that Program and Material \n\"are not subject to any claim, encumbrance or third-party interest\", \nAmazon does not allow a knowledge qualifier on these items as ProdCo \nis the party in best position to know of any of these issues or \nencumbrances (and should be responsible to Amazon for any issues \nthat arise therefrom).",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:unacc:REPS-UNACC-002",
+    "type": "negative"
+  },
+  {
+    "id": "RepsProdCo-UNACC-003",
+    "clause_text": "If ProdCo requests to remove this language entirely, do not remove \nas Amazon needs ProdCo to adhere to these laws and regulations (as \na matter of both law and corporate policy) and this language is \nalready qualified to what is applicable (so any items that are not \napplicable would not apply).",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:unacc:REPS-UNACC-003",
+    "type": "negative",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^If\\s+ProdCo\\s+requests/i"
+    ]
+  },
+  {
+    "id": "RepsProdCo-TRIG-001",
+    "clause_text": "The parties agree that ProdCo represents, warrants and agrees shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:trigger:ProdCo represents, warrants and agrees",
+    "type": "synthetic"
+  },
+  {
+    "id": "RepsProdCo-TRIG-002",
+    "clause_text": "The parties agree that ProdCo represents and warrants shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "RepsProdCo",
+    "source": "RepsProdCo.yaml:trigger:ProdCo represents and warrants",
+    "type": "synthetic"
+  },
+  {
+    "id": "RightsGrant-STD-001",
+    "clause_text": "All rights in the Program, including all materials commissioned \n(including the results and proceeds of services of all personnel \nrendering services) (\"Materials\"), are being specially ordered and \ncommissioned by Amazon as a work made for hire for Amazon. Amazon \nshall be the author and exclusive owner for copyright purposes and \notherwise. To the extent that any of the foregoing may not be \nconsidered a work made for hire for any reason, ProdCo hereby \nirrevocably grants, transfers and assigns to Amazon all right, \ntitle and interest in and to the Program and all Materials, \nincluding all copyrights and other intellectual property rights \ntherein. Amazon shall own exclusively and in perpetuity (or, if \nshorter, the maximum legal term of protection), throughout the \nuniverse, in all languages, and in all media now known or hereafter \ndeveloped, all right, title and interest in and to the Program.",
+    "expected_family": "RightsGrant",
+    "source": "RightsGrant.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "RightsGrant-UNACC-001",
+    "clause_text": "If ProdCo asks to carve out pre-existing agreements or materials \nfrom this rights grant, Amazon does not modify this language. If \nthere are underlying rights agreements, Amazon will take assignment \nof (and possibly amend) these agreements pursuant to separate \npaperwork between the parties, but must generally be clear that \nall results and proceeds in connection with the Materials are work \nmade for hire and the rights to the Program, itself, will be owned \n100% by Amazon.",
+    "expected_family": "RightsGrant",
+    "source": "RightsGrant.yaml:unacc:RIGHTS-UNACC-001",
+    "type": "negative"
+  },
+  {
+    "id": "RightsGrant-TRIG-001",
+    "clause_text": "The parties agree that RIGHTS: shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "RightsGrant",
+    "source": "RightsGrant.yaml:trigger:RIGHTS:",
+    "type": "synthetic"
+  },
+  {
+    "id": "RightsGrant-TRIG-002",
+    "clause_text": "The parties agree that All rights in the Program shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "RightsGrant",
+    "source": "RightsGrant.yaml:trigger:All rights in the Program",
+    "type": "synthetic"
+  },
+  {
+    "id": "ServicesScope-STD-001",
+    "clause_text": "ProdCo will render services as set forth in this agreement, including \nany exhibits and schedules attached hereto (which are incorporated \nby reference), which constitute the entire agreement between the \nparties (collectively, the \"Agreement\"), for the original scripted \ntelevision series audio-visual program currently known as \"PROGRAM\" \n(together with all elements thereof, the \"Program\").",
+    "expected_family": "ServicesScope",
+    "source": "ServicesScope.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "ServicesScope-TRIG-001",
+    "clause_text": "The parties agree that SERVICES: shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ServicesScope",
+    "source": "ServicesScope.yaml:trigger:SERVICES:",
+    "type": "synthetic"
+  },
+  {
+    "id": "ServicesScope-TRIG-002",
+    "clause_text": "The parties agree that ProdCo will render services shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "ServicesScope",
+    "source": "ServicesScope.yaml:trigger:ProdCo will render services",
+    "type": "synthetic"
+  },
+  {
+    "id": "GeneralProvisions-STD-001",
+    "clause_text": "ProdCo has or will obtain signed agreements from each principal, \nemployee or other individual prior to rendering services in \nconnection with the Program on terms consistent with this Agreement \n(including rights and assignment terms hereof) and in a form \napproved by Amazon. Any production order of the Program will not \nbe effective unless in written notice signed by Amazon. This \nAgreement includes and incorporates industry custom standard terms \nand conditions for agreements of this type, such as insurance and \nadditional representations/warranties, indemnification and remedies. \nAt Amazon's request, these additional terms will be formalized as \npart of this Agreement subject to good faith negotiation within \nAmazon's customary parameters; provided that unless and until such \ntime, industry custom standard terms and conditions will prevail.",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "GeneralProvisions-ACC-001",
+    "clause_text": "At Amazon's request or, if earlier, after Amazon's exercise of \nits option to order production of the initial season of the Program",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:acc:ST-ACC-001",
+    "type": "variant"
+  },
+  {
+    "id": "GeneralProvisions-ACC-002",
+    "clause_text": "customary industry parameters for agreements of this type",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:acc:ST-ACC-002",
+    "type": "variant"
+  },
+  {
+    "id": "GeneralProvisions-GUIDE-002",
+    "clause_text": "Amazon Position: If ProdCo takes issue with language that \nnegotiation of the additional terms will be \"within Amazon's \ncustomary parameters\", OK to change to customary industry \nparameters.",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:guidance:ST-ACC-002",
+    "type": "near-miss",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "GeneralProvisions-UNACC-001",
+    "clause_text": "Amazon Position: If ProdCo takes issue with language that industry \ncustom standard terms and conditions will prevail until the \nadditional terms are negotiated, hold to form. This language \napplies to both parties, affects both parties equally (as industry \ncustom is in neither party's control) and is a reasonable compromise \nuntil the appropriate time to negotiate the additional terms.",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:unacc:ST-UNACC-001",
+    "type": "negative",
+    "non_routable": true,
+    "non_routable_reasons": [
+      "Meta-text pattern: /^Amazon\\s+Position:/i"
+    ]
+  },
+  {
+    "id": "GeneralProvisions-TRIG-001",
+    "clause_text": "The parties agree that standard terms and conditions shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:trigger:standard terms and conditions",
+    "type": "synthetic"
+  },
+  {
+    "id": "GeneralProvisions-TRIG-002",
+    "clause_text": "The parties agree that industry custom shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "GeneralProvisions",
+    "source": "StandardTerms.yaml:trigger:industry custom",
+    "type": "synthetic"
+  },
+  {
+    "id": "Confidentiality-STD-001",
+    "clause_text": "ProdCo will not release or authorize any publicity or marketing \nrelating to the Program or use any Amazon trademark without Amazon's \nprior written approval, and ProdCo will keep confidential all \nnon-public information relating to the Program (\"NPI\").",
+    "expected_family": "Confidentiality",
+    "source": "confidentiality.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "Confidentiality-GUIDE-001",
+    "clause_text": "ProdCo requests to include standard carve-outs to ProdCo's \nconfidentiality obligation for disclosures required at law, \ndisclosure to legal representatives, information which makes \nits way into public domain by not fault of ProdCo, etc., OK \nto make these changes as a general matter upon request.",
+    "expected_family": "Confidentiality",
+    "source": "confidentiality.yaml:guidance:CONF-ACC-001",
+    "type": "near-miss"
+  },
+  {
+    "id": "Confidentiality-TRIG-001",
+    "clause_text": "The parties agree that keep confidential shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "Confidentiality",
+    "source": "confidentiality.yaml:trigger:keep confidential",
+    "type": "synthetic"
+  },
+  {
+    "id": "Confidentiality-TRIG-002",
+    "clause_text": "The parties agree that non-public information shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "Confidentiality",
+    "source": "confidentiality.yaml:trigger:non-public information",
+    "type": "synthetic"
+  },
+  {
+    "id": "Insurance-STD-001",
+    "clause_text": "This Agreement includes and incorporates industry custom standard \nterms and conditions for agreements of this type, such as insurance \nand additional representations/warranties, indemnification and \nremedies.",
+    "expected_family": "Insurance",
+    "source": "insurance.yaml:standard_position",
+    "type": "golden"
+  },
+  {
+    "id": "Insurance-TRIG-001",
+    "clause_text": "The parties agree that insurance shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "Insurance",
+    "source": "insurance.yaml:trigger:insurance",
+    "type": "synthetic"
+  },
+  {
+    "id": "Insurance-TRIG-002",
+    "clause_text": "The parties agree that E&O shall be governed by the terms set forth herein, and any modifications thereto shall require written consent.",
+    "expected_family": "Insurance",
+    "source": "insurance.yaml:trigger:E&O",
+    "type": "synthetic"
+  }
+]

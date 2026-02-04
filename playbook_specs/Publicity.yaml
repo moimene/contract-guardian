@@ -1,0 +1,31 @@
+# ================================================================
+# PLAYBOOK SPEC: Publicity
+# Publicity & Marketing
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: Publicity
+display_name: "Publicity & Marketing"
+priority: MEDIUM
+requires_legal_review: false
+
+detection_patterns:
+  red_flags:
+    - "ProdCo may issue press releases"
+    - "without Amazon's approval"
+    - "ProdCo's sole discretion"
+    - "mutual approval for publicity"
+    - "ProdCo may use Amazon trademark"
+    - "blanket publicity approval"
+    - "deemed approved after"
+  must_have:
+    - "Amazon's prior written approval"
+    - "publicity"
+  strong_indicators:
+    - "press release"
+    - "public announcement"
+    - "Amazon's prior written approval"
+    - "social media"
+    - "marketing materials"
+    - "publicity or marketing"
+    - "Amazon trademark"

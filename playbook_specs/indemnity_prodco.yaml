@@ -269,7 +269,7 @@ detection_patterns:
     - "indemnify"
     - "defend"
     - "hold harmless"
-    - "Amazon" OR "Indemnitees" OR "Studio"
+    - '"Amazon" OR "Indemnitees" OR "Studio"'
   
   should_have:
     - "from and against"

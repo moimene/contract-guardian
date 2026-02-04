@@ -1,0 +1,10 @@
+{
+    "clause_instance_id": "test-liability-001",
+    "clause_id": "8.3",
+    "clause_text": "IN NO EVENT SHALL AMAZON BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, LOST REVENUE, OR LOST BUSINESS OPPORTUNITIES. AMAZON'S TOTAL AGGREGATE LIABILITY SHALL NOT EXCEED THE AMOUNTS PAID TO PRODCO UNDER THIS AGREEMENT IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM.",
+    "heading": "LIMITATION OF LIABILITY",
+    "run_id": "test-ll-001",
+    "document_id": "doc-test-ll-001",
+    "playbook_id": "PB_PSA_V1",
+    "contract_type": "nueva_planta"
+}

@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-aipolicy-001",
+    "clause_id": "ai-unrestricted",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000204",
+    "heading": "ARTIFICIAL INTELLIGENCE",
+    "clause_text": "ProdCo may use AI tools and generative AI services in the production of the Program at ProdCo's discretion. ProdCo may input materials into third-party AI services for training or generation purposes. AI-generated content shall be acceptable as deliverables. AI usage at ProdCo's discretion shall not require prior Amazon approval.",
+    "expected_result": {
+        "detected_family": "AIPolicy",
+        "red_flags_found_min": 3,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'ProdCo may use AI tools', 'may input into AI', 'AI-generated content acceptable', 'AI usage at ProdCo discretion'. Critical compliance violation."
+}

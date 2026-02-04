@@ -1,0 +1,13 @@
+{
+    "clause_instance_id": "canary-test-001-compliant",
+    "clause_id": "indemnity-compliant-clause",
+    "document_id": "test-document-001",
+    "run_id": "00000000-0000-0000-0000-000000000001",
+    "clause_text": "ProdCo shall indemnify, defend and hold harmless Amazon, its affiliates, and their respective officers, directors, employees, agents and representatives (collectively, the 'Amazon Indemnitees') from and against any and all claims, damages, losses, costs, and expenses (including reasonable attorneys' fees) arising out of or relating to: (a) any breach of ProdCo's representations, warranties, or obligations under this Agreement; (b) any claim that the Program or any element thereof infringes or misappropriates any intellectual property rights of any third party; (c) any personal injury or property damage caused by ProdCo or its personnel; and (d) any violation of applicable law by ProdCo. This indemnification shall be unlimited and shall survive the termination or expiration of this Agreement.",
+    "expected_result": {
+        "observations_count": 0,
+        "risk_level": "GREEN",
+        "final_status": "Compliant",
+        "notes": "This clause contains all must-have elements (indemnify, defend, hold harmless, Amazon Indemnitees) and no red flags. Should pass as compliant."
+    }
+}

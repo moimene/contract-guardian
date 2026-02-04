@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-taxprovisions-001",
+    "clause_id": "tax-amazon-responsibility",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000205",
+    "heading": "TAX PROVISIONS",
+    "clause_text": "Amazon shall be responsible for all taxes, including withholding tax and VAT, arising from payments under this Agreement. Amazon shall gross up all payments so that ProdCo receives the full amount net of any withholding. No withholding shall be applied to any payment. Amazon indemnifies ProdCo for any tax liability.",
+    "expected_result": {
+        "detected_family": "TaxProvisions",
+        "red_flags_found_min": 3,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'Amazon shall be responsible for all taxes', 'Amazon shall gross up', 'no withholding'. ProdCo should bear tax responsibility."
+}

@@ -1,0 +1,173 @@
+# ================================================================
+# PLAYBOOK SPEC: OtherUnknown
+# Generic Fallback Spec for Unclassified Clauses
+# Version: 2026-02-02 - Discovery Mode Architecture
+# ================================================================
+
+family_id: OtherUnknown
+display_name: "Unclassified Clause"
+priority: HIGH
+requires_legal_review: true
+
+# ================================================================
+# AMAZON'S POSITION
+# ================================================================
+amazon_position:
+  summary: |
+    For any clause not covered by a specific playbook spec, Amazon's general
+    contracting principles apply: asymmetric protection favoring Amazon, 
+    unlimited ProdCo obligations, Amazon control over the Program, broad rights
+    flowing to Amazon, and no knowledge or materiality qualifiers.
+  
+  core_requirements:
+    - Clause should not contain caps or limitations on ProdCo obligations
+    - Clause should not give ProdCo approval rights or control
+    - Clause should not contain knowledge or materiality qualifiers
+    - Any rights should flow to Amazon, not from Amazon
+    - Symmetric/mutual provisions should be rejected in favor of asymmetric
+
+# ================================================================
+# GENERAL CONTRACTING PRINCIPLES
+# These apply to ALL clauses regardless of family
+# ================================================================
+general_principles:
+  - id: PRINCIPLE_1
+    name: "Asymmetric Protection"
+    description: |
+      Amazon should receive MORE protection than it gives.
+      Mutual/symmetric provisions are generally disfavored.
+      ProdCo should bear more risk than Amazon.
+  
+  - id: PRINCIPLE_2
+    name: "Unlimited ProdCo Obligations"
+    description: |
+      ProdCo's indemnification, liability, and obligations should NOT be capped.
+      Any cap, limitation, or threshold on ProdCo obligations is a RED FLAG.
+      Amazon's obligations may be reasonably limited.
+  
+  - id: PRINCIPLE_3
+    name: "Amazon Control"
+    description: |
+      Amazon should retain sole and final control over the Program.
+      Any provision giving ProdCo approval rights, veto power, or control is suspect.
+      "Mutual approval" or "consent not unreasonably withheld" limits Amazon's discretion.
+  
+  - id: PRINCIPLE_4
+    name: "Broad Rights to Amazon"
+    description: |
+      Rights should flow TO Amazon, not FROM Amazon.
+      Any reversion, turnaround, or recapture language favors ProdCo.
+      Perpetual, worldwide, exclusive rights are standard.
+  
+  - id: PRINCIPLE_5
+    name: "Amazon-Favorable Procedures"
+    description: |
+      Notice requirements should not be conditions precedent that bar Amazon's rights.
+      Time periods should favor Amazon (longer for Amazon to act, shorter for ProdCo).
+      Dispute resolution should be California law, binding arbitration.
+  
+  - id: PRINCIPLE_6
+    name: "No Knowledge/Materiality Qualifiers"
+    description: |
+      "To ProdCo's knowledge", "material breach", "substantial" water down obligations.
+      Qualifiers reduce ProdCo's exposure and increase Amazon's risk.
+      Clear, unqualified obligations are preferred.
+
+# ================================================================
+# DETECTION PATTERNS
+# Universal red flags that apply to ANY clause
+# ================================================================
+detection_patterns:
+  red_flags:
+    # Caps/Limitations
+    - "shall not exceed"
+    - "capped at"
+    - "limited to"
+    - "maximum liability"
+    - "aggregate liability"
+    - "not to exceed"
+    
+    # Qualifiers
+    - "to ProdCo's knowledge"
+    - "to Producer's knowledge"
+    - "to the best of"
+    - "material breach"
+    - "material adverse"
+    - "substantially"
+    - "reasonable efforts"
+    - "best efforts"
+    - "commercially reasonable"
+    
+    # ProdCo Control
+    - "ProdCo may terminate"
+    - "ProdCo's sole discretion"
+    - "ProdCo approval required"
+    - "mutual consent"
+    - "consent not unreasonably withheld"
+    - "ProdCo shall have the right"
+    
+    # Rights Unfavorable to Amazon
+    - "rights shall revert"
+    - "automatic reversion"
+    - "turnaround"
+    - "recapture"
+    - "limited term"
+    - "non-exclusive"
+    - "territory limited"
+    
+    # Symmetric Language
+    - "each party shall"
+    - "both parties agree"
+    - "mutual indemnification"
+    - "reciprocal"
+    - "equally applicable"
+    - "symmetric"
+  
+  must_have: []  # Cannot define must-haves for unknown clauses
+  
+  strong_indicators: []  # No indicators - this is the fallback
+
+# ================================================================
+# ACCEPTABILITY MATRIX
+# ================================================================
+acceptability_matrix:
+  acceptable:
+    description: "Clause is administrative/boilerplate with no concerning language"
+    required_elements:
+      - No red flags present
+      - Amazon-favorable or neutral direction
+  
+  passable:
+    description: "Clause has minor concerns but is not critical"
+    variations:
+      - "Low-risk administrative provisions with standard mutual language"
+    requires_approval: "OC_DISCRETION"
+  
+  unacceptable:
+    description: "Any clause with red flags or ProdCo-favorable provisions"
+    patterns:
+      - "Any universal red flag detected"
+      - "ProdCo-favorable directional analysis"
+      - "Missing expected protections"
+
+# ================================================================
+# RISK ASSESSMENT
+# ================================================================
+risk_assessment:
+  default_risk: HIGH
+  escalation_triggers:
+    - "Any red flag detected in unclassified clause"
+    - "Discovery Agent recommends ESCALATE_CRITICAL"
+    - "Novel clause type requiring new playbook spec"
+    - "ProdCo-favorable provisions in any form"
+
+# ================================================================
+# NEGOTIATION GUIDANCE
+# ================================================================
+negotiation_guidance:
+  approach: "ESCALATE_HUMAN"
+  notes: |
+    Unclassified clauses should be escalated for human review. The human reviewer
+    should determine: (1) whether the clause fits an existing family, (2) whether
+    a new playbook spec is needed, (3) the appropriate treatment for this specific
+    agreement.

@@ -93,3 +93,36 @@ triggers:
     - "delay in notification"
     - "cooperate reasonably"
     - "participate, at its own expense"
+
+# ================================================================
+# DETECTION PATTERNS (CG-012 Guardrail)
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+detection_patterns:
+  red_flags:
+    - "notice as condition to indemnity"
+    - "sole control of settlement"
+    - "ProdCo may settle"
+    - "without Amazon's consent"
+    - "waives any right to participate"
+    - "Amazon waives participation"
+    - "counsel without Amazon's approval"
+    - "indemnitor-selected counsel only"
+    - "settlement without consent"
+    - "ten (10) days"
+    - "forfeit indemnification"
+    - "no right to participate"
+  must_have:
+    - "promptly notify"
+    - "assume the defense"
+    - "counsel reasonably acceptable"
+    - "prior written consent"
+  strong_indicators:
+    - "indemnification procedures"
+    - "notice of claim"
+    - "defense of such claim"
+    - "participate in the defense"
+    - "settlement"
+    - "consent to settlement"
+    - "right to participate"
+    - "cooperation with defense"

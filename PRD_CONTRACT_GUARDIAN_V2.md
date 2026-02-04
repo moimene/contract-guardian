@@ -1,22 +1,44 @@
-# PRD Contract Guardian v2.2
-## Sistema de Revision Automatizada de Contratos con RAG
+# PRD Contract Guardian v4.1
+## Sistema de Revisión Automatizada de Contratos con RAG + Multi-Agent Pipeline
 
 **Nombre del Producto**: Contract Guardian (anteriormente Amazon Redliner)
-**Version**: 2.2
-**Fecha**: Enero 2026
-**Estado**: ✅ PRODUCCION - Frontend Estabilizado 100%
+**Versión**: 4.1
+**Fecha**: Febrero 2026
+**Estado**: 🔄 DESARROLLO ACTIVO - Pipeline Estabilizado, Router en Optimización
 
-### Estado del Sistema (2026-01-30)
+---
+
+### Estado del Sistema (2026-02-01)
 
 | Componente | Estado | Detalles |
 |------------|--------|----------|
-| **Frontend (React/Vite)** | ✅ 100% Estable | BUILD PASS, LINT PASS |
-| **Pipeline W2** | ✅ Operativo | ~10s por clausula |
-| **RAG Search** | ✅ Activo | 1,367 policy_examples |
+| **Frontend (React/Vite)** | ✅ 100% Estable | BUILD PASS, TypeScript limpio |
+| **Pipeline W2 v4.1** | ✅ Operativo | RAG Enhanced, ~7-9s por cláusula |
+| **Pipeline W3 v3** | ✅ Estable | Stability + Armored Orchestration |
+| **RAG Search** | ✅ Activo | 1,367 policy_examples con embeddings |
 | **Edge Functions** | ✅ 9 activas | Todas verificadas |
-| **Tests E2E** | ✅ 9/9 pasados | 100% coverage |
-| **Router Agent** | ✅ 25 familias | 100% accuracy verificado |
-| **Playbook Specs** | ✅ 25 activos | High-fidelity grounding |
+| **Router v4.1** | ⚠️ 44.9% Accuracy | 22 familias + OtherUnknown (Target: 89%) |
+| **Playbook Specs** | ✅ 22 activos | YAML High-fidelity |
+| **Escalation Rate** | ⚠️ ~93% | Target: <15% |
+
+#### Métricas en Tiempo Real
+
+| KPI | Actual | Target | Gap |
+|-----|--------|--------|-----|
+| Router Accuracy | 44.9% | 89%+ | -44.1% 🔴 |
+| Escalation Rate | ~93% | <15% | +78% 🔴 |
+| Avg Review Time | 7-9s | <10s | ✅ |
+| RAG Examples | 1,367 | 1,500+ | -133 🟡 |
+| Pending Human Reviews | 50 | 0 | 50 🟡 |
+
+#### Contract Runs Status
+
+| Estado | Cantidad |
+|--------|----------|
+| CREATED | 31 |
+| PROCESSING | 8 (stuck) |
+| COMPLETED | 19 |
+| **Total** | 58 |
 
 ---
 
@@ -667,163 +689,429 @@ UNACCEPTABLE: 453 (33.1%) ████████████████
 
 ---
 
-## 6. Flujos de Trabajo n8n
+## 6. Flujos Agénticos Establecidos (E2E Pipeline v3)
 
-### 6.1 Arquitectura de Workflows
+> **Estado (2026-01-31)**: Pipeline E2E 100% operativo. UI sincronizada via Database Views.
 
-```
-+------------------------------------------------------------------+
-|                         W1: FILE UPLOAD                          |
-|  Trigger: Webhook POST /file-upload                              |
-|  Input: {file_id, file_name, contract_type}                      |
-|  Process:                                                        |
-|    1. Create document record                                     |
-|    2. Resolve blueprint_version_id from contract_type            |
-|    3. Extract text from DOCX/PDF                                 |
-|    4. Create contract_run                                        |
-|  Output: {document_id, run_id, blueprint_version_id}             |
-+------------------------------------------------------------------+
-                           |
-                           v
-+------------------------------------------------------------------+
-|                    W3: CONTRACT REVIEW                           |
-|  Trigger: Webhook POST /contract-review                          |
-|  Input: {document_id, run_id, raw_content}                       |
-|  Process:                                                        |
-|    1. Resolve config (blueprint, contract_model)                 |
-|    2. Extract clauses (LLM or heuristic)                         |
-|    3. Save clause_instances                                      |
-|    4. For each clause: Call W2                                   |
-|    5. Aggregate results                                          |
-|    6. Generate report                                            |
-|  Output: {run_id, clauses_reviewed, escalations}                 |
-+------------------------------------------------------------------+
-                           |
-                           v (per clause)
-+------------------------------------------------------------------+
-|                 W2: CLAUSE REVIEW (RAG ENHANCED)                 |
-|  Trigger: Webhook POST /clause-review                            |
-|  Input: {clause_text, clause_id, blueprint_version_id}           |
-|  Process:                                                        |
-|    1. Generate embedding (OpenAI)                                |
-|    2. RAG Search (search_policy_examples)                        |
-|    3. Process RAG results (group by acceptance)                  |
-|    4. Router Agent (classify matter)                             |
-|    5. Paranoid Agent (with RAG context)                          |
-|    6. Valuator Agent (with RAG context)                          |
-|    7. Decisor (deterministic)                                    |
-|    8. Sanitizer Agent                                            |
-|    9. Save to clause_reviews                                     |
-|  Output: {clause_review object}                                  |
-+------------------------------------------------------------------+
-```
+### 6.0 Diagrama de Arquitectura E2E
 
-### 6.2 W2 Nodos Detallados
-
-| # | Nodo | Tipo | Proposito |
-|---|------|------|-----------|
-| 1 | Webhook | n8n-nodes-base.webhook | Recibe POST /clause-review |
-| 2 | Parse Input | Code | Extrae y valida campos |
-| 3 | Generate Embedding | HTTP Request | POST a OpenAI /v1/embeddings |
-| 4 | Extract Embedding | Code | Extrae vector del response |
-| 5 | RAG Search | Supabase | Ejecuta search_policy_examples() |
-| 6 | Process RAG Results | Code | Agrupa por acceptance, calcula suggested |
-| 7 | Router Agent | HTTP Request | POST a OpenAI /v1/chat/completions |
-| 8 | Parse Router | Code | Parsea JSON response |
-| 9 | Paranoid Agent | HTTP Request | POST con RAG context |
-| 10 | Parse Paranoid | Code | Parsea JSON response |
-| 11 | Valuator Agent | HTTP Request | POST con RAG context |
-| 12 | Parse Valuator | Code | Parsea JSON response |
-| 13 | Decisor | Code | Matriz de decision determinista |
-| 14 | Sanitizer Agent | HTTP Request | POST para sanitizar |
-| 15 | Build Result | Code | Construye objeto final |
-| 16 | Save to clause_reviews | Supabase | INSERT en DB |
-| 17 | Respond | respondToWebhook | Devuelve resultado |
-
-### 6.3 Configuracion de Credenciales
-
-| Credencial | ID | Uso |
-|------------|-----|-----|
-| OpenAI API | SIqSVUfX83ooZaUa | Embeddings + Agentes |
-| Supabase API | 4xA4P6BVQQ2lcvuG | Base de datos |
-
-### 6.4 Endpoints Webhook
-
-| Workflow | Endpoint | Metodo |
-|----------|----------|--------|
-| W1 | `/webhook/file-upload` | POST |
-| W2 | `https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag` | POST |
-| W3 | `/webhook/contract-review` | POST |
-
-### 6.5 Edge Functions Supabase
-
-El sistema cuenta con **9 Edge Functions** desplegadas en Supabase:
-
-| Funcion | Endpoint | JWT | Proposito |
-|---------|----------|-----|-----------|
-| `start_review` | POST /start_review | Si | Iniciar revision de contrato |
-| `update_run_status` | POST /update_run_status | No | Webhook retorno de n8n |
-| `generate_export` | POST /generate_export | No | Exportar documento (Markdown) |
-| `monitoring` | POST /monitoring | No | Dashboard de metricas |
-| `request_review` | POST /request_review | Si | Solicitar revision humana |
-| `export_doc` | POST /export_doc | Si | Exportar DOCX (via n8n) |
-| `n8n-proxy` | POST /n8n-proxy | No | Proxy seguro para n8n |
-| `admin_setup` | POST /admin_setup | No | Configuracion admin |
-
-#### Ejemplo: Iniciar Revision
-```bash
-curl -X POST "https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/start_review" \
-  -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "document_id": "uuid",
-    "contract_type_id": "dsa_streaming_v1"
-  }'
+```mermaid
+flowchart TB
+    subgraph Frontend["Frontend React + Vite"]
+        UI["ContractReview.tsx"]
+        Hook["useContractReviews.ts"]
+    end
+    
+    subgraph Supabase["Supabase"]
+        EF["Edge Function: start_review"]
+        DB[("PostgreSQL")]
+        View["clause_reviews_view"]
+        CI["clause_instances"]
+        CRI["clause_reviews_internal"]
+    end
+    
+    subgraph N8N["n8n Cloud Workflows"]
+        W1["W1_FileUpload"]
+        W3["W3_ContractReview"]
+        W2["W2_ClauseReview RAG"]
+    end
+    
+    subgraph AI["OpenAI API"]
+        GPT4["GPT-4o"]
+        GPT4M["GPT-4o-mini"]
+        EMB["text-embedding-3-small"]
+    end
+    
+    UI --> |"Upload Document"| EF
+    EF --> |"Trigger"| W1
+    W1 --> |"Creates document + run"| DB
+    W1 --> |"Calls"| W3
+    W3 --> |"Extract Text"| EF
+    W3 --> |"AI Parse Clauses"| GPT4
+    W3 --> |"Insert"| CI
+    W3 --> |"For each clause"| W2
+    W2 --> |"Generate Embedding"| EMB
+    W2 --> |"RAG Search"| DB
+    W2 --> |"Keyword Router"| GPT4M
+    W2 --> |"Router Agent"| GPT4M
+    W2 --> |"Paranoid Agent"| GPT4
+    W2 --> |"Valuator Agent"| GPT4
+    W2 --> |"Sanitizer Agent"| GPT4M
+    W2 --> |"Save Result"| CRI
+    
+    View --> |"JOIN"| CI
+    View --> |"JOIN"| CRI
+    Hook --> |"Query"| View
+    UI --> |"Display"| Hook
 ```
 
-#### Ejemplo: Obtener Metricas de Monitoreo
-```bash
-curl -s "https://hvlsuwdqtffiilvampxq.supabase.co/functions/v1/monitoring" | jq '.dashboard.overview'
+### 6.1 Workflows Activos en Producción
+
+| ID | Workflow | Estado | Endpoint | Última Actualización |
+|----|----------|--------|----------|----------------------|
+| `KFEFRtero2u5mqnA` | **W1_DriveIngest** | ⚠️ DEPRECATED | N/A | 2026-01-31 |
+| `YzXEmynMgRCQsihN` | **W3_ContractReview - Stability v3** | ✅ Activo | `/webhook/contract-review-v3` | 2026-02-01 |
+| `NjadjA14ODg3lQbP` | **W2_ClauseReview - RAG Enhanced v4.1** | ✅ Activo | `/webhook/clause-review-rag` | 2026-02-01 |
+
+> **Nota sobre W1**: Deprecado el 31-01-2026. La ingesta de documentos ahora es responsabilidad del frontend
+> (`NewAnalysis.tsx`), que realiza upload directo a Supabase Storage y triggerea `start_review` Edge Function.
+> Ver `n8n/W1_DEPRECATED.md` para más detalles.
+
+---
+
+### 6.2 W1: DriveIngest - ⚠️ DEPRECATED
+
+> [!WARNING]
+> **W1 fue deprecado el 31-01-2026**. El flujo actual ya no requiere este workflow.
+
+#### Razón de Deprecación
+
+El frontend ahora gestiona directamente la ingesta:
+
+| Capacidad Original W1 | Cobertura Actual |
+|----------------------|------------------|
+| Download desde Google Drive | ❌ No requerido - UI hace upload directo |
+| Upload a Supabase Storage | ✅ Frontend (`NewAnalysis.tsx`) |
+| Crear registro en `documents` | ✅ Frontend |
+| Trigger workflow siguiente | ✅ Edge Function `start_review` |
+
+#### Flujo Actual (sin W1)
+
+```
+UI Upload → Supabase Storage + documents → start_review EF → W3 → W2
 ```
 
-Respuesta:
-```json
+#### Posible Reactivación
+- Ingesta batch automatizada desde Google Drive
+- Migración de documentos legacy
+
+Ver `n8n/W1_DEPRECATED.md` para documentación completa.
+
+---
+
+### 6.3 W3: ContractReview - Document Orchestrator
+
+**Propósito**: Orquesta la extracción de texto, parsing de cláusulas con AI, y distribución a W2 para revisión individual.
+
+#### Arquitectura "Armored Orchestration"
+
+W3 implementa un patrón robusto de orquestación con:
+1. **Pre-cálculo de parámetros** para evitar errores de referencia
+2. **Update status inmediato** para feedback en UI
+3. **Extracción de texto vía Edge Function** (compatible con Deno/Uint8Array)
+4. **AI Parsing con GPT-4o** para segmentación de cláusulas
+5. **Procesamiento secuencial con batching** para llamadas a W2
+6. **Agregación de resultados** antes de marcar como COMPLETED
+
+#### Flujo de Nodos
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Webhook → Pre-calc Params → Update Run PROCESSING → Extract Text EF    │
+│                                                           ↓             │
+│                   Update Run COMPLETED ← Aggregate ← Call W2 (batch)   │
+│                                                           ↑             │
+│                                       Insert Clauses ← Format & Split  │
+│                                                           ↑             │
+│                                                    AI Parse Clauses    │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Nodos Detallados
+
+| # | Nodo | Tipo | Función |
+|---|------|------|---------|
+| 1 | Webhook | `webhook` | POST `/contract-review-v3`, responseMode: onReceived |
+| 2 | Pre-calc Params | `code` | Construye URLs y payloads para updates |
+| 3 | Update Run Processing | `httpRequest` | PATCH `contract_runs` → status: PROCESSING |
+| 4 | Extract Text EF | `httpRequest` | Llama Edge Function `extract_text` |
+| 5 | AI Parse Clauses | `httpRequest` | GPT-4o para segmentar texto en cláusulas |
+| 6 | Format & Split | `code` | Transforma respuesta AI en items individuales |
+| 7 | Insert Clauses | `httpRequest` | POST batch a `clause_instances` con return=representation |
+| 8 | Call W2 Review | `httpRequest` | Llama W2 para cada cláusula (batching: 1 item/request) |
+| 9 | Aggregate Results | `aggregate` | Recolecta todas las respuestas de W2 |
+| 10 | Update Run Completed | `httpRequest` | PATCH `contract_runs` → status: COMPLETED |
+
+#### AI Parse Clauses - Prompt System
+
+```javascript
+// System Prompt (extracto)
+"You are a legal document parser. Extract ALL distinct clauses from this contract.
+ For each clause, identify:
+ - index: Sequential number
+ - heading: Clause title or article number
+ - original_text: Complete clause text
+
+ Return a JSON array of clauses."
+
+// Output Schema
 {
-  "total_documents": 14,
-  "total_runs": 15,
-  "completed_runs": 8,
-  "processing_runs": 2,
-  "total_examples": 1367,
-  "total_reviews": 33
+  "clauses": [
+    {
+      "index": 1,
+      "heading": "Services",
+      "original_text": "ProdCo shall provide production services..."
+    }
+  ]
 }
 ```
 
-### 6.6 Vistas de Monitoreo SQL
+#### Patrón de Persistencia PostgREST
 
-```sql
--- Overview general
-SELECT * FROM monitoring_overview;
-
--- Actividad reciente (24h)
-SELECT * FROM monitoring_recent_activity;
-
--- Performance de runs
-SELECT * FROM monitoring_run_performance;
-
--- Errores
-SELECT * FROM monitoring_errors;
-
--- Stats RAG por matter
-SELECT * FROM monitoring_rag_stats;
+```javascript
+// Headers críticos para Insert Clauses
+{
+  "Prefer": "return=representation",  // Retorna el registro insertado
+  "Authorization": "Bearer <service_role_key>"
+}
 ```
 
-### 6.7 Funciones RPC
+---
 
-| Funcion | Proposito |
-|---------|-----------|
-| `search_policy_examples()` | Busqueda semantica por embedding |
-| `get_monitoring_dashboard()` | Dashboard completo de metricas |
-| `is_superuser()` | Verificar permisos de superusuario |
+### 6.4 W2: ClauseReview - RAG Enhanced Multi-Agent Pipeline
+
+**Propósito**: Pipeline de 6 agentes especializados que analiza cada cláusula con RAG y produce recomendaciones sanitizadas.
+
+#### Arquitectura Multi-Agente
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        W2 - CLAUSE REVIEW PIPELINE                      │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  Webhook → Parse Input → Keyword Router (deterministic)                 │
+│                                ↓                                        │
+│           Generate Embedding (text-embedding-3-small)                   │
+│                                ↓                                        │
+│              RAG Search (search_policy_examples)                        │
+│                                ↓                                        │
+│           ┌──────────────────────────────────────┐                      │
+│           │ 1. Router Agent (gpt-4o-mini)        │ → Clasifica materia │
+│           │ 2. Paranoid Agent (gpt-4o)           │ → Detecta issues    │
+│           │ 3. Valuator Agent (gpt-4o)           │ → Valora + redlines │
+│           │ 4. Decisor (determinístico)          │ → Matriz decisión   │
+│           │ 5. Decision Engine v2                │ → Final decision    │
+│           │ 6. Sanitizer Agent (gpt-4o-mini)     │ → Output cliente    │
+│           └──────────────────────────────────────┘                      │
+│                                ↓                                        │
+│       Build Result → Save to clause_reviews_internal                    │
+│                                ↓                                        │
+│              Save to sanitizer_outputs → Respond                        │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Nodos Detallados (25 nodos)
+
+| # | Nodo | Modelo | Función |
+|---|------|--------|---------|
+| 1 | Webhook | - | POST `/clause-review-rag` |
+| 2 | Parse Input | code | Valida y extrae campos |
+| 3 | Keyword Router | code | Router determinístico por keywords (25 familias) |
+| 4 | Generate Embedding | OpenAI | text-embedding-3-small (1536 dims) |
+| 5 | RAG Search | Supabase RPC | `search_policy_examples()` |
+| 6 | Process RAG Results | code | Agrupa por acceptance level |
+| 7 | Router Agent | gpt-4o-mini | Clasifica en 1 de 25 familias |
+| 8 | Paranoid Agent | gpt-4o | Alta recall - detecta TODOS los issues |
+| 9 | Valuator Agent | gpt-4o | Decide acceptance + propone redlines |
+| 10 | Decisor Deterministic | code | Matriz de decisión basada en thresholds |
+| 11 | Decision Engine v2 | code | Lógica final de escalación |
+| 12 | Sanitizer Agent | gpt-4o-mini | Limpia output para cliente |
+| 13 | Build Result | code | Construye objeto final |
+| 14 | Save to clause_reviews_internal | httpRequest | POST a Supabase |
+| 15 | Save to sanitizer_outputs | httpRequest | Audit trail |
+| 16 | Respond | respondToWebhook | Retorna resultado |
+
+#### Keyword Router - 25 Familias Soportadas
+
+```javascript
+const FAMILY_KEYWORDS = {
+  'Confidentiality': ['confidential', 'secret', 'proprietary', 'NDA'],
+  'PaymentCredits': ['payment', 'compensation', 'fee', 'invoice', 'credit'],
+  'TerminationRights': ['termination', 'terminate', 'rescind', 'cancel'],
+  'IndemnityProdCo': ['indemnify', 'hold harmless', 'defend', 'indemnification'],
+  'IndemnityAmazon': ['amazon indemnif', 'company shall indemnify'],
+  'RightsGrant': ['grant', 'license', 'rights', 'ownership', 'IP'],
+  'RepsProdCo': ['represents', 'warrants', 'producer represents'],
+  'RepsAmazon': ['amazon represents', 'company represents'],
+  'LiabilityLimitation': ['limitation of liability', 'cap', 'ceiling'],
+  'Insurance': ['insurance', 'policy', 'coverage', 'insured'],
+  'ForceMajeure': ['force majeure', 'act of god', 'unforeseeable'],
+  'DisputeResolution': ['dispute', 'arbitration', 'mediation', 'governing law'],
+  'DeliveryMilestones': ['delivery', 'milestone', 'schedule', 'deadline'],
+  'ServicesScope': ['services', 'scope', 'deliverables', 'work product'],
+  // ... 11 más familias
+};
+```
+
+#### RAG Search - Función RPC
+
+```sql
+SELECT * FROM search_policy_examples(
+  query_embedding := $embedding,
+  match_threshold := 0.6,
+  match_count := 10,
+  filter_matter_policy_id := NULL
+);
+
+-- Returns:
+-- id, example_text, acceptance, similarity, clause_type_name, matter_policy_name
+```
+
+#### Decisor - Matriz de Decisión
+
+| final_status | confidence | Acción | client_state |
+|--------------|------------|--------|---------------|
+| ACCEPTABLE | >= 0.7 | AUTO_PASS | OK |
+| ACCEPTABLE | < 0.7 | ESCALATE | NEEDS_REVIEW |
+| PASSABLE | >= 0.5 | AUTO_PASS | RECOMMENDED |
+| PASSABLE | < 0.5 | ESCALATE | NEEDS_REVIEW |
+| UNACCEPTABLE | >= 0.7 | AUTO_REDLINE | REQUIRED |
+| UNACCEPTABLE | < 0.7 | ESCALATE | NEEDS_REVIEW |
+| NotCovered | any | ESCALATE | BLOCKED |
+
+#### Output a `clause_reviews_internal`
+
+```javascript
+{
+  "clause_instance_id": "uuid",
+  "run_id": "uuid",
+  "document_id": "uuid",
+  "detected_family": "Confidentiality",
+  "confidence_overall": 0.85,
+  "decision": "ESCALATE_HUMAN",
+  "escalation_recommended": true,
+  "escalation_reason": "CRITICAL_ISSUE_DETECTED",
+  "observations": {
+    "summary": "The clause lacks AI tool use restriction...",
+    "observations": [
+      {
+        "issue": "No explicit mention of AI tool use restriction",
+        "description": "The clause does not address...",
+        "change_type": "modified",
+        "confidence": 0.7
+      }
+    ]
+  },
+  "proposed_changes": [],
+  "created_at": "2026-01-31T04:24:34.530Z"
+}
+```
+
+---
+
+### 6.5 Capa de Sincronización UI: Database Views
+
+**Problema Resuelto**: W2 guarda en `clause_reviews_internal` pero el frontend esperaba `clause_reviews`.
+
+**Solución**: Database View `clause_reviews_view` que:
+1. Une `clause_instances` (texto, heading) con `clause_reviews_internal` (análisis)
+2. Transforma `observations[]` → `proposed_changes[]` para el formato UI
+3. Mapea `decision` → `client_state` (ESCALATE_HUMAN → NEEDS_REVIEW)
+
+#### Vista SQL
+
+```sql
+CREATE OR REPLACE VIEW clause_reviews_view AS
+SELECT 
+    ci.id::text as clause_instance_id,
+    ci.document_id::text,
+    ci.run_id::text,
+    ci.clause_index as sequence_number,
+    ci.heading,
+    ci.original_text as clause_text,
+    
+    COALESCE(cri.detected_family, 'Desconocida') as detected_family,
+    COALESCE(cri.confidence_overall, 0)::numeric as confidence_score,
+    
+    -- Map decision to client_state
+    CASE COALESCE(cri.decision, 'ESCALATE_HUMAN')
+        WHEN 'ACCEPT_AS_IS' THEN 'OK'
+        WHEN 'APPROVE_WITH_NOTES' THEN 'RECOMMENDED'
+        WHEN 'REQUEST_MODIFICATION' THEN 'REQUIRED'
+        WHEN 'ESCALATE_HUMAN' THEN 'NEEDS_REVIEW'
+        WHEN 'REJECT' THEN 'BLOCKED'
+        ELSE 'NEEDS_REVIEW'
+    END as client_state,
+    
+    COALESCE(cri.observations->>'summary', '') as client_summary_line,
+    
+    -- Transform observations to proposed_changes format
+    COALESCE(
+        (SELECT jsonb_agg(
+            jsonb_build_object(
+                'change_id', gen_random_uuid()::text,
+                'op_type', 'REPLACE',
+                'reason', obs->>'issue',
+                'suggested_text', obs->>'description',
+                'accepted', false,
+                'rejected', false
+            )
+        ) FROM jsonb_array_elements(cri.observations->'observations') AS obs),
+        '[]'::jsonb
+    ) as proposed_changes,
+    
+    COALESCE(cri.escalation_recommended, false) as escalation_recommended,
+    cri.escalation_reason,
+    ci.created_at,
+    ci.updated_at
+    
+FROM clause_instances ci
+LEFT JOIN clause_reviews_internal cri 
+    ON ci.id::text = cri.clause_instance_id;
+```
+
+#### Integración Frontend
+
+```typescript
+// useContractReviews.ts - ANTES
+.from('clause_reviews')
+
+// useContractReviews.ts - DESPUÉS  
+.from('clause_reviews_view')  // Query desde view
+
+// useClauseActions.ts - Mutations
+.from('clause_reviews_internal')  // Escribe en tabla real
+```
+
+---
+
+### 6.6 Edge Functions Supabase (9 activas)
+
+| Función | Endpoint | JWT | Propósito |
+|---------|----------|-----|-----------|
+| `start_review` | POST | Sí | Iniciar revisión, trigger W1 |
+| `update_run_status` | POST | No | Callback de n8n para status |
+| `extract_text` | POST | No | Extracción texto PDF/DOCX (Deno) |
+| `generate_export` | POST | No | Exportar documento Markdown |
+| `monitoring` | POST | No | Dashboard de métricas |
+| `request_review` | POST | Sí | Solicitar revisión humana |
+| `n8n-proxy` | POST | No | Proxy seguro para n8n Cloud |
+| `admin_setup` | POST | No | Configuración admin |
+| `export_doc` | POST | Sí | Exportar DOCX vía n8n |
+
+#### Patrón Deno-Compatible (Uint8Array vs Buffer)
+
+```typescript
+// Edge Function: extract_text
+// CRÍTICO: n8n Cloud usa Node.js pero Edge Functions usan Deno
+const fileData = new Uint8Array(await response.arrayBuffer());
+// NO usar Buffer.from() - no disponible en Deno
+```
+
+---
+
+### 6.7 Métricas de Performance
+
+| Métrica | Valor Actual |
+|---------|-------------|
+| Tiempo W1 (upload) | ~2s |
+| Tiempo W3 (extracción + parsing) | ~15s |
+| Tiempo W2 (por cláusula) | ~10s |
+| Tiempo E2E (10 cláusulas) | ~2min |
+| RAG Examples disponibles | 1,367 |
+| Familias soportadas | 25 |
+| Accuracy Router | 100% (verificado) |
 
 ---
 

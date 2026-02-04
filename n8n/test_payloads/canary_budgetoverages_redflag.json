@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-budgetoverages-001",
+    "clause_id": "budget-amazon-pays-overages",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000207",
+    "heading": "BUDGET AND OVERAGES",
+    "clause_text": "The approved production budget is set forth in Exhibit B. Amazon shall pay all overages incurred in the production of the Program. There shall be no cap on overages payable by Amazon. ProdCo shall not be responsible for any cost overruns. Amazon pre-approves all contingency spending. Amazon bears the contingency reserve.",
+    "expected_result": {
+        "detected_family": "BudgetOverages",
+        "red_flags_found_min": 4,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'Amazon shall pay all overages', 'no cap on overages', 'ProdCo not responsible for overages', 'Amazon pre-approves overages', 'Amazon bears contingency'. ProdCo should bear overage risk."
+}

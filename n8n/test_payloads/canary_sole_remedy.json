@@ -1,0 +1,25 @@
+{
+    "clause_instance_id": "canary-test-004-sole-remedy",
+    "clause_id": "indemnity-sole-remedy-clause",
+    "document_id": "test-document-002",
+    "run_id": "00000000-0000-0000-0000-000000000004",
+    "clause_text": "ProdCo shall indemnify, defend and hold harmless Amazon from and against any claims arising out of ProdCo's breach of this Agreement. The indemnification provided herein shall be Amazon's sole and exclusive remedy for any such claims, and Amazon waives any right to seek other relief.",
+    "expected_result": {
+        "observations_count_min": 1,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation",
+        "expected_observations": [
+            {
+                "pattern_matched": "sole remedy",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            },
+            {
+                "pattern_matched": "exclusive remedy",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            }
+        ],
+        "notes": "Red flag: 'sole and exclusive remedy' limits Amazon's options for relief."
+    }
+}

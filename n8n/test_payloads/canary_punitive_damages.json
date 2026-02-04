@@ -1,0 +1,30 @@
+{
+    "clause_instance_id": "canary-test-006-punitive",
+    "clause_id": "indemnity-punitive-exclusion-clause",
+    "document_id": "test-document-004",
+    "run_id": "00000000-0000-0000-0000-000000000006",
+    "clause_text": "ProdCo shall indemnify, defend and hold harmless Amazon from all claims arising from this Agreement. In no event shall ProdCo be liable for punitive damages, and any indirect damages or consequential losses are expressly excluded from this indemnification obligation.",
+    "expected_result": {
+        "observations_count_min": 3,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation",
+        "expected_observations": [
+            {
+                "pattern_matched": "punitive",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            },
+            {
+                "pattern_matched": "indirect damages",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            },
+            {
+                "pattern_matched": "consequential",
+                "possible_category": "MatchesUnacceptable",
+                "severity": "high"
+            }
+        ],
+        "notes": "Red flags: exclusion of punitive, indirect, and consequential damages weakens indemnification coverage."
+    }
+}

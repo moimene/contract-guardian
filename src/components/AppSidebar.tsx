@@ -12,7 +12,8 @@ import {
   X,
   AlertTriangle,
   Book,
-  Share2
+  Share2,
+  Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/new', label: 'Nuevo Análisis', icon: FilePlus },
   { href: '/escalations', label: 'Escalaciones', icon: AlertTriangle },
+  { href: '/observability', label: 'Observabilidad', icon: Activity },
 ];
 
 const configItems = [

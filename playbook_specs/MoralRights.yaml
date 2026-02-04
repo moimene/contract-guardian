@@ -1,0 +1,33 @@
+# ================================================================
+# PLAYBOOK SPEC: MoralRights
+# Moral Rights / Droit Moral
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: MoralRights
+display_name: "Moral Rights / Droit Moral"
+priority: CRITICAL
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "reserves moral rights"
+    - "retains moral rights"
+    - "shall not waive"
+    - "ProdCo may exercise"
+    - "author's rights preserved"
+    - "droit moral retained"
+    - "paternity right"
+    - "integrity right retained"
+    - "credit removal not permitted"
+  must_have:
+    - "waive"
+    - "moral rights"
+  strong_indicators:
+    - "waives any and all moral rights"
+    - "droit moral"
+    - "non-exercise of moral rights"
+    - "irrevocably waives"
+    - "author's moral rights"
+    - "right of integrity"
+    - "right of paternity"

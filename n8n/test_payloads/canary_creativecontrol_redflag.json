@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-creativecontrol-001",
+    "clause_id": "creative-control-shared",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000202",
+    "heading": "CREATIVE CONTROL",
+    "clause_text": "ProdCo shall have final approval over all creative decisions relating to the Program, including but not limited to casting, script, and directing. Amazon shall provide meaningful consultation but mutual approval shall be required for any material changes to the creative direction. ProdCo retains creative control over the artistic elements.",
+    "expected_result": {
+        "detected_family": "CreativeControl",
+        "red_flags_found_min": 3,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'ProdCo shall have final approval', 'mutual approval required', 'ProdCo retains creative control'. Amazon should have sole control."
+}

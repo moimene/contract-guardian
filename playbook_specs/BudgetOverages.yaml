@@ -1,0 +1,30 @@
+# ================================================================
+# PLAYBOOK SPEC: BudgetOverages
+# Budget & Overages
+# Version: 2026-02-02 - From Legal Team Review
+# ================================================================
+
+family_id: BudgetOverages
+display_name: "Budget & Overages"
+priority: HIGH
+requires_legal_review: true
+
+detection_patterns:
+  red_flags:
+    - "Amazon shall pay all overages"
+    - "overages at Amazon's expense"
+    - "no cap on overages"
+    - "ProdCo not responsible for overages"
+    - "Amazon pre-approves overages"
+    - "cost plus"
+    - "actual costs plus"
+    - "Amazon bears contingency"
+  must_have:
+    - "budget"
+  strong_indicators:
+    - "approved budget"
+    - "cost overruns"
+    - "overage"
+    - "contingency"
+    - "actual costs"
+    - "approved production budget"

@@ -1,0 +1,15 @@
+{
+    "clause_instance_id": "canary-keypersons-001",
+    "clause_id": "key-persons-prodco-discretion",
+    "document_id": "test-document-canary",
+    "run_id": "00000000-0000-0000-0000-000000000203",
+    "heading": "KEY PERSONS",
+    "clause_text": "The Key Persons for this Program are [DIRECTOR] and [LEAD ACTOR]. If any Key Person becomes unavailable, ProdCo may replace such Key Person at ProdCo's sole discretion without requiring Amazon's approval. ProdCo shall not be obligated to secure pay-or-play commitments. Automatic termination shall apply if Key Person is unavailable for more than 30 days.",
+    "expected_result": {
+        "detected_family": "KeyPersons",
+        "red_flags_found_min": 2,
+        "risk_level": "RED",
+        "final_status": "UnacceptableDeviation"
+    },
+    "test_notes": "Contains red flags: 'ProdCo may replace', 'ProdCo sole discretion to replace', 'automatic termination if unavailable'. Amazon should approve replacements."
+}

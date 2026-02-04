@@ -102,7 +102,7 @@ function StatsCard({
                         trend.positive ? "text-green-600" : "text-red-600"
                     )}>
                         <TrendingUp className={cn("h-3 w-3 mr-1", !trend.positive && "rotate-180")} />
-                        {trend.value}% vs última semana
+                        {trend.value}% vs last week
                     </div>
                 )}
             </CardContent>
@@ -116,19 +116,19 @@ function StatsCard({
 
 function FailurePatternsTable({ patterns }: { patterns: FailurePattern[] }) {
     const typeLabels: Record<string, { label: string; color: string }> = {
-        'low_confidence': { label: 'Baja Confianza', color: 'bg-amber-100 text-amber-800' },
-        'keyword_fallback': { label: 'Fallback a LLM', color: 'bg-blue-100 text-blue-800' },
-        'unknown_classification': { label: 'No Clasificado', color: 'bg-red-100 text-red-800' },
-        'low_anchor_confidence': { label: 'Anchor Bajo', color: 'bg-purple-100 text-purple-800' },
-        'hallucination_detected': { label: 'Alucinación', color: 'bg-red-100 text-red-800' },
+        'low_confidence': { label: 'Low Confidence', color: 'bg-amber-100 text-amber-800' },
+        'keyword_fallback': { label: 'LLM Fallback', color: 'bg-blue-100 text-blue-800' },
+        'unknown_classification': { label: 'Unclassified', color: 'bg-red-100 text-red-800' },
+        'low_anchor_confidence': { label: 'Low Anchor', color: 'bg-purple-100 text-purple-800' },
+        'hallucination_detected': { label: 'Hallucination', color: 'bg-red-100 text-red-800' },
     }
 
     if (patterns.length === 0) {
         return (
             <div className="text-center py-8 text-muted-foreground">
                 <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-500" />
-                <p>No hay patrones de fallo detectados</p>
-                <p className="text-sm">El sistema está funcionando correctamente</p>
+                <p>No failure patterns detected</p>
+                <p className="text-sm">The system is functioning correctly</p>
             </div>
         )
     }
@@ -153,7 +153,7 @@ function FailurePatternsTable({ patterns }: { patterns: FailurePattern[] }) {
                             <div>
                                 <p className="font-medium">{pattern.agent_name}</p>
                                 <p className="text-sm text-muted-foreground">
-                                    Confianza promedio: {(pattern.avg_confidence * 100).toFixed(1)}%
+                                    Avg. Confidence: {(pattern.avg_confidence * 100).toFixed(1)}%
                                 </p>
                             </div>
                         </div>
@@ -162,7 +162,7 @@ function FailurePatternsTable({ patterns }: { patterns: FailurePattern[] }) {
                                 {pattern.occurrence_count}
                             </Badge>
                             <p className="text-xs text-muted-foreground mt-1">
-                                ocurrencias
+                                occurrences
                             </p>
                         </div>
                     </div>
@@ -201,11 +201,11 @@ function FeedbackDialog({ review, onClose, onSubmit }: FeedbackDialogProps) {
     }
 
     const decisionOptions = [
-        { value: 'CONFIRM_ACCEPT', label: 'Confirmar Aceptación', color: 'bg-green-100 text-green-800 border-green-300' },
-        { value: 'CONFIRM_REJECT', label: 'Confirmar Rechazo', color: 'bg-red-100 text-red-800 border-red-300' },
-        { value: 'OVERRIDE_ACCEPT', label: 'Sobrescribir → Aceptar', color: 'bg-blue-100 text-blue-800 border-blue-300' },
-        { value: 'OVERRIDE_REJECT', label: 'Sobrescribir → Rechazar', color: 'bg-amber-100 text-amber-800 border-amber-300' },
-        { value: 'NEEDS_REVIEW', label: 'Requiere más revisión', color: 'bg-purple-100 text-purple-800 border-purple-300' },
+        { value: 'CONFIRM_ACCEPT', label: 'Confirm Accept', color: 'bg-green-100 text-green-800 border-green-300' },
+        { value: 'CONFIRM_REJECT', label: 'Confirm Reject', color: 'bg-red-100 text-red-800 border-red-300' },
+        { value: 'OVERRIDE_ACCEPT', label: 'Override → Accept', color: 'bg-blue-100 text-blue-800 border-blue-300' },
+        { value: 'OVERRIDE_REJECT', label: 'Override → Reject', color: 'bg-amber-100 text-amber-800 border-amber-300' },
+        { value: 'NEEDS_REVIEW', label: 'Needs More Review', color: 'bg-purple-100 text-purple-800 border-purple-300' },
     ]
 
     return (
@@ -215,7 +215,7 @@ function FeedbackDialog({ review, onClose, onSubmit }: FeedbackDialogProps) {
                 <div className="flex items-center justify-between p-4 border-b">
                     <div className="flex items-center gap-3">
                         <MessageSquare className="h-5 w-5 text-primary" />
-                        <h2 className="text-lg font-semibold">Feedback de Revisión</h2>
+                        <h2 className="text-lg font-semibold">Review Feedback</h2>
                     </div>
                     <Button variant="ghost" size="icon" onClick={onClose}>
                         <X className="h-4 w-4" />
@@ -235,18 +235,18 @@ function FeedbackDialog({ review, onClose, onSubmit }: FeedbackDialogProps) {
                                 review.confidence_overall < 0.5 ? "bg-red-100 text-red-700" :
                                     review.confidence_overall < 0.7 ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"
                             )}>
-                                Confianza: {(review.confidence_overall * 100).toFixed(0)}%
+                                Confidence: {(review.confidence_overall * 100).toFixed(0)}%
                             </div>
                         </div>
 
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-1">Decisión del Sistema:</p>
+                            <p className="text-sm font-medium text-muted-foreground mb-1">System Decision:</p>
                             <p className="font-medium">{review.decision || review.final_status}</p>
                         </div>
 
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-1">Razón de Escalación:</p>
-                            <p className="text-sm">{review.escalation_reason || 'No especificada'}</p>
+                            <p className="text-sm font-medium text-muted-foreground mb-1">Escalation Reason:</p>
+                            <p className="text-sm">{review.escalation_reason || 'Not specified'}</p>
                         </div>
 
                         <div className="flex gap-4 text-xs text-muted-foreground">
@@ -258,7 +258,7 @@ function FeedbackDialog({ review, onClose, onSubmit }: FeedbackDialogProps) {
                     {/* Decision Selection */}
                     <div>
                         <label className="block text-sm font-medium mb-3">
-                            Tu Decisión <span className="text-destructive">*</span>
+                            Your Decision <span className="text-destructive">*</span>
                         </label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {decisionOptions.map((opt) => (
@@ -281,16 +281,16 @@ function FeedbackDialog({ review, onClose, onSubmit }: FeedbackDialogProps) {
                     {/* Feedback Text */}
                     <div>
                         <label className="block text-sm font-medium mb-2">
-                            Comentarios (Opcional)
+                            Comments (Optional)
                         </label>
                         <textarea
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
-                            placeholder="Añade contexto para mejorar el sistema..."
+                            placeholder="Add context to improve the system..."
                             className="w-full h-24 px-3 py-2 rounded-lg border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                            Este feedback ayuda a entrenar el sistema para casos similares
+                            This feedback helps train the system for similar cases
                         </p>
                     </div>
                 </div>
@@ -298,18 +298,18 @@ function FeedbackDialog({ review, onClose, onSubmit }: FeedbackDialogProps) {
                 {/* Footer */}
                 <div className="flex items-center justify-end gap-3 p-4 border-t bg-muted/30">
                     <Button variant="outline" onClick={onClose} disabled={submitting}>
-                        Cancelar
+                        Cancel
                     </Button>
                     <Button onClick={handleSubmit} disabled={!decision || submitting}>
                         {submitting ? (
                             <>
                                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                Guardando...
+                                Saving...
                             </>
                         ) : (
                             <>
                                 <Send className="h-4 w-4 mr-2" />
-                                Enviar Feedback
+                                Submit Feedback
                             </>
                         )}
                     </Button>
@@ -333,7 +333,7 @@ function PendingReviewsTable({ reviews, onReviewClick }: PendingReviewsTableProp
         return (
             <div className="text-center py-8 text-muted-foreground">
                 <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-500" />
-                <p>No hay revisiones pendientes</p>
+                <p>No pending reviews</p>
             </div>
         )
     }
@@ -366,7 +366,7 @@ function PendingReviewsTable({ reviews, onReviewClick }: PendingReviewsTableProp
                             )}>
                                 {(review.confidence_overall * 100).toFixed(0)}%
                             </div>
-                            <p className="text-xs text-muted-foreground">confianza</p>
+                            <p className="text-xs text-muted-foreground">confidence</p>
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
@@ -374,7 +374,7 @@ function PendingReviewsTable({ reviews, onReviewClick }: PendingReviewsTableProp
             ))}
             {reviews.length > 15 && (
                 <p className="text-center text-sm text-muted-foreground py-2">
-                    +{reviews.length - 15} más pendientes
+                    +{reviews.length - 15} more pending
                 </p>
             )}
         </div>
@@ -429,7 +429,7 @@ export function Observability() {
 
         } catch (err) {
             console.error('Error fetching observability data:', err)
-            setError('Error al cargar datos de observabilidad')
+            setError('Error loading observability data')
         } finally {
             setLoading(false)
         }
@@ -463,7 +463,7 @@ export function Observability() {
     const formatDate = (dateStr: string) => {
         if (!dateStr) return 'N/A'
         const date = new Date(dateStr)
-        return date.toLocaleDateString('es-ES', {
+        return date.toLocaleDateString('en-US', {
             day: '2-digit',
             month: 'short',
             hour: '2-digit',
@@ -479,14 +479,14 @@ export function Observability() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Observabilidad</h1>
+                    <h1 className="text-2xl font-bold">Observability</h1>
                     <p className="text-muted-foreground">
-                        Métricas del pipeline y análisis de fallos
+                        Pipeline metrics and failure analysis
                     </p>
                 </div>
                 <Button onClick={fetchData} disabled={loading} variant="outline">
                     <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-                    Actualizar
+                    Refresh
                 </Button>
             </div>
 
@@ -499,30 +499,30 @@ export function Observability() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <StatsCard
-                    title="Total Ejecuciones"
+                    title="Total Runs"
                     value={stats?.total_runs ?? 0}
-                    subtitle={stats?.last_run_at ? `Última: ${formatDate(stats.last_run_at)}` : undefined}
+                    subtitle={stats?.last_run_at ? `Last: ${formatDate(stats.last_run_at)}` : undefined}
                     icon={BarChart3}
                     color="primary"
                 />
                 <StatsCard
-                    title="Tasa de Éxito"
+                    title="Success Rate"
                     value={`${successRate}%`}
-                    subtitle={`${stats?.successful_runs ?? 0} exitosas de ${stats?.total_runs ?? 0}`}
+                    subtitle={`${stats?.successful_runs ?? 0} successful of ${stats?.total_runs ?? 0}`}
                     icon={CheckCircle}
                     color="success"
                 />
                 <StatsCard
-                    title="Duración Promedio"
+                    title="Avg. Duration"
                     value={formatDuration(stats?.avg_duration_ms ?? 0)}
-                    subtitle="Por documento completo"
+                    subtitle="Per full document"
                     icon={Clock}
                     color="primary"
                 />
                 <StatsCard
-                    title="Cláusulas/Documento"
+                    title="Clauses/Document"
                     value={(stats?.avg_clauses_per_run ?? 0).toFixed(1)}
-                    subtitle="Promedio por ejecución"
+                    subtitle="Average per run"
                     icon={Activity}
                     color="primary"
                 />
@@ -534,10 +534,10 @@ export function Observability() {
                     <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0" />
                     <div>
                         <p className="font-medium text-amber-800">
-                            {pendingReviews.length} cláusulas pendientes de revisión humana
+                            {pendingReviews.length} clauses pending human review
                         </p>
                         <p className="text-sm text-amber-700">
-                            Haz clic en una cláusula para enviar feedback
+                            Click on a clause to submit feedback
                         </p>
                     </div>
                 </div>
@@ -548,7 +548,7 @@ export function Observability() {
                 <TabsList>
                     <TabsTrigger value="pending" className="flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4" />
-                        Revisiones Pendientes
+                        Pending Reviews
                         {pendingReviews.length > 0 && (
                             <Badge variant="secondary" className="ml-1">
                                 {pendingReviews.length}
@@ -557,7 +557,7 @@ export function Observability() {
                     </TabsTrigger>
                     <TabsTrigger value="failures" className="flex items-center gap-2">
                         <XCircle className="h-4 w-4" />
-                        Patrones de Fallo
+                        Failure Patterns
                         {failurePatterns.length > 0 && (
                             <Badge variant="secondary" className="ml-1">
                                 {failurePatterns.length}
@@ -569,9 +569,9 @@ export function Observability() {
                 <TabsContent value="pending">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Revisiones Pendientes</CardTitle>
+                            <CardTitle>Pending Reviews</CardTitle>
                             <CardDescription>
-                                Haz clic en una cláusula para enviar feedback y mejorar el sistema
+                                Click on a clause to send feedback and improve the system
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -586,9 +586,9 @@ export function Observability() {
                 <TabsContent value="failures">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Análisis de Modos de Fallo (FMA)</CardTitle>
+                            <CardTitle>Failure Mode Analysis (FMA)</CardTitle>
                             <CardDescription>
-                                Patrones detectados para mejora continua del sistema
+                                Patterns detected for continuous system improvement
                             </CardDescription>
                         </CardHeader>
                         <CardContent>

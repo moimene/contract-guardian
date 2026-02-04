@@ -57,7 +57,7 @@ export function NewAnalysis() {
                 'VALIDATION_ERROR',
                 'INVALID_EXTENSION',
                 `Extension not allowed: ${extension}`,
-                `Formato no soportado. Usa: ${ALLOWED_EXTENSIONS.join(', ')}`,
+                `Unsupported format. Use: ${ALLOWED_EXTENSIONS.join(', ')}`,
                 false
             ));
             return;
@@ -69,7 +69,7 @@ export function NewAnalysis() {
                 'VALIDATION_ERROR',
                 'FILE_TOO_LARGE',
                 `File size: ${selectedFile.size} bytes`,
-                `El archivo es demasiado grande. Máximo: 50MB`,
+                `File is too large. Maximum: 50MB`,
                 false
             ));
             return;
@@ -198,9 +198,9 @@ export function NewAnalysis() {
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <div>
-                    <h1 className="text-3xl font-bold text-foreground">Nuevo Análisis</h1>
+                    <h1 className="text-3xl font-bold text-foreground">New Analysis</h1>
                     <p className="text-muted-foreground mt-1">
-                        Sube un contrato para revisión automática
+                        Upload a contract for automated review
                     </p>
                 </div>
             </div>
@@ -208,9 +208,9 @@ export function NewAnalysis() {
             {/* Step 1: Select Contract Type */}
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg">1. Selecciona el tipo de contrato</CardTitle>
+                    <CardTitle className="text-lg">1. Select Contract Type</CardTitle>
                     <CardDescription>
-                        Elige la tipología que mejor se ajuste a tu documento
+                        Choose the typology that best matches your document
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -249,12 +249,12 @@ export function NewAnalysis() {
                                                     {isSelected && <Check className="h-4 w-4 text-primary" />}
                                                     {!hasData && typology.is_active && (
                                                         <Badge variant="outline" className="text-xs">
-                                                            Sin datos
+                                                            No data
                                                         </Badge>
                                                     )}
                                                     {isDisabled && (
                                                         <Badge variant="secondary" className="text-xs">
-                                                            Próximamente
+                                                            Coming Soon
                                                         </Badge>
                                                     )}
                                                 </div>
@@ -263,7 +263,7 @@ export function NewAnalysis() {
                                                 </p>
                                                 {hasData && (
                                                     <p className="text-xs text-muted-foreground mt-1">
-                                                        {typology.matters_count} materias · {typology.examples_count.toLocaleString()} ejemplos
+                                                        {typology.matters_count} matters · {typology.examples_count.toLocaleString()} examples
                                                     </p>
                                                 )}
                                             </div>
@@ -279,9 +279,9 @@ export function NewAnalysis() {
             {/* Step 2: Upload File */}
             <Card className="mb-6">
                 <CardHeader>
-                    <CardTitle className="text-lg">2. Sube el archivo</CardTitle>
+                    <CardTitle className="text-lg">2. Upload File</CardTitle>
                     <CardDescription>
-                        Arrastra un archivo DOCX o PDF, o haz clic para seleccionar
+                        Drag a DOCX or PDF file, or click to select
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -322,18 +322,18 @@ export function NewAnalysis() {
                                         setFile(null)
                                     }}
                                 >
-                                    Cambiar
+                                    Change
                                 </Button>
                             </div>
                         ) : (
                             <>
                                 <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                                 <p className="text-muted-foreground">
-                                    Arrastra tu archivo aquí o{' '}
-                                    <span className="text-primary font-medium">haz clic para seleccionar</span>
+                                    Drag your file here or{' '}
+                                    <span className="text-primary font-medium">click to select</span>
                                 </p>
                                 <p className="text-sm text-muted-foreground mt-2">
-                                    Formatos soportados: DOCX, DOC, PDF
+                                    Supported formats: DOCX, DOC, PDF
                                 </p>
                             </>
                         )}
@@ -351,12 +351,12 @@ export function NewAnalysis() {
                     {uploading ? (
                         <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Procesando...
+                            Processing...
                         </>
                     ) : (
                         <>
                             <Upload className="h-4 w-4 mr-2" />
-                            Iniciar Análisis
+                            Start Analysis
                         </>
                     )}
                 </Button>

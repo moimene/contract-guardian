@@ -33,7 +33,7 @@ const DocumentListItem = memo(function DocumentListItem({
                 <div>
                     <p className="font-medium">{doc.file_name}</p>
                     <p className="text-sm text-muted-foreground">
-                        {new Date(doc.created_at).toLocaleDateString('es-ES', {
+                        {new Date(doc.created_at).toLocaleDateString('en-US', {
                             day: 'numeric',
                             month: 'short',
                             year: 'numeric',
@@ -56,11 +56,11 @@ const EmptyState = memo(function EmptyState() {
     return (
         <div className="text-center py-8">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">No hay documentos todavía</p>
+            <p className="text-muted-foreground mb-4">No documents yet</p>
             <Link to="/new">
                 <Button>
                     <FilePlus className="h-4 w-4 mr-2" />
-                    Subir tu primer contrato
+                    Upload your first contract
                 </Button>
             </Link>
         </div>
@@ -134,13 +134,13 @@ export function Dashboard() {
     const getStatusBadge = useCallback((status: string) => {
         switch (status) {
             case 'PROCESSED':
-                return <Badge variant="ok"><CheckCircle className="h-3 w-3 mr-1" />Completado</Badge>
+                return <Badge variant="ok"><CheckCircle className="h-3 w-3 mr-1" />Completed</Badge>
             case 'PROCESSING':
-                return <Badge variant="recommended"><Loader2 className="h-3 w-3 mr-1 animate-spin" />Procesando</Badge>
+                return <Badge variant="recommended"><Loader2 className="h-3 w-3 mr-1 animate-spin" />Processing</Badge>
             case 'ERROR':
                 return <Badge variant="blocked"><AlertTriangle className="h-3 w-3 mr-1" />Error</Badge>
             default:
-                return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pendiente</Badge>
+                return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Pending</Badge>
         }
     }, [])
 
@@ -151,13 +151,13 @@ export function Dashboard() {
                 <div>
                     <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
                     <p className="text-muted-foreground mt-1">
-                        Gestiona tus contratos y revisiones
+                        Manage your contracts and reviews
                     </p>
                 </div>
                 <Link to="/new">
                     <Button>
                         <FilePlus className="h-4 w-4 mr-2" />
-                        Nuevo Análisis
+                        New Analysis
                     </Button>
                 </Link>
             </div>
@@ -168,7 +168,7 @@ export function Dashboard() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-muted-foreground">Total Documentos</p>
+                                <p className="text-sm text-muted-foreground">Total Documents</p>
                                 <p className="text-2xl font-bold">{stats.total}</p>
                             </div>
                             <FileText className="h-8 w-8 text-primary" />
@@ -180,7 +180,7 @@ export function Dashboard() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-muted-foreground">En Proceso</p>
+                                <p className="text-sm text-muted-foreground">Processing</p>
                                 <p className="text-2xl font-bold">{stats.processing}</p>
                             </div>
                             <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
@@ -192,7 +192,7 @@ export function Dashboard() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-muted-foreground">Completados</p>
+                                <p className="text-sm text-muted-foreground">Completed</p>
                                 <p className="text-2xl font-bold">{stats.completed}</p>
                             </div>
                             <CheckCircle className="h-8 w-8 text-green-500" />
@@ -204,7 +204,7 @@ export function Dashboard() {
                     <CardContent className="pt-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-muted-foreground">Errores</p>
+                                <p className="text-sm text-muted-foreground">Errors</p>
                                 <p className="text-2xl font-bold">{stats.errors}</p>
                             </div>
                             <AlertTriangle className="h-8 w-8 text-red-500" />
@@ -216,7 +216,7 @@ export function Dashboard() {
             {/* Recent Documents */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Documentos Recientes</CardTitle>
+                    <CardTitle>Recent Documents</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {loading ? (

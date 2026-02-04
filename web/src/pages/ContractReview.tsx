@@ -81,7 +81,7 @@ export function ContractReview() {
         if (!documentId) return
 
         try {
-            // Ejecutar ambos fetches en paralelo
+            // Execute both fetches in parallel
             const [docResult, clausesResult] = await Promise.all([
                 supabase
                     .from('documents')
@@ -415,7 +415,7 @@ export function ContractReview() {
                                 <div className="relative">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                     <Input
-                                        placeholder="Buscar cláusulas..."
+                                        placeholder="Search clauses..."
                                         value={searchTerm}
                                         onChange={(e) => {
                                             // [rerender-transitions] startTransition para filtrado no urgente
@@ -454,7 +454,7 @@ export function ContractReview() {
                                                     <p className="text-xs text-muted-foreground mt-0.5">{clause.detected_family}</p>
                                                     {pendingChanges > 0 && (
                                                         <span className="text-xs text-amber-600 mt-1 inline-block">
-                                                            {pendingChanges} cambio{pendingChanges > 1 ? 's' : ''} pendiente{pendingChanges > 1 ? 's' : ''}
+                                                            {pendingChanges} pending change{pendingChanges > 1 ? 's' : ''}
                                                         </span>
                                                     )}
                                                 </div>
@@ -535,7 +535,7 @@ export function ContractReview() {
                                         <Card className="mb-4">
                                             <CardHeader className="pb-2">
                                                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                                                    CAMBIOS PROPUESTOS ({selectedClause.proposed_changes.length})
+                                                    PROPOSED CHANGES ({selectedClause.proposed_changes.length})
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent className="space-y-3">
@@ -685,7 +685,7 @@ export function ContractReview() {
                                 </div>
                             ) : (
                                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                                    Selecciona una cláusula para ver los detalles
+                                    Select a clause to view details
                                 </div>
                             )}
                         </div>

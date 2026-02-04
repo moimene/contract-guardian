@@ -14,12 +14,32 @@ import {
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 
-const navItems = [
-    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/new', label: 'Nuevo Análisis', icon: FilePlus },
-    { href: '/playbook', label: 'Playbook', icon: BookOpen },
-    { href: '/escalations', label: 'Escalaciones', icon: AlertTriangle },
-    { href: '/observability', label: 'Observabilidad', icon: Activity },
+
+// PRD v2.3: Grouped navigation by layers
+const navGroups = [
+    {
+        id: 'contracts',
+        label: 'CONTRACTS',
+        items: [
+            { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+            { href: '/new', label: 'New Analysis', icon: FilePlus },
+        ]
+    },
+    {
+        id: 'reference',
+        label: 'REFERENCE',
+        items: [
+            { href: '/playbook', label: 'Playbook', icon: BookOpen, badge: 'Read-Only' },
+        ]
+    },
+    {
+        id: 'operations',
+        label: 'OPERATIONS',
+        items: [
+            { href: '/escalations', label: 'Escalations', icon: AlertTriangle, hasBadgeCount: true },
+            { href: '/observability', label: 'Observability', icon: Activity },
+        ]
+    },
 ]
 
 interface AppSidebarProps {
@@ -56,46 +76,82 @@ export function AppSidebar({ user, pendingEscalations = 0, signOut }: AppSidebar
                 )}
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 py-4 px-2">
-                {navItems.map((item) => {
-                    const isActive = location.pathname === item.href
-                    const Icon = item.icon
+            {/* Navigation - Grouped by Layers */}
+            <nav className="flex-1 py-4 px-2 overflow-y-auto">
+                {navGroups.map((group) => (
+                    <div key={group.id} className="mb-4">
+                        {/* Group Label */}
+                        {!collapsed && (
+                            <div
+                                className="px-3 py-1.5 text-xs font-semibold tracking-wider opacity-70"
+                                style={{ color: '#6dc1b0' }}
+                            >
+                                {group.label}
+                            </div>
+                        )}
 
-                    return (
-                        <Link
-                            key={item.href}
-                            to={item.href}
-                            className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors"
-                            )}
-                            style={{
-                                color: '#ffffff',
-                                backgroundColor: isActive ? '#007362' : 'transparent',
-                                fontWeight: isActive ? 600 : 500
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isActive) e.currentTarget.style.backgroundColor = 'rgba(0, 115, 98, 0.5)'
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'
-                            }}
-                        >
-                            <Icon className="h-5 w-5 flex-shrink-0" />
-                            {!collapsed && (
-                                <span>{item.label}</span>
-                            )}
-                            {!collapsed && item.href === '/escalations' && pendingEscalations > 0 && (
-                                <span
-                                    className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full"
-                                    style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+                        {/* Group Items */}
+                        {group.items.map((item) => {
+                            const isActive = location.pathname === item.href ||
+                                (item.href !== '/' && location.pathname.startsWith(item.href))
+                            const Icon = item.icon
+
+                            return (
+                                <Link
+                                    key={item.href}
+                                    to={item.href}
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors"
+                                    )}
+                                    style={{
+                                        color: '#ffffff',
+                                        backgroundColor: isActive ? '#007362' : 'transparent',
+                                        fontWeight: isActive ? 600 : 500
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!isActive) e.currentTarget.style.backgroundColor = 'rgba(0, 115, 98, 0.5)'
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'
+                                    }}
                                 >
-                                    {pendingEscalations}
-                                </span>
-                            )}
-                        </Link>
-                    )
-                })}
+                                    <Icon className="h-5 w-5 flex-shrink-0" />
+                                    {!collapsed && (
+                                        <>
+                                            <span className="flex-1">{item.label}</span>
+                                            {/* Read-Only Badge for Playbook */}
+                                            {'badge' in item && item.badge && (
+                                                <span
+                                                    className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+                                                    style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#6dc1b0' }}
+                                                >
+                                                    {item.badge}
+                                                </span>
+                                            )}
+                                            {/* Escalations Count Badge */}
+                                            {'hasBadgeCount' in item && item.hasBadgeCount && pendingEscalations > 0 && (
+                                                <span
+                                                    className="text-xs font-bold px-2 py-0.5 rounded-full"
+                                                    style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
+                                                >
+                                                    {pendingEscalations}
+                                                </span>
+                                            )}
+                                        </>
+                                    )}
+                                </Link>
+                            )
+                        })}
+                    </div>
+                ))}
+
+                {/* Separator before Admin (future) */}
+                {!collapsed && (
+                    <div
+                        className="mx-3 my-3"
+                        style={{ borderTop: '1px dashed rgba(109, 193, 176, 0.3)' }}
+                    />
+                )}
             </nav>
 
             {/* User info */}
@@ -114,7 +170,7 @@ export function AppSidebar({ user, pendingEscalations = 0, signOut }: AppSidebar
                         onClick={() => signOut?.()}
                     >
                         <LogOut className="h-4 w-4 mr-2" />
-                        Cerrar sesión
+                        Sign Out
                     </Button>
                 </div>
             )}
@@ -137,3 +193,4 @@ export function AppSidebar({ user, pendingEscalations = 0, signOut }: AppSidebar
         </aside>
     )
 }
+

@@ -50,7 +50,7 @@ export function Playbook() {
     const [searchQuery, setSearchQuery] = useState('')
     const [acceptanceFilter, setAcceptanceFilter] = useState<string>('all')
 
-    // Seleccionar primera tipología con datos
+    // Select first typology with data
     useEffect(() => {
         if (typologies.length > 0 && !selectedTypology) {
             const withData = typologies.find(t => t.examples_count > 0)
@@ -58,7 +58,7 @@ export function Playbook() {
         }
     }, [typologies, selectedTypology])
 
-    // Cargar materias cuando cambia tipología
+    // Load matters when typology changes
     const fetchMatters = useCallback(async () => {
         if (!selectedTypology) return
         setLoadingMatters(true)
@@ -79,7 +79,7 @@ export function Playbook() {
         fetchMatters()
     }, [fetchMatters])
 
-    // Cargar ejemplos cuando se expande una materia
+    // Load examples when a matter is expanded
     const fetchExamples = useCallback(async (matterId: string) => {
         setLoadingExamples(true)
         try {
@@ -107,7 +107,7 @@ export function Playbook() {
         }
     }
 
-    // Filtrar materias por búsqueda
+    // Filter matters by search
     const filteredMatters = matters.filter(m =>
         m.matter_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         m.matter_code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -116,11 +116,11 @@ export function Playbook() {
     const getAcceptanceBadge = (acceptance: string) => {
         switch (acceptance) {
             case 'ACCEPTABLE':
-                return <Badge className="bg-green-100 text-green-800"><CheckCircle2 className="h-3 w-3 mr-1" />Aceptable</Badge>
+                return <Badge className="bg-green-100 text-green-800"><CheckCircle2 className="h-3 w-3 mr-1" />Acceptable</Badge>
             case 'PASSABLE':
-                return <Badge className="bg-amber-100 text-amber-800"><AlertCircle className="h-3 w-3 mr-1" />Pasable</Badge>
+                return <Badge className="bg-amber-100 text-amber-800"><AlertCircle className="h-3 w-3 mr-1" />Passable</Badge>
             case 'UNACCEPTABLE':
-                return <Badge className="bg-red-100 text-red-800"><XCircle className="h-3 w-3 mr-1" />Inaceptable</Badge>
+                return <Badge className="bg-red-100 text-red-800"><XCircle className="h-3 w-3 mr-1" />Unacceptable</Badge>
             default:
                 return <Badge variant="secondary">{acceptance}</Badge>
         }
@@ -143,17 +143,17 @@ export function Playbook() {
                     </Badge>
                 </div>
                 <p className="text-muted-foreground">
-                    Explora las materias y ejemplos de referencia por tipología de contrato
+                    Explore matters and reference examples by contract typology
                 </p>
                 {/* PRD v2.3: Governance Message */}
                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-                    <strong>📘 Este Playbook es de solo lectura.</strong> Los cambios en reglas y políticas
-                    son gestionados por el equipo de Legal Ops. Para solicitar actualizaciones,
-                    contacta al administrador del sistema.
+                    <strong>📘 This Playbook is read-only.</strong> Changes to rules and policies
+                    are managed by the Legal Ops team. To request updates,
+                    contact the system administrator.
                 </div>
             </div>
 
-            {/* Selector de Tipología */}
+            {/* Typology Selector */}
             {loadingTypologies ? (
                 <div className="flex justify-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin" />
@@ -173,44 +173,44 @@ export function Playbook() {
                 </Tabs>
             )}
 
-            {/* Stats de la tipología */}
+            {/* Typology Stats */}
             {selectedTypologyData && (
                 <Card className="mb-6">
                     <CardContent className="pt-6">
                         <div className="grid grid-cols-4 gap-4 text-center">
                             <div>
                                 <p className="text-2xl font-bold text-primary">{matters.length}</p>
-                                <p className="text-sm text-muted-foreground">Materias</p>
+                                <p className="text-sm text-muted-foreground">Matters</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-green-600">
                                     {matters.reduce((s, m) => s + m.acceptable_count, 0).toLocaleString()}
                                 </p>
-                                <p className="text-sm text-muted-foreground">Aceptables</p>
+                                <p className="text-sm text-muted-foreground">Acceptable</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-amber-600">
                                     {matters.reduce((s, m) => s + m.passable_count, 0).toLocaleString()}
                                 </p>
-                                <p className="text-sm text-muted-foreground">Pasables</p>
+                                <p className="text-sm text-muted-foreground">Passable</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-red-600">
                                     {matters.reduce((s, m) => s + m.unacceptable_count, 0).toLocaleString()}
                                 </p>
-                                <p className="text-sm text-muted-foreground">Inaceptables</p>
+                                <p className="text-sm text-muted-foreground">Unacceptable</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             )}
 
-            {/* Búsqueda y Filtros */}
+            {/* Search and Filters */}
             <div className="flex gap-4 mb-6">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Buscar materia..."
+                        placeholder="Search matter..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         className="pl-10"
@@ -222,7 +222,7 @@ export function Playbook() {
                         size="sm"
                         onClick={() => setAcceptanceFilter('all')}
                     >
-                        Todos
+                        All
                     </Button>
                     <Button
                         variant={acceptanceFilter === 'acceptable' ? 'default' : 'outline'}
@@ -230,7 +230,7 @@ export function Playbook() {
                         onClick={() => setAcceptanceFilter('acceptable')}
                         className="text-green-700"
                     >
-                        <CheckCircle2 className="h-4 w-4 mr-1" /> Aceptables
+                        <CheckCircle2 className="h-4 w-4 mr-1" /> Acceptable
                     </Button>
                     <Button
                         variant={acceptanceFilter === 'passable' ? 'default' : 'outline'}
@@ -238,7 +238,7 @@ export function Playbook() {
                         onClick={() => setAcceptanceFilter('passable')}
                         className="text-amber-700"
                     >
-                        <AlertCircle className="h-4 w-4 mr-1" /> Pasables
+                        <AlertCircle className="h-4 w-4 mr-1" /> Passable
                     </Button>
                     <Button
                         variant={acceptanceFilter === 'unacceptable' ? 'default' : 'outline'}
@@ -246,12 +246,12 @@ export function Playbook() {
                         onClick={() => setAcceptanceFilter('unacceptable')}
                         className="text-red-700"
                     >
-                        <XCircle className="h-4 w-4 mr-1" /> Inaceptables
+                        <XCircle className="h-4 w-4 mr-1" /> Unacceptable
                     </Button>
                 </div>
             </div>
 
-            {/* Lista de Materias */}
+            {/* Matters List */}
             {loadingMatters ? (
                 <div className="flex justify-center py-12">
                     <Loader2 className="h-8 w-8 animate-spin" />
@@ -288,12 +288,12 @@ export function Playbook() {
                                                 <Badge className="bg-red-100 text-red-800">{matter.unacceptable_count}</Badge>
                                             )}
                                         </div>
-                                        <Badge variant="outline">{matter.examples_count} ejemplos</Badge>
+                                        <Badge variant="outline">{matter.examples_count} examples</Badge>
                                     </div>
                                 </div>
                             </CardHeader>
 
-                            {/* Ejemplos expandidos */}
+                            {/* Expanded examples */}
                             {expandedMatter === matter.matter_id && (
                                 <CardContent className="border-t">
                                     {loadingExamples ? (
@@ -302,7 +302,7 @@ export function Playbook() {
                                         </div>
                                     ) : examples.length === 0 ? (
                                         <p className="text-center text-muted-foreground py-6">
-                                            No hay ejemplos con el filtro seleccionado
+                                            No examples with the selected filter
                                         </p>
                                     ) : (
                                         <div className="space-y-4 mt-4">
@@ -320,12 +320,12 @@ export function Playbook() {
                                                     <p className="text-sm leading-relaxed mb-3">{ex.example_text}</p>
                                                     {ex.rationale && (
                                                         <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
-                                                            <strong>Razonamiento:</strong> {ex.rationale}
+                                                            <strong>Rationale:</strong> {ex.rationale}
                                                         </div>
                                                     )}
                                                     {ex.proposed_redline && (
                                                         <div className="text-xs text-green-700 bg-green-50 p-2 rounded mt-2">
-                                                            <strong>Redline sugerido:</strong> {ex.proposed_redline}
+                                                            <strong>Suggested redline:</strong> {ex.proposed_redline}
                                                         </div>
                                                     )}
                                                 </div>

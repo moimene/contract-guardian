@@ -95,9 +95,9 @@ export function Escalations() {
         <div className="h-screen flex flex-col">
             {/* Header */}
             <div className="px-6 py-4 border-b border-border bg-white">
-                <h1 className="text-2xl font-bold text-foreground">Escalaciones</h1>
+                <h1 className="text-2xl font-bold text-foreground">Escalations</h1>
                 <p className="text-muted-foreground">
-                    Gestiona las cláusulas que requieren revisión manual
+                    Manage clauses that require manual review
                 </p>
             </div>
 
@@ -106,22 +106,22 @@ export function Escalations() {
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-100 text-yellow-700">
                     <Clock className="h-4 w-4" />
                     <span className="font-medium">{stats.pending}</span>
-                    <span className="text-sm">Pendientes</span>
+                    <span className="text-sm">Pending</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700">
                     <User className="h-4 w-4" />
                     <span className="font-medium">{stats.in_review}</span>
-                    <span className="text-sm">En revisión</span>
+                    <span className="text-sm">In Review</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-100 text-red-700">
                     <AlertTriangle className="h-4 w-4" />
                     <span className="font-medium">{stats.high_urgency}</span>
-                    <span className="text-sm">Alta urgencia</span>
+                    <span className="text-sm">High Urgency</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-100 text-green-700">
                     <CheckCircle className="h-4 w-4" />
                     <span className="font-medium">{stats.resolved}</span>
-                    <span className="text-sm">Resueltas</span>
+                    <span className="text-sm">Resolved</span>
                 </div>
             </div>
 
@@ -133,7 +133,7 @@ export function Escalations() {
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input
-                                placeholder="Buscar..."
+                                placeholder="Search..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-9"
@@ -144,24 +144,24 @@ export function Escalations() {
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value as EscalationStatus | 'ALL')}
                                 className="text-sm border rounded px-2 py-1 flex-1"
-                                aria-label="Filtrar por estado"
+                                aria-label="Filter by status"
                             >
-                                <option value="ALL">Todos los estados</option>
-                                <option value="pending">Pendiente</option>
-                                <option value="in_review">En revisión</option>
-                                <option value="resolved">Resuelta</option>
-                                <option value="rejected">Rechazada</option>
+                                <option value="ALL">All status</option>
+                                <option value="pending">Pending</option>
+                                <option value="in_review">In Review</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="rejected">Rejected</option>
                             </select>
                             <select
                                 value={filterUrgency}
                                 onChange={(e) => setFilterUrgency(e.target.value as EscalationUrgency | 'ALL')}
                                 className="text-sm border rounded px-2 py-1 flex-1"
-                                aria-label="Filtrar por urgencia"
+                                aria-label="Filter by urgency"
                             >
-                                <option value="ALL">Todas</option>
-                                <option value="high">Alta</option>
-                                <option value="medium">Media</option>
-                                <option value="low">Baja</option>
+                                <option value="ALL">All</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
                             </select>
                         </div>
                     </div>
@@ -170,7 +170,7 @@ export function Escalations() {
                         {filteredEscalations.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4">
                                 <AlertTriangle className="h-12 w-12 mb-2" />
-                                <p>No hay escalaciones</p>
+                                <p>No escalations</p>
                             </div>
                         ) : (
                             filteredEscalations.map((esc) => {
@@ -199,7 +199,7 @@ export function Escalations() {
                                             <div className="flex-1 min-w-0">
                                                 <p className="font-medium text-sm line-clamp-2">{esc.reason}</p>
                                                 <p className="text-xs text-muted-foreground mt-1">
-                                                    {new Date(esc.created_at).toLocaleDateString('es-ES', {
+                                                    {new Date(esc.created_at).toLocaleDateString('en-US', {
                                                         day: 'numeric',
                                                         month: 'short',
                                                         hour: '2-digit',
@@ -235,7 +235,7 @@ export function Escalations() {
                                     </div>
                                     <p className="text-xs text-muted-foreground">
                                         ID: {selectedEscalation.escalation_id.slice(0, 8)}... ·
-                                        Creada: {new Date(selectedEscalation.created_at).toLocaleString('es-ES')}
+                                        Created: {new Date(selectedEscalation.created_at).toLocaleString('en-US')}
                                     </p>
                                 </CardHeader>
                             </Card>
@@ -244,7 +244,7 @@ export function Escalations() {
                             <Card className="mb-4">
                                 <CardHeader className="pb-2">
                                     <CardTitle className="text-sm font-medium text-muted-foreground">
-                                        MOTIVO
+                                        REASON
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -261,7 +261,7 @@ export function Escalations() {
                             <Card className="mb-4">
                                 <CardHeader className="pb-2">
                                     <CardTitle className="text-sm font-medium text-muted-foreground">
-                                        DOCUMENTO
+                                        DOCUMENT
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -270,7 +270,7 @@ export function Escalations() {
                                         className="flex items-center gap-2 text-primary hover:underline"
                                     >
                                         <FileText className="h-4 w-4" />
-                                        Ver contrato
+                                        View Contract
                                         <ExternalLink className="h-3 w-3" />
                                     </Link>
                                 </CardContent>
@@ -281,7 +281,7 @@ export function Escalations() {
                                 <Card className="mb-4">
                                     <CardHeader className="pb-2">
                                         <CardTitle className="text-sm font-medium text-muted-foreground">
-                                            RESOLUCIÓN
+                                            RESOLUTION
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
@@ -303,27 +303,27 @@ export function Escalations() {
                                         onClick={() => handleResolve('reject')}
                                     >
                                         <X className="h-4 w-4 mr-2" />
-                                        Rechazar
+                                        Reject
                                     </Button>
                                     <Button
                                         variant="outline"
                                         onClick={() => handleResolve('modify')}
                                     >
                                         <Edit className="h-4 w-4 mr-2" />
-                                        Modificar
+                                        Modify
                                     </Button>
                                     <Button
                                         onClick={() => handleResolve('approve')}
                                     >
                                         <Check className="h-4 w-4 mr-2" />
-                                        Aprobar
+                                        Approve
                                     </Button>
                                 </div>
                             ) : null}
                         </div>
                     ) : (
                         <div className="flex items-center justify-center h-full text-muted-foreground">
-                            Selecciona una escalación para ver los detalles
+                            Select an escalation to view details
                         </div>
                     )}
                 </div>

@@ -400,7 +400,7 @@ export function ContractReview() {
                             filterStatus === 'ALL' ? "bg-accent" : "hover:bg-accent"
                         )}
                     >
-                        Ver todas
+                        View all
                     </button>
                 </div>
             )}
@@ -507,11 +507,11 @@ export function ContractReview() {
                                                 )}
                                             </div>
                                             <CardTitle className="text-lg">
-                                                #{selectedClause.sequence_number} {selectedClause.heading || 'Cláusula'}
+                                                #{selectedClause.sequence_number} {selectedClause.heading || 'Clause'}
                                             </CardTitle>
                                             <p className="text-sm text-muted-foreground">
-                                                Familia: {selectedClause.detected_family} ·
-                                                Confianza: {Math.round(selectedClause.confidence_score * 100)}%
+                                                Family: {selectedClause.detected_family} ·
+                                                Confidence: {Math.round(selectedClause.confidence_score * 100)}%
                                             </p>
                                         </CardHeader>
                                     </Card>
@@ -520,7 +520,7 @@ export function ContractReview() {
                                     <Card className="mb-4">
                                         <CardHeader className="pb-2">
                                             <CardTitle className="text-sm font-medium text-muted-foreground">
-                                                TEXTO ORIGINAL
+                                                ORIGINAL TEXT
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent>

@@ -1,0 +1,804 @@
+{
+    "name": "W3 ContractReview - v4.0 (Native Extract)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "contract-review-v3",
+                "options": {}
+            },
+            "id": "webhook",
+            "name": "Webhook",
+            "position": [
+                480,
+                304
+            ],
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "webhookId": "93f12089-a5c6-43d9-95e2-0402d2443022"
+        },
+        {
+            "parameters": {
+                "jsCode": "// W3 v4.0: Pre-calc with file info for native extraction\nif (!items || items.length === 0) return [{json: {}}];\nconst inputData = items[0].json;\nconst body = inputData.body || {};\nconst runId = body.run_id;\nconst docId = body.document_id;\nconst fileName = body.file_name || '';\nconst filePath = body.file_path || '';\n\nconst now = new Date().toISOString();\nconst ext = fileName.split('.').pop()?.toLowerCase() || 'docx';\n\nreturn [{\n  json: {\n    run_id: runId,\n    document_id: docId,\n    file_name: fileName,\n    file_path: filePath,\n    file_extension: ext,\n    is_pdf: ext === 'pdf',\n    is_docx: ext === 'docx' || ext === 'doc',\n    started_at: now,\n    update_url: 'https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/contract_runs?run_id=eq.' + runId,\n    processing_payload: { status: \"PROCESSING\", stage: \"EXTRACTION\", started_at: now },\n    completed_payload: { status: \"COMPLETED\", completed_at: now }\n  }\n}];"
+            },
+            "id": "precalc_params",
+            "name": "Pre-calc Params",
+            "position": [
+                608,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "PATCH",
+                "url": "={{ $json.update_url }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($json.processing_payload) }}",
+                "options": {}
+            },
+            "id": "update_processing",
+            "name": "Update Run Processing",
+            "position": [
+                800,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Get document info from Supabase to build download URL\nconst precalc = $('Pre-calc Params').first().json;\nconst docId = precalc.document_id;\n\n// Return doc_id for next query\nreturn [{ json: { document_id: docId, ...precalc } }];"
+            },
+            "id": "prepare_query",
+            "name": "Prepare Query",
+            "position": [
+                920,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "GET",
+                "url": "=https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/documents?document_id=eq.{{ $json.document_id }}&select=storage_path,file_name",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "get_document",
+            "name": "Get Document Info",
+            "position": [
+                1040,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2
+        },
+        {
+            "parameters": {
+                "jsCode": "// Build signed URL for Supabase Storage download\nconst doc = $json[0] || $json;\nconst storagePath = doc.storage_path;\nconst fileName = doc.file_name || 'document';\nconst precalc = $('Pre-calc Params').first().json;\n\nif (!storagePath) {\n  throw new Error('Document storage_path is null - cannot download file');\n}\n\n// storage_path format: \"contracts/timestamp_filename.docx\"\n// For Supabase Storage: bucket/path within bucket\nconst pathWithinBucket = storagePath.replace(/^contracts\\//, '');\n\nconst ext = fileName.split('.').pop()?.toLowerCase() || 'docx';\n\nreturn [{\n  json: {\n    ...precalc,\n    storage_path: storagePath,\n    path_within_bucket: pathWithinBucket,\n    file_name: fileName,\n    file_extension: ext,\n    is_pdf: ext === 'pdf',\n    is_docx: ext === 'docx' || ext === 'doc',\n    download_url: `https://hvlsuwdqtffiilvampxq.supabase.co/storage/v1/object/contracts/${pathWithinBucket}`\n  }\n}];"
+            },
+            "id": "build_download_url",
+            "name": "Build Download URL",
+            "position": [
+                1160,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "GET",
+                "url": "={{ $json.download_url }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "responseFormat": "file"
+                        }
+                    },
+                    "timeout": 60000
+                }
+            },
+            "id": "download_file",
+            "name": "Download File",
+            "position": [
+                1280,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "pdf-check",
+                            "leftValue": "={{ $('Build Download URL').first().json.is_pdf }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "is_pdf",
+            "name": "Is PDF?",
+            "position": [
+                1400,
+                304
+            ],
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "operation": "text",
+                "options": {}
+            },
+            "id": "extract_pdf",
+            "name": "Extract PDF Text",
+            "position": [
+                1520,
+                204
+            ],
+            "type": "n8n-nodes-base.extractFromFile",
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "operation": "decompress",
+                "options": {}
+            },
+            "id": "unzip_docx",
+            "name": "Unzip DOCX",
+            "position": [
+                1520,
+                404
+            ],
+            "type": "n8n-nodes-base.compression",
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "jsCode": "// Filter to get only document.xml from the unzipped DOCX\nconst items = $input.all();\nlet documentXml = null;\n\nfor (const item of items) {\n  const fileName = item.binary?.data?.fileName || '';\n  if (fileName.includes('word/document.xml') || fileName === 'document.xml') {\n    documentXml = item;\n    break;\n  }\n}\n\nif (!documentXml) {\n  // Try to find any XML that might contain the text\n  for (const item of items) {\n    const fileName = item.binary?.data?.fileName || '';\n    if (fileName.endsWith('.xml') && fileName.includes('word')) {\n      documentXml = item;\n      break;\n    }\n  }\n}\n\nif (!documentXml) {\n  throw new Error('Could not find document.xml in DOCX archive');\n}\n\nreturn [documentXml];"
+            },
+            "id": "filter_document_xml",
+            "name": "Filter document.xml",
+            "position": [
+                1640,
+                404
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "operation": "toJson",
+                "options": {}
+            },
+            "id": "xml_to_json",
+            "name": "XML to JSON",
+            "position": [
+                1760,
+                404
+            ],
+            "type": "n8n-nodes-base.xml",
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "jsCode": "// Parse DOCX XML structure to extract text\nconst json = $json;\nlet allText = [];\n\nfunction extractText(obj) {\n  if (typeof obj === 'string') {\n    return obj.trim();\n  }\n  if (Array.isArray(obj)) {\n    return obj.map(extractText).filter(t => t).join(' ');\n  }\n  if (typeof obj === 'object' && obj !== null) {\n    // Look for 'w:t' elements which contain the actual text in DOCX\n    if (obj['w:t']) {\n      const textContent = obj['w:t'];\n      if (typeof textContent === 'string') {\n        return textContent;\n      } else if (Array.isArray(textContent)) {\n        return textContent.map(t => typeof t === 'string' ? t : (t._ || t['#text'] || '')).join('');\n      } else if (typeof textContent === 'object') {\n        return textContent._ || textContent['#text'] || '';\n      }\n    }\n    // Recursively process all properties\n    return Object.values(obj).map(extractText).filter(t => t).join(' ');\n  }\n  return '';\n}\n\n// Try to find 'w:document' > 'w:body' > 'w:p' (paragraphs)\ntry {\n  const body = json['w:document']?.['w:body'] || json['document']?.['body'] || json;\n  const text = extractText(body);\n  \n  if (!text || text.length < 50) {\n    // Fallback: search entire JSON\n    allText.push(extractText(json));\n  } else {\n    allText.push(text);\n  }\n} catch (e) {\n  allText.push(extractText(json));\n}\n\nconst finalText = allText.join('\\n\\n').replace(/\\s+/g, ' ').trim();\nconst precalc = $('Pre-calc Params').first().json;\n\nreturn [{\n  json: {\n    ...precalc,\n    extracted_text: finalText,\n    text_length: finalText.length,\n    extraction_method: 'docx_native'\n  }\n}];"
+            },
+            "id": "parse_docx_text",
+            "name": "Parse DOCX Text",
+            "position": [
+                1880,
+                404
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "jsCode": "// Merge PDF extracted text with precalc data\nconst precalc = $('Pre-calc Params').first().json;\nconst text = $json.text || $json.data || '';\n\nreturn [{\n  json: {\n    ...precalc,\n    extracted_text: text,\n    text_length: text.length,\n    extraction_method: 'pdf_native'\n  }\n}];"
+            },
+            "id": "format_pdf_text",
+            "name": "Format PDF Text",
+            "position": [
+                1640,
+                204
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {},
+            "id": "merge_extraction",
+            "name": "Merge Extraction",
+            "position": [
+                2000,
+                304
+            ],
+            "type": "n8n-nodes-base.merge",
+            "typeVersion": 3
+        },
+        {
+            "parameters": {
+                "jsCode": "// v4.0: Prepare AI Payload for clause extraction\nconst text = $json.extracted_text || '';\nconst precalc = $('Pre-calc Params').first().json;\n\nconsole.log(`[Prepare AI Payload] Text length: ${text.length} chars`);\n\nif (!text || text.length < 100) {\n  throw new Error(`Extracted text too short (${text.length} chars) - extraction failed`);\n}\n\nconst aiPayload = {\n  model: 'gpt-4o',\n  temperature: 0,\n  messages: [\n    {\n      role: 'system',\n      content: `You are a legal document parser. Extract ALL numbered or titled clauses/sections from the contract.\n\nIMPORTANT: Return a JSON object with this EXACT structure:\n{\n  \"clauses\": [\n    {\n      \"clause_id\": \"clause_1\",\n      \"heading\": \"SECTION TITLE OR CLAUSE NUMBER\",\n      \"clause_text\": \"Full text of the clause...\"\n    }\n  ]\n}\n\nRules:\n- Extract EVERY distinct clause/section you can identify\n- Include numbered sections (1., 2., etc.) and titled sections\n- Preserve the full text of each clause\n- The \"clauses\" array MUST contain at least one item`\n    },\n    {\n      role: 'user',\n      content: text.substring(0, 100000)\n    }\n  ],\n  response_format: { type: 'json_object' }\n};\n\nreturn [{\n  json: {\n    ...precalc,\n    ai_payload: aiPayload,\n    extracted_text: text,\n    extraction_method: $json.extraction_method || 'unknown'\n  }\n}];"
+            },
+            "id": "prepare_ai_payload",
+            "name": "Prepare AI Payload",
+            "position": [
+                2120,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.openai.com/v1/chat/completions",
+                "authentication": "predefinedCredentialType",
+                "nodeCredentialType": "openAiApi",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify($json.ai_payload) }}",
+                "options": {
+                    "timeout": 120000
+                }
+            },
+            "id": "ai_parse",
+            "name": "AI Parse Clauses",
+            "position": [
+                2240,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "credentials": {
+                "openAiApi": {
+                    "id": "SIqSVUfX83ooZaUa",
+                    "name": "amazon redliner"
+                }
+            },
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "jsCode": "// v4.0: Robust parsing\nconst prevJson = $('Pre-calc Params').first().json;\nconst aiResponse = $json;\n\nconst uuid = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {\n  const r = Math.random() * 16 | 0;\n  return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);\n});\n\nconst isUuid = (s) => typeof s === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);\n\nif (!isUuid(prevJson.document_id)) throw new Error(`Invalid document_id UUID`);\nif (!isUuid(prevJson.run_id)) throw new Error(`Invalid run_id UUID`);\n\nlet clauses = [];\ntry {\n  const content = aiResponse.choices?.[0]?.message?.content || '';\n  console.log(`[Format & Split] Parsing OpenAI response...`);\n  \n  if (!content) throw new Error('OpenAI returned empty content');\n  \n  const parsed = JSON.parse(content);\n  clauses = parsed.clauses || parsed.items || parsed.sections || (Array.isArray(parsed) ? parsed : []);\n  \n  if (clauses.length === 0) {\n    for (const key of Object.keys(parsed)) {\n      if (Array.isArray(parsed[key]) && parsed[key].length > 0) {\n        clauses = parsed[key];\n        break;\n      }\n    }\n  }\n  console.log(`[Format & Split] Found ${clauses.length} clauses`);\n} catch (e) {\n  console.error(`[Format & Split] Parse error: ${e.message}`);\n  throw new Error(`AI Parse failed: ${e.message}`);\n}\n\nif (clauses.length === 0) {\n  throw new Error('AI Parse returned 0 clauses');\n}\n\nreturn clauses.map((c, i) => ({\n  json: {\n    ...prevJson,\n    clause_instance_id: uuid(),\n    clause_id: c.clause_id || `clause_${i+1}`,\n    clause_text: c.clause_text || c.text || c.content || '',\n    heading: c.heading || c.title || '',\n    total_clauses: clauses.length,\n    clause_index: i\n  }\n}));"
+            },
+            "id": "format_split",
+            "name": "Format & Split",
+            "position": [
+                2360,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/clause_instances?on_conflict=document_id,clause_index",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=representation,resolution=merge-duplicates"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ id: $json.clause_instance_id, run_id: $json.run_id, document_id: $json.document_id, clause_index: $json.clause_index, heading: $json.heading || '', original_text: $json.clause_text }) }}",
+                "options": {}
+            },
+            "id": "insert_clauses",
+            "name": "Insert Clauses",
+            "position": [
+                2480,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2
+        },
+        {
+            "parameters": {
+                "jsCode": "const d = Array.isArray($json) ? $json[0] : $json;\nif (!d?.id) throw new Error('Insert failed');\nreturn [{json: d}];"
+            },
+            "id": "verify_insert",
+            "name": "Verify Insert",
+            "position": [
+                2600,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://mmenendeza.app.n8n.cloud/webhook/clause-review-rag",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ (() => { const d = Array.isArray($json) ? $json[0] : $json; return JSON.stringify({ clause_instance_id: d.id, clause_id: 'clause_' + (d.clause_index + 1), clause_text: d.original_text, run_id: d.run_id, document_id: d.document_id, heading: d.heading || '', contract_type: 'psa_amazon', sequence_number: d.clause_index }); })() }}",
+                "options": {
+                    "timeout": 90000
+                }
+            },
+            "id": "call_w2",
+            "name": "Call W2 Review",
+            "position": [
+                2720,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "jsCode": "const items = $input.all().map(i => i.json);\nconst precalc = $('Pre-calc Params').first().json;\nconst startTime = new Date(precalc.started_at);\nconst totalDurationMs = new Date() - startTime;\nlet clausesProcessed = items.length;\n\nconsole.log('[Collect Metrics] Total items: ' + clausesProcessed);\n\nreturn [{ json: { run_id: precalc.run_id, document_id: precalc.document_id, total_items: clausesProcessed, _pipeline_metrics: { run_id: precalc.run_id, total_duration_ms: totalDurationMs, total_clauses: clausesProcessed, workflow_version: 'v4.0-native-extract' } } }];"
+            },
+            "id": "collect_metrics",
+            "name": "Collect Metrics",
+            "position": [
+                2840,
+                304
+            ],
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2
+        },
+        {
+            "parameters": {
+                "method": "PATCH",
+                "url": "=https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/contract_runs?run_id=eq.{{ $('Pre-calc Params').first().json.run_id }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ status: 'COMPLETED', completed_at: new Date().toISOString(), total_clauses: ($('Collect Metrics').first().json._pipeline_metrics?.total_clauses || 0) }) }}",
+                "options": {}
+            },
+            "id": "update_completed",
+            "name": "Update Run Completed",
+            "position": [
+                2960,
+                304
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2
+        },
+        {
+            "parameters": {},
+            "id": "error_trigger",
+            "name": "Error Trigger",
+            "position": [
+                480,
+                500
+            ],
+            "type": "n8n-nodes-base.errorTrigger",
+            "typeVersion": 1
+        },
+        {
+            "parameters": {
+                "method": "PATCH",
+                "url": "=https://hvlsuwdqtffiilvampxq.supabase.co/rest/v1/contract_runs?run_id=eq.{{ $json.execution?.customData?.run_id || 'unknown' }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "apikey",
+                            "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2bHN1d2RxdGZmaWlsdmFtcHhxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2ODMxMjkwMiwiZXhwIjoyMDgzODg4OTAyfQ.fiPHwoYlT3aW6MRrRTMvF7H6zKSiiUdS3pyOd8tT0ok"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        },
+                        {
+                            "name": "Prefer",
+                            "value": "return=minimal"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ status: 'FAILED', error_message: ($json.error?.message || 'Workflow execution failed').substring(0, 500), completed_at: new Date().toISOString() }) }}",
+                "options": {
+                    "timeout": 5000
+                }
+            },
+            "id": "update_failed",
+            "name": "Update Run FAILED",
+            "position": [
+                700,
+                500
+            ],
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "onError": "continueRegularOutput"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Pre-calc Params",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Pre-calc Params": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run Processing",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Run Processing": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Query",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Query": {
+            "main": [
+                [
+                    {
+                        "node": "Get Document Info",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Document Info": {
+            "main": [
+                [
+                    {
+                        "node": "Build Download URL",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Build Download URL": {
+            "main": [
+                [
+                    {
+                        "node": "Download File",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Download File": {
+            "main": [
+                [
+                    {
+                        "node": "Is PDF?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Is PDF?": {
+            "main": [
+                [
+                    {
+                        "node": "Extract PDF Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Unzip DOCX",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract PDF Text": {
+            "main": [
+                [
+                    {
+                        "node": "Format PDF Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format PDF Text": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Extraction",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Unzip DOCX": {
+            "main": [
+                [
+                    {
+                        "node": "Filter document.xml",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filter document.xml": {
+            "main": [
+                [
+                    {
+                        "node": "XML to JSON",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "XML to JSON": {
+            "main": [
+                [
+                    {
+                        "node": "Parse DOCX Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse DOCX Text": {
+            "main": [
+                [
+                    {
+                        "node": "Merge Extraction",
+                        "type": "main",
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Merge Extraction": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare AI Payload",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare AI Payload": {
+            "main": [
+                [
+                    {
+                        "node": "AI Parse Clauses",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Parse Clauses": {
+            "main": [
+                [
+                    {
+                        "node": "Format & Split",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format & Split": {
+            "main": [
+                [
+                    {
+                        "node": "Insert Clauses",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Insert Clauses": {
+            "main": [
+                [
+                    {
+                        "node": "Verify Insert",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Verify Insert": {
+            "main": [
+                [
+                    {
+                        "node": "Call W2 Review",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Call W2 Review": {
+            "main": [
+                [
+                    {
+                        "node": "Collect Metrics",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Collect Metrics": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run Completed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Error Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Update Run FAILED",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "saveExecutionProgress": true,
+        "saveManualExecutions": true,
+        "saveDataErrorExecution": "all",
+        "saveDataSuccessExecution": "all",
+        "executionTimeout": 3600,
+        "timezone": "UTC",
+        "callerPolicy": "workflowsFromSameOwner"
+    },
+    "versionId": "v4.0-native-extract-20260205",
+    "meta": {
+        "instanceId": "e30f3d921a61d3f73e3eabe4fb1f4cfa51dfa5c1aaf9fb23188d4bcf355ee15a"
+    },
+    "id": "YzXEmynMgRCQsihN",
+    "tags": []
+}

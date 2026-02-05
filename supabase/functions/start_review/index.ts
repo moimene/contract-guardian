@@ -60,7 +60,8 @@ serve(async (req) => {
       run_id: run.run_id,
       contract_type_id: contract_type_id || 'amazon-psa',
       file_name: doc.file_name,
-      file_path: doc.file_path, // Key addition for v3 extraction
+      file_path: doc.file_path,
+      storage_path: doc.storage_path, // For W3 v4.0 native extraction
       anonymization_mode,
       party_aliases
     }

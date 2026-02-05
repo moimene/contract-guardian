@@ -127,9 +127,11 @@ export function NewAnalysis() {
             console.log('[Upload] Storage success:', uploadData)
 
             // Create document record
+            // storage_path is required by extract_text Edge Function
             const insertPayload = {
                 file_name: file.name,
                 file_path: filePath,
+                storage_path: filePath, // Same as file_path - EF strips bucket prefix
                 contract_type_id: selectedType,
                 status: 'UPLOADED',
                 tenant_id: '00000000-0000-0000-0000-000000000001' // Default dev tenant
